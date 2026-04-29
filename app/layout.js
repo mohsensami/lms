@@ -20,7 +20,7 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   const conn = await dbConnect();
-  console.log(conn);
+  //console.log(conn);
   return (
     <html lang="en">
       <body className={cn(` antialiased  min-h-full flex flex-col`)}>
