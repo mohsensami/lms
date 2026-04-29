@@ -29,14 +29,8 @@ const courseSchema = new Schema({
     required: true,
     type: Boolean,
   },
-  category: {
-    required: true,
-    type: Schema.ObjectId,
-  },
-  instructor: {
-    required: true,
-    type: Schema.ObjectId,
-  },
+  category: { type: Schema.ObjectId, ref: "Category" },
+  instructor: { type: Schema.ObjectId, ref: "User" },
   testimonials: {
     required: true,
     type: [Schema.ObjectId],
