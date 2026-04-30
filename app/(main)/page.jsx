@@ -101,7 +101,7 @@ const HomePage = () => {
   return (
     <>
       <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32 grainy">
-        <div className="container mx-auto flex max-w-[64rem] flex-col items-center gap-4 text-center relative isolate">
+        <div className="container  flex max-w-[64rem] flex-col items-center gap-4 text-center relative isolate">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -143,7 +143,7 @@ const HomePage = () => {
       {/* Categories Section */}
       <section
         id="categories"
-        className="container mx-auto space-y-6  py-8  md:py-12 lg:py-24"
+        className="container  space-y-6  py-8  md:py-12 lg:py-24"
       >
         <div className="flex items-center justify-between">
           <SectionTitle>Categories</SectionTitle>
@@ -155,7 +155,7 @@ const HomePage = () => {
             Browse All <ArrowRightIcon className="h-4 w-4" />
           </Link>
         </div>
-        <div className="mx-auto grid justify-center gap-4 grid-cols-2  md:grid-cols-3 2xl:grid-cols-4">
+        <div className=" grid justify-center gap-4 grid-cols-2  md:grid-cols-3 2xl:grid-cols-4">
           {categories.map((category) => {
             return (
               <Link
@@ -181,7 +181,7 @@ const HomePage = () => {
       {/* Courses */}
       <section
         id="courses"
-        className="container mx-auto space-y-6   md:py-12 lg:py-24"
+        className="container  space-y-6   md:py-12 lg:py-24"
       >
         <div className="flex items-center justify-between">
           <SectionTitle>Courses</SectionTitle>

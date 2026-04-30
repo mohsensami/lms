@@ -72,3 +72,43 @@
     @apply bg-background text-foreground;
   }
 } */
+
+@import "tailwindcss";
+
+@utility container {
+  /* وسط‌چین کردن (center: true) */
+  margin-inline: auto;
+
+  /* حاشیه داخلی ۲ رِم (padding: "2rem") */
+  padding-inline: 2rem;
+
+  /* عرض کامل در همه اندازه‌ها */
+  width: 100%;
+
+  /*
+    تنظیم max-width برای بریکپوینت‌های مختلف
+    بریکپوینت‌های پیش‌فرض Tailwind v4: sm=40rem, md=48rem, lg=64rem, xl=80rem, 2xl=96rem
+    ما 2xl را به 1400px تغییر می‌دهیم و بقیه را می‌توانید حذف یا اضافه کنید
+  */
+
+  @variant sm {
+    max-width: 640px; /* یا اگر می‌خواهید از پیش‌فرض تم استفاده کنید: var(--breakpoint-sm) */
+  }
+
+  @variant md {
+    max-width: 768px;
+  }
+
+  @variant lg {
+    max-width: 1024px;
+  }
+
+  @variant xl {
+    max-width: 1280px;
+  }
+
+  /* تنظیم سفارشی 2xl برابر با 1400px مطابق با درخواست شما */
+  @variant 2xl {
+    max-width: 1400px;
+  }
+}
