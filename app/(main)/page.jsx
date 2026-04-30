@@ -138,6 +138,8 @@ const HomePage = () => {
         </div>
       </section>
 
+      <Element />
+
       {/* Categories Section */}
       <section
         id="categories"
