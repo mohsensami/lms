@@ -4,6 +4,7 @@ import Support from "@/components/support";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { formatPrice } from "@/lib/formatPrice";
 import { cn } from "@/lib/utils";
+import { getCourseList } from "@/queries/courses";
 import { BookOpen } from "lucide-react";
 import { ArrowRightIcon } from "lucide-react";
 import { ArrowRight } from "lucide-react";
@@ -97,7 +98,9 @@ const courses = [
     thumbnail: "/assets/images/categories/music.jpg",
   },
 ];
-const HomePage = () => {
+const HomePage = async () => {
+  const courseslist = await getCourseList();
+  console.log(courseslist);
   return (
     <>
       <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32 grainy">
