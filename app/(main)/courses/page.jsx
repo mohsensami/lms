@@ -7,50 +7,19 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+
 import { formatPrice } from "@/lib/formatPrice";
-import { cn } from "@/lib/utils";
-import { Search } from "lucide-react";
+
 import { ArrowRight } from "lucide-react";
 import { BookOpen } from "lucide-react";
-import { ChevronDown } from "lucide-react";
-import { MessageSquareText } from "lucide-react";
-import { Filter } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-
-// for mobile sidebar
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { X } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-const SORT_OPTIONS = [
-  { label: "Price: Low to High", value: "price-asc" },
-  { label: "Price: High to Low", value: "price-desc" },
-];
+import SearchCourse from "./_components/SearchCourse";
+import SortCourse from "./_components/SortCourse";
+import FilterCourseMobile from "./_components/FilterCourseMobile";
 
 const PRICE_OPTIONS = [
   { label: "Free", value: "free" },
@@ -185,126 +154,14 @@ const CoursesPage = () => {
       {/* <h2 className="text-xl md:text-2xl font-medium">All Courses</h2> */}
       {/* header */}
       <div className="flex items-baseline justify-between  border-gray-200 border-b pb-6 flex-col gap-4 lg:flex-row">
-        <div className="relative h-10 max-lg:w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 z-10 h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="Search courses..."
-            className="pl-8 pr-3 py-2 text-sm" // Add additional styling as needed
-          />
-        </div>
+        <SearchCourse />
 
         <div className="flex items-center justify-end gap-2 max-lg:w-full">
-          <Select>
-            <SelectTrigger className="w-[180px] border-none !border-b focus:ring-0 focus:ring-offset-0  overflow-hidden">
-              <SelectValue placeholder="Sort By" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Fruits</SelectLabel>
-                {SORT_OPTIONS.map((option) => (
-                  <SelectItem
-                    className="cursor-pointer"
-                    key={option.value}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <SortCourse />
 
           {/* Filter Menus For Mobile */}
 
-          <div className="lg:hidden">
-            <Sheet>
-              <SheetTrigger>
-                <Filter className="h-6 w-6" />
-              </SheetTrigger>
-              <SheetContent side="left">
-                <SheetHeader>
-                  <SheetTitle className="text-left">Filter Courses</SheetTitle>
-                  <Accordion defaultValue={["categories"]} type="multiple">
-                    {/* Categories filter */}
-                    <AccordionItem value="categories">
-                      <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
-                        <span className="font-medium text-gray-900">
-                          Categories
-                        </span>
-                      </AccordionTrigger>
-
-                      <AccordionContent className="pt-6 animate-none">
-                        <ul className="space-y-4">
-                          {CATEGORY_OPTIONS.map((option, optionIdx) => (
-                            <li
-                              key={option.value}
-                              className="flex items-center"
-                            >
-                              <Checkbox
-                                type="checkbox"
-                                id={`category-${optionIdx}`}
-                                onCheckedChange={() => {
-                                  applyArrayFilter({
-                                    type: "categories",
-                                    value: option.value,
-                                  });
-                                }}
-                                checked={filter.categories.includes(
-                                  option.value,
-                                )}
-                              />
-                              <label
-                                htmlFor={`category-${optionIdx}`}
-                                className="ml-3 text-sm text-gray-600 cursor-pointer"
-                              >
-                                {option.label}
-                              </label>
-                            </li>
-                          ))}
-                        </ul>
-                      </AccordionContent>
-                    </AccordionItem>
-                    {/* Price filter */}
-                    <AccordionItem value="price">
-                      <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
-                        <span className="font-medium text-gray-900">Price</span>
-                      </AccordionTrigger>
-
-                      <AccordionContent className="pt-6 animate-none">
-                        <ul className="space-y-4">
-                          {PRICE_OPTIONS.map((option, optionIdx) => (
-                            <li
-                              key={option.value}
-                              className="flex items-center"
-                            >
-                              <Checkbox
-                                type="checkbox"
-                                id={`price-${optionIdx}`}
-                                onCheckedChange={() => {
-                                  applyArrayFilter({
-                                    type: "price",
-                                    value: option.value,
-                                  });
-                                }}
-                                checked={filter.price.includes(option.value)}
-                              />
-                              <label
-                                htmlFor={`price-${optionIdx}`}
-                                className="ml-3 text-sm text-gray-600 cursor-pointer"
-                              >
-                                {option.label}
-                              </label>
-                            </li>
-                          ))}
-                        </ul>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </SheetHeader>
-              </SheetContent>
-            </Sheet>
-          </div>
+          <FilterCourseMobile />
         </div>
       </div>
       {/* header ends */}
