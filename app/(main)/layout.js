@@ -29,7 +29,10 @@ const MainLayout = ({ children }) => {
           <MainNav items={navLinks} />
         </div>
       </header>
-      <main className="flex-1 pt-20 flex flex-col"> {children} </main>
+      <main className="flex-1 pt-20 flex flex-col border-b border-gray-700">
+        {" "}
+        {children}{" "}
+      </main>
       <SiteFooter />
     </div>
   );
