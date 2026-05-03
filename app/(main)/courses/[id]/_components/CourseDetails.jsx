@@ -1,30 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { CheckCheck } from "lucide-react";
-import { Presentation } from "lucide-react";
-import { UsersRound } from "lucide-react";
-import { Star } from "lucide-react";
-import { MessageSquare } from "lucide-react";
-import { BookCheck } from "lucide-react";
-import { Clock10 } from "lucide-react";
-import { Radio } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
-import { Video } from "lucide-react";
-import { NotepadText } from "lucide-react";
-import { FileQuestion } from "lucide-react";
-import { PlayCircle } from "lucide-react";
-import { SquarePlay } from "lucide-react";
-import { Tv } from "lucide-react";
-import { StickyNote } from "lucide-react";
-import { BookOpen } from "lucide-react";
-import { ArrowRight } from "lucide-react";
 import CourseOverview from "./CourseOverview";
 import CourseCurriculam from "./CourseCurriculam";
 import CourseInstructor from "./CourseInstructor";
