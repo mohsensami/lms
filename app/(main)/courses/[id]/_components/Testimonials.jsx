@@ -10,7 +10,7 @@ import { SectionTitle } from "@/components/section-title";
 import StarRating from "@/components/start-rating";
 
 const Testimonials = ({ testimonials }) => {
-  console.log(testimonials);
+  //console.log(testimonials);
 
   return (
     <section className="pb-8 md:pb-12 lg:pb-24">
