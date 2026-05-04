@@ -14,7 +14,7 @@ import { FileQuestion } from "lucide-react";
 import CourseLessonList from "./CourseLessonList";
 
 const CourseModuleList = ({ module }) => {
-  console.log(module);
+  //console.log(module);
 
   return (
     <div>
