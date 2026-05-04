@@ -64,3 +64,5 @@ export async function getCourseDetails(id) {
     .lean();
   return replaceMongoIdInObject(course);
 }
+
+export async function getCourseDetailsByInstructor(instructorId) {}
