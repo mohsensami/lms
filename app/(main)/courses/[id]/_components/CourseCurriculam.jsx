@@ -12,7 +12,12 @@ import {
 import CourseModuleList from "./module/CourseModuleList";
 
 const CourseCurriculam = ({ course }) => {
-  console.log(course);
+  // console.log(course)
+
+  const totalDuration = course?.modules.reduce(function (acc, obj) {
+    return acc + obj.duration;
+  }, 0);
+
   return (
     <>
       <div className="flex gap-x-5 items-center justify-center flex-wrap mt-4 mb-6 text-gray-600 text-sm">
@@ -22,7 +27,7 @@ const CourseCurriculam = ({ course }) => {
         </span>
         <span className="flex items-center gap-1.5">
           <Clock10 className="w-4 h-4" />
-          50+ Hours
+          {(totalDuration / 60).toPrecision(2)}+ Hours
         </span>
         <span className="flex items-center gap-1.5">
           <Radio className="w-4 h-4" />4 Live Class
@@ -35,7 +40,10 @@ const CourseCurriculam = ({ course }) => {
         collapsible="true"
         className="w-full"
       >
-        <CourseModuleList />
+        {course?.modules &&
+          course.modules.map((module, index) => (
+            <CourseModuleList key={module.id || index} module={module} />
+          ))}
       </Accordion>
     </>
   );
