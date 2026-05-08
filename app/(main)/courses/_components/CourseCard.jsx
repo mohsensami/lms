@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 import { ArrowRightIcon } from "lucide-react";
 import { BookOpen } from "lucide-react";
+import EnrollCourse from "@/components/enroll-course";
 
 const CourseCard = ({ course }) => {
   return (
@@ -46,10 +47,7 @@ const CourseCard = ({ course }) => {
               {formatPrice(course?.price)}
             </p>
 
-            <Button variant="ghost" className="text-xs text-sky-700 h-7 gap-1">
-              Enroll
-              <ArrowRight className="w-3" />
-            </Button>
+            <EnrollCourse asLink={true} />
           </div>
         </div>
       </div>
