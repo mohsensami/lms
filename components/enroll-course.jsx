@@ -3,11 +3,13 @@ import React from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { createCheckoutSession } from "@/app/actions/stripe";
+import { createZarinpalPayment } from "../app/actions/zarinpal";
+// import { createCheckoutSession } from "@/app/actions/stripe";
 
 const EnrollCourse = ({ asLink, courseId }) => {
   const formAction = async (data) => {
-    const { url } = await createCheckoutSession(data);
+    const { url } = await createZarinpalPayment(data);
+    // const { url } = await createCheckoutSession(data);
     window.location.assign(url);
   };
 
