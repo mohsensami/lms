@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { sendEmails } from "@/lib/emails";
 import { stripe } from "@/lib/stripe";
 import { getCourseDetails } from "@/queries/courses";
+import { enrollForCourse } from "@/queries/enrollments";
 import { getUserByEmail } from "@/queries/users";
 import { CircleCheck } from "lucide-react";
 import Link from "next/link";
@@ -38,6 +39,12 @@ const Success = async ({ searchParams: { session_id, courseId } }) => {
 
   if (paymentStatus === "succeeded") {
     /// Update data to enrollment table
+    const enrolled = await enrollForCourse(
+      course?.id,
+      loggedInUser?.id,
+      "stripe",
+    );
+    console.log(enrolled);
 
     // Send emails to the instructor and student who paid
 
