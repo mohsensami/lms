@@ -14,13 +14,21 @@ async function EnrolledCourses() {
   }
 
   const loggedInUser = await getUserByEmail(session?.user?.email);
-  console.log(loggedInUser);
 
   const enrollments = await getEnrollmentsForUser(loggedInUser?.id);
+  console.log(enrollments);
 
   return (
     <div className="grid sm:grid-cols-2 gap-6">
-      <EnrolledCourseCard />
+      {enrollments && enrollments.length > 0 ? (
+        <>
+          {enrollments.map((enrollment) => (
+            <EnrolledCourseCard key={enrollment?.id} enrollment={enrollment} />
+          ))}
+        </>
+      ) : (
+        <p className="font-bold text-red-700">No Enrollments found!</p>
+      )}
     </div>
   );
 }

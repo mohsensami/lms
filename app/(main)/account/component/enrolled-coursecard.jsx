@@ -2,21 +2,26 @@ import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
 import Image from "next/image";
+import { getCategoryDetails } from "@/queries/categories";
 
-const EnrolledCourseCard = () => {
+const EnrolledCourseCard = async ({ enrollment }) => {
+  const courseCategory = await getCategoryDetails(
+    enrollment?.course?.category?._id,
+  );
+
   return (
     <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
       <div className="relative w-full aspect-video rounded-md overflow-hidden">
         <Image
-          src="/assets/images/courses/course_1.png"
-          alt={"course"}
+          src={`/assets/images/courses/${enrollment?.course?.thumbnail}`}
+          alt={enrollment?.course?.title}
           className="object-cover"
           fill
         />
       </div>
       <div className="flex flex-col pt-2">
         <div className="text-lg md:text-base font-medium group-hover:text-sky-700 line-clamp-2">
-          Reactive Accelerator
+          {enrollment?.course?.title}
         </div>
         <span className="text-xs text-muted-foreground">Development</span>
         <div className="my-3 flex items-center gap-x-2 text-sm md:text-xs">
