@@ -24,3 +24,5 @@ export async function enrollForCourse(courseId, userId, paymentMethod) {
     throw new Error(error);
   }
 }
+
+export async function getEnrollmentsForUser(userId) {}
