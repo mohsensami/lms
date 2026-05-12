@@ -68,7 +68,10 @@ export async function getCourseDetails(id) {
 }
 
 export async function getCourseDetailsByInstructor(instructorId) {
-  const courses = await Course.find({ instructor: instructorId }).lean();
+  const courses = await Course.find({ instructor: instructorId })
+    .populate({ path: "category", model: Category })
+    .populate({ path: "instructor", model: User })
+    .lean();
 
   const enrollments = await Promise.all(
     courses.map(async (course) => {
@@ -94,11 +97,26 @@ export async function getCourseDetailsByInstructor(instructorId) {
       return acc + obj.rating;
     }, 0) / totalTestimonials.length;
 
+  const firstName =
+    courses.length > 0 ? courses[0]?.instructor?.firstName : "Unknown";
+  const lastName =
+    courses.length > 0 ? courses[0]?.instructor?.lastName : "Unknown";
+  const fullInsName = `${firstName} ${lastName}`;
+
+  const Designation =
+    courses.length > 0 ? courses[0]?.instructor?.designation : "Unknown";
+
+  const insImage =
+    courses.length > 0 ? courses[0]?.instructor?.profilePicture : "Unknown";
+
   return {
     courses: courses.length,
     enrollments: totalEnrollments,
     reviews: totalTestimonials.length,
     ratings: avgRating.toPrecision(2),
     inscourses: courses,
+    fullInsName,
+    Designation,
+    insImage,
   };
 }

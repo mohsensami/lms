@@ -18,7 +18,7 @@ const InstructorProfile = async ({ params: { id } }) => {
   const courseDetailsByInstructor = await getCourseDetailsByInstructor(
     id.toString(),
   );
-  console.log(courseDetailsByInstructor);
+  //console.log(courseDetailsByInstructor);
 
   return (
     <section id="categories" className="space-y-6  py-6  lg:py-12">
@@ -28,17 +28,21 @@ const InstructorProfile = async ({ params: { id } }) => {
           <div className="bg-white rounded-2xl p-6 shadow">
             <div className="mb-6">
               <div className="w-36 h-36 rounded-full  mb-5 mx-auto overflow-hidden">
-                <img
-                  src="https://res.cloudinary.com/dbxtifnah/image/upload/v1733089153/ariyan_o3jjoe.jpg"
-                  alt=""
+                <Image
+                  src={courseDetailsByInstructor?.insImage}
+                  alt={courseDetailsByInstructor?.fullInsName}
+                  width={300}
+                  height={300}
                   className="w-full h-full object-cover rounded"
                 />
               </div>
 
               <div>
-                <h4 className="text-xl lg:text-2xl text-center">Kazi Ariyan</h4>
+                <h4 className="text-xl lg:text-2xl text-center">
+                  {courseDetailsByInstructor?.fullInsName}
+                </h4>
                 <div className="text-gray-600 font-medium mb-6 text-sm text-center">
-                  Senior Software Engineer
+                  {courseDetailsByInstructor?.Designation}
                 </div>
                 <ul className=" items-center gap-3 flex-wrap text-sm text-gray-600 font-medium grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 md:grid-cols-4">
                   <li className="flex items-center space-x-3">
