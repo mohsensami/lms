@@ -5,6 +5,7 @@ import { Star } from "lucide-react";
 import { MessageSquare } from "lucide-react";
 import Image from "next/image";
 import { getCourseDetailsByInstructor } from "@/queries/courses";
+import Link from "next/link";
 
 const CourseInstructor = async ({ course }) => {
   const instructor = course?.instructor;
@@ -53,6 +54,12 @@ const CourseInstructor = async ({ course }) => {
               <li className="flex space-x-3">
                 <Star className="text-gray-600" />
                 <div>{courseDetailsByInstructor?.ratings} Average Rating</div>
+              </li>
+
+              <li className="flex space-x-3">
+                <Link href={`/inst-profile/${instructor?._id}`}>
+                  <div className="text-red-600 font-bold">See Profile</div>
+                </Link>
               </li>
             </ul>
           </div>
