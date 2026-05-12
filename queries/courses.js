@@ -99,5 +99,6 @@ export async function getCourseDetailsByInstructor(instructorId) {
     enrollments: totalEnrollments,
     reviews: totalTestimonials.length,
     ratings: avgRating.toPrecision(2),
+    inscourses: courses,
   };
 }
