@@ -67,6 +67,17 @@ export async function getCourseDetails(id) {
   return replaceMongoIdInObject(course);
 }
 
+function groupBy(array, keyFn) {
+  return array.reduce((acc, item) => {
+    const key = keyFn(item);
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(item);
+    return acc;
+  }, {});
+}
+
 export async function getCourseDetailsByInstructor(instructorId) {
   const courses = await Course.find({ instructor: instructorId })
     .populate({ path: "category", model: Category })
@@ -79,6 +90,17 @@ export async function getCourseDetailsByInstructor(instructorId) {
       return enrollment;
     }),
   );
+
+  // Group enrollments by course
+  const groupByCourses = groupBy(enrollments.flat(), (item) => item.course);
+
+  /// Calculate total revenue
+  const totalRevenue = courses.reduce((acc, course) => {
+    const enrollmentsForCourse = groupByCourses[course._id] || [];
+    return acc + enrollmentsForCourse.length * course.price;
+  }, 0);
+
+  //console.log(totalRevenue);
 
   const totalEnrollments = enrollments.reduce((acc, obj) => {
     return acc + obj.length;
@@ -115,6 +137,7 @@ export async function getCourseDetailsByInstructor(instructorId) {
     reviews: totalTestimonials.length,
     ratings: avgRating.toPrecision(2),
     inscourses: courses,
+    revenue: totalRevenue,
     fullInsName,
     Designation,
     insImage,
