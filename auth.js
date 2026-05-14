@@ -1,8 +1,9 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { User } from "./model/user-model";
 import bcrypt from "bcryptjs";
 import { authConfig } from "./auth.config";
+import { User } from "./model/user-model";
+import { dbConnect } from "./service/mongo";
 
 export const {
   handlers: { GET, POST },
@@ -14,31 +15,51 @@ export const {
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
-        if (credentials == null) return null;
+        console.log("1️⃣ Authorize started");
+
+        if (!credentials?.email || !credentials?.password) {
+          console.error("Missing credentials");
+          return null;
+        }
 
         try {
-          const user = await User.findOne({ email: credentials?.email });
-          //console.log(user);
+          // ✅ مهم: اول اتصال به دیتابیس
+          console.log("2️⃣ Connecting to database...");
+          await dbConnect();
+          console.log("3️⃣ Connected to database");
 
-          if (user) {
-            const isMatch = await bcrypt.compare(
-              credentials.password,
-              user.password,
-            );
+          // جستجوی کاربر
+          console.log("4️⃣ Finding user:", credentials.email);
+          const user = await User.findOne({ email: credentials.email });
+          console.log("5️⃣ User found:", user ? "Yes" : "No");
 
-            if (isMatch) {
-              return user;
-            } else {
-              console.error("Password Mismatch");
-              throw new Error("Check your password");
-            }
-          } else {
-            console.error("User not found");
+          if (!user) {
+            console.error("User not found:", credentials.email);
             throw new Error("User not found");
           }
+
+          // بررسی رمز عبور
+          console.log("6️⃣ Checking password");
+          const isMatch = await bcrypt.compare(
+            credentials.password,
+            user.password,
+          );
+
+          if (!isMatch) {
+            console.error("Password mismatch for:", credentials.email);
+            throw new Error("Check your password");
+          }
+
+          console.log("7️⃣ Authentication successful");
+          // برگرداندن user object (بدون password)
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+          };
         } catch (err) {
-          console.error(err);
-          throw new Error(err);
+          console.error("❌ Authorize error:", err);
+          throw new Error(err.message || "Authentication failed");
         }
       },
     }),
