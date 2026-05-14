@@ -30,7 +30,7 @@ const MainNav = ({ items, children }) => {
       try {
         const response = await fetch("/api/me");
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         setLoggedInUser(data);
       } catch (error) {
         console.log(error);

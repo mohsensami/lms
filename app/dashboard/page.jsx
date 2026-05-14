@@ -19,10 +19,6 @@ const DashboardPage = async () => {
 
   return (
     <div className="p-6">
-      <p className="pb-4 text-gray-800">
-        {" "}
-        Login as : <strong>{courseStatus?.fullInsName}</strong>{" "}
-      </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         {/* total courses */}
         <Card>
