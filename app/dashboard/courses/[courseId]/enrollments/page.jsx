@@ -24,7 +24,7 @@ const EnrollmentsPage = async ({ params: { courseId } }) => {
       {/* <Link href="/teacher/create">
         <Button>New Course</Button>
       </Link> */}
-      <h2>{course?.title}</h2>
+      <h2 className="text-3xl text-gray-700 font-bold">{course?.title}</h2>
       <DataTable columns={columns} data={enrollmentForCourse} />
     </div>
   );
