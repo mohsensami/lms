@@ -15,7 +15,7 @@ const DashboardPage = async () => {
   if (instructor?.role !== "instructor") redirect("/login");
 
   const courseStatus = await getCourseDetailsByInstructor(instructor?.id);
-  console.log(courseStatus);
+  // console.log(courseStatus);
 
   return (
     <div className="p-6">

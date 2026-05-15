@@ -65,7 +65,7 @@ export const columns = [
       const isPublished = row.getValue("isPublished") || false;
 
       return (
-        <Badge className={cn("bg-gray-500", isPublished && "bg-success")}>
+        <Badge className={cn("bg-gray-500", isPublished && "bg-green-600")}>
           {isPublished ? "Published" : "Unpublished"}
         </Badge>
       );
