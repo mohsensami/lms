@@ -16,7 +16,7 @@ import Link from "next/link";
 export const columns = [
   {
     id: "name",
-    accessorKey: "student.name",
+    accessorKey: "studentName",
     header: ({ column }) => {
       return (
         <Button
@@ -42,7 +42,7 @@ export const columns = [
     },
   },
   {
-    accessorKey: "review",
+    accessorKey: "content",
     header: ({ column }) => {
       return (
         <Button
@@ -54,34 +54,4 @@ export const columns = [
       );
     },
   },
-  // {
-  //   id: "actions",
-  //   cell: ({ row }) => {
-  //     const { id } = row.original;
-  //     return (
-  //       <DropdownMenu>
-  //         <DropdownMenuTrigger asChild>
-  //           <Button variant="ghost" className="h-4 w-8 p-0">
-  //             <span className="sr-only">Open Menu</span>
-  //             <MoreHorizontal className="h-4 w-4" />
-  //           </Button>
-  //         </DropdownMenuTrigger>
-  //         <DropdownMenuContent align="end">
-  //           <Link href={`/dashboard/courses/${id}`}>
-  //             <DropdownMenuItem className="cursor-pointer">
-  //               <Pencil className="h-4 w-4 mr-2" />
-  //               Edit
-  //             </DropdownMenuItem>
-  //           </Link>
-  //           <Link href={`/dashboard/courses/${id}/enrollments`}>
-  //             <DropdownMenuItem className="cursor-pointer">
-  //               <GraduationCap className="h-4 w-4 mr-2" />
-  //               View Enrollments
-  //             </DropdownMenuItem>
-  //           </Link>
-  //         </DropdownMenuContent>
-  //       </DropdownMenu>
-  //     );
-  //   },
-  // },
 ];
