@@ -17,15 +17,15 @@ import { ObjectId } from "mongoose";
 //   },
 // ];
 const CoursesPage = async () => {
-  const courses = sanitizeData(await getInstructorDashboardData());
-  console.log(courses);
+  const data = sanitizeData(await getInstructorDashboardData());
+  console.log(data);
 
   return (
     <div className="p-6">
       {/* <Link href="/teacher/create">
         <Button>New Course</Button>
       </Link> */}
-      <DataTable columns={columns} data={courses} />
+      <DataTable columns={columns} data={data?.courses} />
     </div>
   );
 };

@@ -15,7 +15,7 @@ const reviews = [
     rating: 5,
   },
 ];
-const ReviewsPage = async () => {
+const ReviewsPage = async ({ params: { courseId } }) => {
   return (
     <div className="p-6">
       <h2>Think in a Redux way reviews</h2>
