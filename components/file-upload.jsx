@@ -8,7 +8,7 @@ import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 
 export const UploadDropzone = (props) => {
-  const { isMulti = false, label } = props;
+  const { isMulti = false, label, onUpload } = props;
 
   const [droppedFiles, setDroppedFiles] = useState(null);
 
@@ -50,6 +50,7 @@ export const UploadDropzone = (props) => {
     // });
     setUploadProgress(100);
     clearInterval(progressInterval);
+    onUpload(acceptedFiles);
   }, []);
 
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
@@ -71,7 +72,7 @@ export const UploadDropzone = (props) => {
       {...getRootProps()}
       className={cn(
         "mt-3 flex cursor-pointer items-center justify-center rounded-md border border-dashed p-3 py-12 hover:bg-muted/30",
-        isUploading ? "pointer-events-none !cursor-not-allowed opacity-80" : ""
+        isUploading ? "pointer-events-none !cursor-not-allowed opacity-80" : "",
       )}
     >
       <input multiple={isMulti} {...getInputProps()} disabled={isUploading} />
