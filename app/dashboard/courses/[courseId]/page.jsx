@@ -14,8 +14,11 @@ import { TitleForm } from "./_components/title-form";
 import { CourseActions } from "./_components/course-action";
 import AlertBanner from "@/components/alert-banner";
 import { QuizSetForm } from "./_components/quiz-set-form";
+import { getCourseDetails } from "@/queries/courses";
 
-const EditCourse = () => {
+const EditCourse = async ({ params: { courseId } }) => {
+  const course = await getCourseDetails(courseId);
+  //console.log(course);
   return (
     <>
       <AlertBanner
@@ -34,9 +37,9 @@ const EditCourse = () => {
             </div>
             <TitleForm
               initialData={{
-                title: "Reactive Accelerator",
+                title: course?.title,
               }}
-              courseId={1}
+              courseId={courseId}
             />
             <DescriptionForm initialData={{}} courseId={1} />
             <ImageForm initialData={{}} courseId={1} />
