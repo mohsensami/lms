@@ -15,10 +15,11 @@ import { CourseActions } from "./_components/course-action";
 import AlertBanner from "@/components/alert-banner";
 import { QuizSetForm } from "./_components/quiz-set-form";
 import { getCourseDetails } from "@/queries/courses";
+import { SubTitleForm } from "./_components/subtitle-form";
 
 const EditCourse = async ({ params: { courseId } }) => {
   const course = await getCourseDetails(courseId);
-  //console.log(course);
+  console.log(course);
   return (
     <>
       <AlertBanner
@@ -38,6 +39,12 @@ const EditCourse = async ({ params: { courseId } }) => {
             <TitleForm
               initialData={{
                 title: course?.title,
+              }}
+              courseId={courseId}
+            />
+            <SubTitleForm
+              initialData={{
+                subtitle: course?.subtitle,
               }}
               courseId={courseId}
             />

@@ -7,6 +7,7 @@ const courseSchema = new Schema({
   },
   subtitle: {
     type: String,
+    default: "subtitle",
   },
   description: {
     required: true,
