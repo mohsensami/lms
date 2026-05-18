@@ -151,3 +151,12 @@ export async function getCourseDetailsByInstructor(instructorId, expand) {
     insImage,
   };
 }
+
+export async function create(courseData) {
+  try {
+    const course = await Course.create(courseData);
+    return JSON.parse(JSON.stringify(course));
+  } catch (error) {
+    throw new Error(error);
+  }
+}
