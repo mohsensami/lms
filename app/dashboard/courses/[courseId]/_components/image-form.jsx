@@ -25,6 +25,29 @@ export const ImageForm = ({ initialData, courseId }) => {
 
   useEffect(() => {
     if (file) {
+      async function uploadFile() {
+        try {
+          const formData = new FormData();
+          formData.append("files", file[0]);
+          formData.append("destination", "./public/assets/images/courses");
+          formData.append("courseId", courseId);
+          const response = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+          const result = await response.text();
+          console.log(result);
+          if (response.status === 200) {
+            initialData.imageUrl = `/assets/images/courses/${file[0].path}`;
+            toast.success(result);
+            toggleEdit();
+            router.refresh();
+          }
+        } catch (e) {
+          toast.error(e.message);
+        }
+      }
+      uploadFile();
     }
   }, [file]);
 
