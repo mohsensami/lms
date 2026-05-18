@@ -48,7 +48,10 @@ const EditCourse = async ({ params: { courseId } }) => {
               }}
               courseId={courseId}
             />
-            <DescriptionForm initialData={{}} courseId={1} />
+            <DescriptionForm
+              initialData={{ description: course?.description }}
+              courseId={courseId}
+            />
             <ImageForm initialData={{}} courseId={1} />
             <CategoryForm initialData={{}} courseId={1} />
 
@@ -68,7 +71,10 @@ const EditCourse = async ({ params: { courseId } }) => {
                 <IconBadge icon={CircleDollarSign} />
                 <h2 className="text-xl">Sell you course</h2>
               </div>
-              <PriceForm initialData={{}} courseId={1} />
+              <PriceForm
+                initialData={{ price: course?.price }}
+                courseId={courseId}
+              />
             </div>
           </div>
         </div>

@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { updateCourse } from "@/app/actions/course";
 
 const formSchema = z.object({
   description: z.string().min(1, {
@@ -41,6 +42,7 @@ export const DescriptionForm = ({ initialData, courseId }) => {
 
   const onSubmit = async (values) => {
     try {
+      await updateCourse(courseId, values);
       toast.success("Course updated");
       toggleEdit();
       router.refresh();
@@ -68,7 +70,7 @@ export const DescriptionForm = ({ initialData, courseId }) => {
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.description && "text-slate-500 italic"
+            !initialData.description && "text-slate-500 italic",
           )}
         >
           {initialData.description || "No description"}

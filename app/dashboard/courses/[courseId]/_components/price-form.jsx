@@ -19,6 +19,7 @@ import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { updateCourse } from "@/app/actions/course";
 
 const formSchema = z.object({
   price: z.coerce.number(),
@@ -33,7 +34,7 @@ export const PriceForm = ({ initialData, courseId }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      price: initialData?.price || undefined,
+      price: initialData?.price ?? undefined,
     },
   });
 
@@ -41,6 +42,7 @@ export const PriceForm = ({ initialData, courseId }) => {
 
   const onSubmit = async (values) => {
     try {
+      await updateCourse(courseId, values);
       toast.success("Course updated");
       toggleEdit();
       router.refresh();
@@ -68,7 +70,7 @@ export const PriceForm = ({ initialData, courseId }) => {
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.price && "text-slate-500 italic"
+            !initialData.price && "text-slate-500 italic",
           )}
         >
           {initialData.price ? formatPrice(initialData.price) : "No price"}
