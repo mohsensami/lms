@@ -20,7 +20,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ModuleList } from "./module-list";
 import { getSlug } from "@/lib/convertData";
-import { createModule } from "@/app/actions/module";
+import { createModule, reOrderModules } from "@/app/actions/module";
 
 const formSchema = z.object({
   title: z.string().min(1),
@@ -81,6 +81,7 @@ export const ModulesForm = ({ initialData, courseId }) => {
   const onReorder = async (updateData) => {
     console.log({ updateData });
     try {
+      reOrderModules(updateData);
       setIsUpdating(true);
 
       toast.success("Chapters reordered");

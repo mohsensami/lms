@@ -1,6 +1,7 @@
 "use server";
 
 import { Course } from "@/model/course-model";
+import { Module } from "@/model/module.model";
 import { create } from "@/queries/modules";
 
 export async function createModule(data) {
@@ -21,6 +22,18 @@ export async function createModule(data) {
     course.save();
 
     return createdModule;
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
+export async function reOrderModules(data) {
+  try {
+    await Promise.all(
+      data.map(async (element) => {
+        await Module.findByIdAndUpdate(element.id, { order: element.position });
+      }),
+    );
   } catch (e) {
     throw new Error(e);
   }
