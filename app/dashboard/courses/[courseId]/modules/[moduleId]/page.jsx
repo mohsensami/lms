@@ -12,10 +12,31 @@ import { ModuleTitleForm } from "./_components/module-title-form";
 import { LessonForm } from "./_components/lesson-form";
 import { CourseActions } from "../../_components/course-action";
 import { getModule } from "@/queries/modules";
+import { replaceMongoIdInArray } from "@/lib/convertData";
+import { ObjectId } from "mongoose";
 
 const Module = async ({ params: { courseId, moduleId } }) => {
   const module = await getModule(moduleId);
-  console.log(module);
+  // console.log(module);
+  function sanitizeData(data) {
+    return JSON.parse(
+      JSON.stringify(data, (key, value) => {
+        if (value instanceof ObjectId) {
+          return value.toString();
+        }
+        if (Buffer.isBuffer(value)) {
+          return value.toString("base64");
+        }
+        return value;
+      }),
+    );
+  }
+
+  const rawlessons = await replaceMongoIdInArray(module?.lessonIds).sort(
+    (a, b) => a.order - b.order,
+  );
+
+  const lessons = sanitizeData(rawlessons);
   return (
     <>
       <AlertBanner
@@ -56,7 +77,7 @@ const Module = async ({ params: { courseId, moduleId } }) => {
                 <IconBadge icon={BookOpenCheck} />
                 <h2 className="text-xl">Module Lessons</h2>
               </div>
-              <LessonForm />
+              <LessonForm initialData={lessons} moduleId={moduleId} />
             </div>
           </div>
           <div>
