@@ -27,6 +27,12 @@ export const LessonModal = ({ open, setOpen, courseId, lesson }) => {
           e.preventDefault();
         }}
       >
+        <DialogHeader>
+          <DialogTitle>Lesson Editor</DialogTitle>
+          <DialogDescription>
+            Customize and manage the settings for this lesson.
+          </DialogDescription>
+        </DialogHeader>
         <div>
           <div className="flex items-center justify-between">
             <div className="w-full">
