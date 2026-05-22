@@ -85,10 +85,11 @@ export const LessonModal = ({ open, setOpen, courseId, lesson }) => {
               </div>
               <VideoUrlForm
                 initialData={{
-                  url: "https://www.youtube.com/embed/LJi2tiWiYmI?si=-vs8fO-xzWmu7ztG",
+                  url: lesson?.video_url,
+                  duration: lesson?.duration,
                 }}
-                courseId={1}
-                lessonId={1}
+                courseId={courseId}
+                lessonId={lesson?.id}
               />
             </div>
           </div>
