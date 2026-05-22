@@ -31,7 +31,7 @@ export const LessonModal = ({ open, setOpen, courseId, lesson }) => {
           <div className="flex items-center justify-between">
             <div className="w-full">
               <Link
-                href={`/dashboard/courses/${1}`}
+                href={`/dashboard/courses/${courseId}`}
                 className="flex items-center text-sm hover:opacity-75 transition mb-6"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -50,9 +50,9 @@ export const LessonModal = ({ open, setOpen, courseId, lesson }) => {
                   <h2 className="text-xl">Customize Your chapter</h2>
                 </div>
                 <LessonTitleForm
-                  initialData={{}}
-                  courseId={"1"}
-                  lessonId={"1"}
+                  initialData={{ title: lesson?.title }}
+                  courseId={courseId}
+                  lessonId={lesson?.id}
                 />
                 <LessonDescriptionForm
                   initialData={{}}

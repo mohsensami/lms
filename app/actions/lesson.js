@@ -34,3 +34,11 @@ export async function reOrderLesson(data) {
     throw new Error(e);
   }
 }
+
+export async function updateLesson(lessonId, data) {
+  try {
+    await Lesson.findByIdAndUpdate(lessonId, data);
+  } catch (error) {
+    throw new Error(e);
+  }
+}
