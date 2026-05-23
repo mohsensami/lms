@@ -3,6 +3,7 @@
 import { Lesson } from "@/model/lesson.model";
 import { Module } from "@/model/module.model";
 import { create } from "@/queries/lessons";
+import mongoose from "mongoose";
 
 export async function createLesson(data) {
   try {
