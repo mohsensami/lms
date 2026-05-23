@@ -56,3 +56,14 @@ export async function changeLessonPublishState(lessonId) {
     throw new Error(error);
   }
 }
+
+export async function deleteLesson(lessonId, moduleId) {
+  try {
+    const module = await Module.findById(moduleId);
+    module.lessonIds.pull(new mongoose.Types.ObjectId(lessonId));
+    await Lesson.findByIdAndDelete(lessonId);
+    module.save();
+  } catch (err) {
+    throw new Error(err);
+  }
+}
