@@ -14,9 +14,11 @@ import { CourseActions } from "../../_components/course-action";
 import { getModule } from "@/queries/modules";
 import { replaceMongoIdInArray } from "@/lib/convertData";
 import { ObjectId } from "mongoose";
+import { ModuleActions } from "./_components/module-action";
 
 const Module = async ({ params: { courseId, moduleId } }) => {
   const module = await getModule(moduleId);
+  const sanitizedModule = sanitizeData(module);
   // console.log(module);
   function sanitizeData(data) {
     return JSON.parse(
@@ -55,7 +57,7 @@ const Module = async ({ params: { courseId, moduleId } }) => {
               Back to course setup
             </Link>
             <div className="flex items-center justify-end">
-              <CourseActions />
+              <ModuleActions module={sanitizedModule} courseId={courseId} />
             </div>
           </div>
         </div>
