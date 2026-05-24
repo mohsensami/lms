@@ -6,10 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { changeLessonPublishState, deleteLesson } from "@/app/actions/lesson";
 import { toast } from "sonner";
+import { changeModulePublishState, deleteModule } from "@/app/actions/module";
+import { useRouter } from "next/navigation";
 
 export const ModuleActions = ({ module, courseId }) => {
   const [action, setAction] = useState(null);
   const [published, setPublished] = useState(module?.active);
+  const router = useRouter();
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -17,9 +20,10 @@ export const ModuleActions = ({ module, courseId }) => {
     try {
       switch (action) {
         case "change-active": {
-          const activeState = await changeLessonPublishState(lesson.id);
+          const activeState = await changeModulePublishState(module.id);
           setPublished(!activeState);
-          toast.success("The lesson has been updated");
+          toast.success("The Module has been updated");
+          router.refresh();
           break;
         }
 
@@ -29,8 +33,8 @@ export const ModuleActions = ({ module, courseId }) => {
               "A published lesson can not be deleted. First unpublish it, then delete",
             );
           } else {
-            await deleteLesson(lesson.id, moduleId);
-            onDelete();
+            await deleteModule(module.id, courseId);
+            router.push(`/dashboard/courses/${courseId}`);
           }
           break;
         }
