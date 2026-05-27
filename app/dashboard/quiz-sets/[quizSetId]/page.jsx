@@ -13,6 +13,8 @@ import { Delete } from "lucide-react";
 import { Trash } from "lucide-react";
 import { CircleCheck } from "lucide-react";
 import { Circle } from "lucide-react";
+import { getQuizSetById } from "@/queries/quizzes";
+
 const initialQuizes = [
   {
     id: 1,
@@ -59,8 +61,9 @@ const initialQuizes = [
     ],
   },
 ];
-const EditQuizSet = () => {
-  const [quizes, setQuizes] = useState(initialQuizes);
+const EditQuizSet = async ({ params: { quizSetId } }) => {
+  const quizSet = await getQuizSetById(quizSetId);
+  console.log(quizSet);
   return (
     <>
       <AlertBanner
@@ -94,7 +97,7 @@ const EditQuizSet = () => {
                         return (
                           <div
                             className={cn(
-                              "py-1.5 rounded-sm  text-sm flex items-center gap-1 text-gray-600"
+                              "py-1.5 rounded-sm  text-sm flex items-center gap-1 text-gray-600",
                             )}
                             key={option.label}
                           >
