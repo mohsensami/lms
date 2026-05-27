@@ -16,14 +16,17 @@ import mongoose from "mongoose";
 export async function dbConnect() {
   try {
     if (mongoose.connections[0].readyState) {
-      return;
+      return true;
     }
 
     await mongoose.connect(String(process.env.MONGODB_CONNECTION_STRING));
 
-    console.log("MongoDB connected");
+    console.log("MongoDB Connected");
+
+    return true;
   } catch (error) {
-    console.error("MongoDB Error:", error);
-    throw error;
+    console.log("MongoDB Error:", error);
+
+    return false;
   }
 }
