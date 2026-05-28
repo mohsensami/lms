@@ -13,6 +13,7 @@ import { Trash } from "lucide-react";
 import { CircleCheck } from "lucide-react";
 import { Circle } from "lucide-react";
 import { getQuizSetById } from "@/queries/quizzes";
+import { QuizCardActions } from "./_components/quiz-card-action";
 
 const EditQuizSet = async ({ params: { quizSetId } }) => {
   const quizSet = await getQuizSetById(quizSetId);
@@ -81,16 +82,7 @@ const EditQuizSet = async ({ params: { quizSetId } }) => {
                       })}
                     </div>
                     <div className="flex items-center justify-end gap-2 mt-6">
-                      <Button variant="ghost" size="sm">
-                        <Pencil className="w-3 mr-1" /> Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="text-destructive"
-                        variant="ghost"
-                      >
-                        <Trash className="w-3 mr-1" /> Delete
-                      </Button>
+                      <QuizCardActions quiz={quiz} quizSetId={quizSetId} />
                     </div>
                   </div>
                 );
