@@ -81,7 +81,7 @@ const formSchema = z.object({
   }),
 });
 
-export const AddQuizForm = ({ setQuizes }) => {
+export const AddQuizForm = ({ quizSetId }) => {
   const router = useRouter();
 
   const form = useForm({
@@ -127,7 +127,6 @@ export const AddQuizForm = ({ setQuizes }) => {
 
       if (isOneCorrecrMarked) {
         await addQuizToQuizSet(quizSetId, values);
-
         form.reset({
           title: "",
           description: "",
@@ -148,6 +147,7 @@ export const AddQuizForm = ({ setQuizes }) => {
             isTrue: false,
           },
         });
+        toast.success("Quiz Added Successfully");
         // toggleEdit();
         router.refresh();
       } else {
