@@ -35,10 +35,13 @@ const EditQuizSet = async ({ params: { quizSetId } }) => {
   // const [quizes, setQuizes] = useState(initialQuizes);
   return (
     <>
-      <AlertBanner
-        label="This course is unpublished. It will not be visible in the course."
-        variant="warning"
-      />
+      {quizzes.length === 0 && (
+        <AlertBanner
+          label="No Quiz are in the set, add some using the form above."
+          variant="warning"
+          className="rounded mb-6"
+        />
+      )}
       <div className="p-6">
         <div className="flex items-center justify-end">
           <QuizSetAction />
