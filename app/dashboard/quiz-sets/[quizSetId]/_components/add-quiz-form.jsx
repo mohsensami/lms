@@ -113,19 +113,22 @@ export const AddQuizForm = ({ setQuizes }) => {
 
   const onSubmit = async (values) => {
     try {
-      console.log({ values });
+      // console.log({ values });
+      const correctness = [
+        values.optionA.isTrue,
+        values.optionB.isTrue,
+        values.optionC.isTrue,
+        values.optionD.isTrue,
+      ];
 
-      const structuredQuiz = {
-        id: Date.now(),
-        title: values.title,
-        options: [
-          values.optionA,
-          values.optionB,
-          values.optionC,
-          values.optionD,
-        ],
-      };
-      setQuizes((prevQuizes) => [...prevQuizes, structuredQuiz]);
+      const correctMarked = correctness.filter((c) => c);
+      const isOneCorrecrMarked = correctMarked.length === 1;
+
+      if (isOneCorrecrMarked) {
+      } else {
+        toast.error("You must make only one correct answer");
+      }
+
       form.reset({
         title: "",
         description: "",
