@@ -35,26 +35,33 @@ const EditQuizSet = async ({ params: { quizSetId } }) => {
   // const [quizes, setQuizes] = useState(initialQuizes);
   return (
     <>
-      {quizzes.length === 0 && (
+      {!quizSet.active && (
         <AlertBanner
-          label="No Quiz are in the set, add some using the form above."
+          label="This Quiz is unpublished. It will not be visible in the course."
           variant="warning"
-          className="rounded mb-6"
         />
       )}
+
       <div className="p-6">
         <div className="flex items-center justify-end">
-          <QuizSetAction />
+          <QuizSetAction
+            quizSetId={quizSetId}
+            quiz={quizSet?.active}
+            quizId={quizSet?.id}
+          />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2  gap-6 mt-16">
           {/* Quiz List */}
           <div className="max-lg:order-2">
             <h2 className="text-xl mb-6">Quiz List</h2>
-            <AlertBanner
-              label="No Quiz are in the set, add some using the form above."
-              variant="warning"
-              className="rounded mb-6"
-            />
+            {quizzes.length === 0 && (
+              <AlertBanner
+                label="No Quiz are in the set, add some using the form above."
+                variant="warning"
+                className="rounded mb-6"
+              />
+            )}
+
             <div className="space-y-6">
               {quizzes.map((quiz) => {
                 return (
