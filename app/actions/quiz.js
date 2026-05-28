@@ -2,6 +2,7 @@
 import { Quizset } from "@/model/quizset-model";
 import { getSlug } from "./../../lib/convertData";
 import { createQuiz } from "@/queries/quizzes";
+import { Quiz } from "@/model/quizzes-model";
 
 export async function updateQuizSet(quizset, dataToUpdate) {
   try {
@@ -43,6 +44,18 @@ export async function addQuizToQuizSet(quizSetId, quizData) {
     const quizSet = await Quizset.findById(quizSetId);
     quizSet.quizIds.push(createdQuizId);
     quizSet.save();
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function deleteQuiz(quizSetId, quizId) {
+  try {
+    await Quizset.findByIdAndUpdate(quizSetId, {
+      $pull: { quizIds: quizId },
+    });
+
+    await Quiz.findByIdAndDelete(quizId);
   } catch (error) {
     throw new Error(error);
   }
