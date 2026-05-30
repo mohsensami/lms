@@ -44,3 +44,7 @@ export async function deleteCourse(courseId) {
     throw new Error(err);
   }
 }
+
+export async function updateQuizSetForCourse(courseId, dataUpdated) {
+  console.log(courseId, dataUpdated);
+}
