@@ -90,10 +90,11 @@ export const QuizSetForm = ({
           {foundMatch ? (
             <span>{foundMatch.label}</span>
           ) : (
-            <span> "nO Quiz set selected"</span>
+            <span> "No Quiz set selected"</span>
           )}
         </p>
       )}
+
       {console.log({ options })}
       {isEditing && (
         <Form {...form}>
