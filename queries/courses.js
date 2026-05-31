@@ -9,6 +9,7 @@ import {
 } from "@/lib/convertData";
 import { getEnrollmentsForCourse } from "./enrollments";
 import { getTestimonialsForCourse } from "./testimonials";
+import { Lesson } from "@/model/lesson.model";
 
 export async function getCourseList() {
   const courses = await Course.find({ active: true })
@@ -36,6 +37,10 @@ export async function getCourseList() {
     .populate({
       path: "modules",
       model: Module,
+      populate: {
+        path: "lessonIds",
+        model: Lesson,
+      },
     })
     .lean();
   return replaceMongoIdInArray(courses);
@@ -62,6 +67,10 @@ export async function getCourseDetails(id) {
     .populate({
       path: "modules",
       model: Module,
+      populate: {
+        path: "lessonIds",
+        model: Lesson,
+      },
     })
     .lean();
   return replaceMongoIdInObject(course);

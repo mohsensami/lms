@@ -14,9 +14,16 @@ import CourseModuleList from "./module/CourseModuleList";
 const CourseCurriculam = ({ course }) => {
   // console.log(course)
 
-  const totalDuration = course?.modules.reduce(function (acc, obj) {
-    return acc + obj.duration;
-  }, 0);
+  const totalDuration = course?.modules
+    .map((item) => {
+      return item.lessonIds.reduce(function (acc, obj) {
+        return acc + obj.duration;
+      }, 0);
+    })
+    .reduce(function (acc, obj) {
+      return acc + obj;
+    }, 0);
+  //console.log(totalDuration);
 
   return (
     <>
@@ -27,7 +34,7 @@ const CourseCurriculam = ({ course }) => {
         </span>
         <span className="flex items-center gap-1.5">
           <Clock10 className="w-4 h-4" />
-          {(totalDuration / 60).toPrecision(2)}+ Hours
+          {(totalDuration / 3660).toPrecision(2)}+ Hours
         </span>
         <span className="flex items-center gap-1.5">
           <Radio className="w-4 h-4" />4 Live Class
