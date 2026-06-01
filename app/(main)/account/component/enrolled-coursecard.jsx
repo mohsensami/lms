@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getCategoryDetails } from "@/queries/categories";
 import { getReport } from "@/queries/reports";
 import { CourseProgress } from "@/components/course-progress";
+import { getCourseDetails } from "@/queries/courses";
 
 const EnrolledCourseCard = async ({ enrollment }) => {
   // console.log(enrollment);
@@ -20,15 +21,26 @@ const EnrolledCourseCard = async ({ enrollment }) => {
   const report = await getReport(filter);
   //console.log(report);
 
+  /// Get Total Module Number
+  const courseDetails = await getCourseDetails(enrollment?.course?._id);
+  const totalModuleCount = courseDetails?.modules?.length;
+
   /// Total Completed Modules
-  const totalCompletedModules = report?.totalCompletedModeules?.length;
+  const totalCompletedModules = report?.totalCompletedModeules
+    ? report?.totalCompletedModeules?.length
+    : 0;
+
+  /// Total Progress
+  const totalProgress = totalModuleCount
+    ? (totalCompletedModules / totalModuleCount) * 100
+    : 0;
 
   // Get all Quizzes and Assignments
   const quizzes = report?.quizAssessment?.assessments;
-  const totalQuizzes = quizzes?.length;
+  const totalQuizzes = quizzes?.length ?? 0;
 
   // Find attempted quizzes
-  const quizzesTaken = quizzes.filter((q) => q.attempted);
+  const quizzesTaken = quizzes ? quizzes.filter((q) => q.attempted) : [];
   //console.log(quizzesTaken);
 
   // find how many quizzes answered correct
@@ -44,7 +56,7 @@ const EnrolledCourseCard = async ({ enrollment }) => {
   //console.log(totalCorrect);
 
   const marksFromQuizzes = totalCorrect?.length * 5;
-  const otherMarks = report?.quizAssessment?.otherMarks;
+  const otherMarks = report?.quizAssessment?.otherMarks ?? 0;
   const totalMarks = marksFromQuizzes + otherMarks;
 
   return (
@@ -113,9 +125,10 @@ const EnrolledCourseCard = async ({ enrollment }) => {
             {totalMarks}
           </span>
         </div>
+
         <CourseProgress
           size="sm"
-          value={80}
+          value={totalProgress}
           variant={110 === 100 ? "success" : ""}
         />
       </div>
