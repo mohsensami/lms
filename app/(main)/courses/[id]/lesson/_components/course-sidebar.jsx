@@ -14,9 +14,10 @@ import { PlayCircle } from "lucide-react";
 import { Lock } from "lucide-react";
 import Link from "next/link";
 import { ReviewModal } from "./review-modal";
+import { DownloadCertificate } from "./download-certificate";
+import { GiveReview } from "./give-review";
 
 export const CourseSidebar = () => {
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const isActive = true;
   const isCompleted = true;
   return (
@@ -48,7 +49,7 @@ export const CourseSidebar = () => {
                   className={cn(
                     "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
                     isActive && "text-slate-700  hover:text-slate-700",
-                    isCompleted && "text-emerald-700 hover:text-emerald-700"
+                    isCompleted && "text-emerald-700 hover:text-emerald-700",
                   )}
                 >
                   <div className="flex items-center gap-x-2">
@@ -57,7 +58,7 @@ export const CourseSidebar = () => {
                       className={cn(
                         "text-slate-500",
                         isActive && "text-slate-700",
-                        isCompleted && "text-emerald-700"
+                        isCompleted && "text-emerald-700",
                       )}
                     />
                     Introduction
@@ -71,90 +72,15 @@ export const CourseSidebar = () => {
                     false && "text-slate-700  hover:text-slate-700",
                     isCompleted &&
                       false &&
-                      "text-emerald-700 hover:text-emerald-700"
+                      "text-emerald-700 hover:text-emerald-700",
                   )}
                 >
                   <div className="flex items-center gap-x-2">
                     <PlayCircle
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700"
-                      )}
-                    />
-                    What is React ?
-                  </div>
-                </button>
-                {/* lock*/}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600",
-                    false && "text-slate-700  hover:text-slate-700",
-                    isCompleted &&
-                      false &&
-                      "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <Lock
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700"
-                      )}
-                    />
-                    What is React ?
-                  </div>
-                </button>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          {/* item ends */}
-
-          {/* item */}
-          <AccordionItem className="border-0" value="item-2">
-            <AccordionTrigger>Foundational React JS </AccordionTrigger>
-            <AccordionContent>
-              <div className="flex flex-col w-full gap-3">
-                {/* active and completed */}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
-                    isActive && "text-slate-700  hover:text-slate-700",
-                    isCompleted && "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <CheckCircle
                       size={16}
                       className={cn(
                         "text-slate-500",
                         isActive && "text-slate-700",
-                        isCompleted && "text-emerald-700"
-                      )}
-                    />
-                    Introduction
-                  </div>
-                </button>
-                {/* not active and completed */}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
-                    false && "text-slate-700  hover:text-slate-700",
-                    isCompleted &&
-                      false &&
-                      "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <PlayCircle
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700"
                       )}
                     />
                     What is React ?
@@ -168,90 +94,15 @@ export const CourseSidebar = () => {
                     false && "text-slate-700  hover:text-slate-700",
                     isCompleted &&
                       false &&
-                      "text-emerald-700 hover:text-emerald-700"
+                      "text-emerald-700 hover:text-emerald-700",
                   )}
                 >
                   <div className="flex items-center gap-x-2">
                     <Lock
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700"
-                      )}
-                    />
-                    What is React ?
-                  </div>
-                </button>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          {/* item ends */}
-
-          {/* item */}
-          <AccordionItem className="border-0" value="item-3">
-            <AccordionTrigger>Advanced React JS </AccordionTrigger>
-            <AccordionContent>
-              <div className="flex flex-col w-full gap-3">
-                {/* active and completed */}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
-                    isActive && "text-slate-700  hover:text-slate-700",
-                    isCompleted && "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <CheckCircle
                       size={16}
                       className={cn(
                         "text-slate-500",
                         isActive && "text-slate-700",
-                        isCompleted && "text-emerald-700"
-                      )}
-                    />
-                    Introduction
-                  </div>
-                </button>
-                {/* not active and completed */}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
-                    false && "text-slate-700  hover:text-slate-700",
-                    isCompleted &&
-                      false &&
-                      "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <PlayCircle
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700"
-                      )}
-                    />
-                    What is React ?
-                  </div>
-                </button>
-                {/* lock*/}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600",
-                    false && "text-slate-700  hover:text-slate-700",
-                    isCompleted &&
-                      false &&
-                      "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <Lock
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700"
                       )}
                     />
                     What is React ?
@@ -262,170 +113,12 @@ export const CourseSidebar = () => {
           </AccordionItem>
           {/* item ends */}
 
-          {/* item */}
-          <AccordionItem className="border-0" value="item-4">
-            <AccordionTrigger>Project: Ecommerce Application</AccordionTrigger>
-            <AccordionContent>
-              <div className="flex flex-col w-full gap-3">
-                {/* active and completed */}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
-                    isActive && "text-slate-700  hover:text-slate-700",
-                    isCompleted && "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <CheckCircle
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700",
-                        isCompleted && "text-emerald-700"
-                      )}
-                    />
-                    Introduction
-                  </div>
-                </button>
-                {/* not active and completed */}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
-                    false && "text-slate-700  hover:text-slate-700",
-                    isCompleted &&
-                      false &&
-                      "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <PlayCircle
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700"
-                      )}
-                    />
-                    What is React ?
-                  </div>
-                </button>
-                {/* lock*/}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600",
-                    false && "text-slate-700  hover:text-slate-700",
-                    isCompleted &&
-                      false &&
-                      "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <Lock
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700"
-                      )}
-                    />
-                    What is React ?
-                  </div>
-                </button>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          {/* item ends */}
-
-          {/* item */}
-          <AccordionItem className="border-0" value="item-3">
-            <AccordionTrigger>Advanced React JS </AccordionTrigger>
-            <AccordionContent>
-              <div className="flex flex-col w-full gap-3">
-                {/* active and completed */}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
-                    isActive && "text-slate-700  hover:text-slate-700",
-                    isCompleted && "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <CheckCircle
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700",
-                        isCompleted && "text-emerald-700"
-                      )}
-                    />
-                    Introduction
-                  </div>
-                </button>
-                {/* not active and completed */}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
-                    false && "text-slate-700  hover:text-slate-700",
-                    isCompleted &&
-                      false &&
-                      "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <PlayCircle
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700"
-                      )}
-                    />
-                    What is React ?
-                  </div>
-                </button>
-                {/* lock*/}
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600",
-                    false && "text-slate-700  hover:text-slate-700",
-                    isCompleted &&
-                      false &&
-                      "text-emerald-700 hover:text-emerald-700"
-                  )}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <Lock
-                      size={16}
-                      className={cn(
-                        "text-slate-500",
-                        isActive && "text-slate-700"
-                      )}
-                    />
-                    What is React ?
-                  </div>
-                </button>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          {/* item ends */}
-
-          <Button className="w-full mt-6">
-            <>Download Certificate</>
-          </Button>
-
-          <Button
-            onClick={() => setIsReviewModalOpen(true)}
-            variant="outline"
-            className="w-full mt-6"
-          >
-            Give Review
-          </Button>
+          <div className="w-full px-6">
+            <GiveReview />
+            <DownloadCertificate />
+          </div>
         </Accordion>
       </div>
-      <ReviewModal open={isReviewModalOpen} setOpen={setIsReviewModalOpen} />
     </>
   );
 };
