@@ -76,7 +76,7 @@ const Success = async ({ searchParams: { Authority, Status, courseId } }) => {
 
         <div className="flex items-center gap-3">
           <Button asChild size="sm">
-            <Link href="/courses">Browse Courses</Link>
+            <Link href={`/courses/${courseId}/lesson`}>Play Course</Link>
           </Button>
         </div>
       </div>
