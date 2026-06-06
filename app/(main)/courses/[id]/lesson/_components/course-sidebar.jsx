@@ -17,8 +17,26 @@ import { ReviewModal } from "./review-modal";
 import { DownloadCertificate } from "./download-certificate";
 import { GiveReview } from "./give-review";
 import { SidebarModules } from "./sidebar-modules";
+import { getCourseDetails } from "@/queries/courses";
+import { getLoggedInUser } from "@/lib/loggedin-user";
 
-export const CourseSidebar = () => {
+export const CourseSidebar = async ({ courseId }) => {
+  const course = await getCourseDetails(courseId);
+  const loggedinUser = await getLoggedInUser();
+
+  const updatedataModules = await Promise.all(
+    course?.modules.map(async (module) => {
+      const moduleId = module._id.toString();
+      const lessons = module?.lessonIds;
+
+      const updatedLessons = await Promise.all(
+        lessons.map(async (lesson) => {
+          const lessonId = lesson._id.toString();
+        }),
+      );
+    }),
+  );
+
   return (
     <>
       <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
