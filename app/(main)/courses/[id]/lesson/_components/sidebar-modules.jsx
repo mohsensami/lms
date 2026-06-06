@@ -12,7 +12,7 @@ import { Lock } from "lucide-react";
 import Link from "next/link";
 import { SidebarLessons } from "./sidebar-lessons";
 
-export const SidebarModules = () => {
+export const SidebarModules = ({ courseId, modules }) => {
   return (
     <Accordion
       defaultValue="item-1"
