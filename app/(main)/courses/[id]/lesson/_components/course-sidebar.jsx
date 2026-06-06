@@ -18,6 +18,7 @@ import { SidebarModules } from "./sidebar-modules";
 import { getCourseDetails } from "@/queries/courses";
 import { getLoggedInUser } from "@/lib/loggedin-user";
 import { Watch } from "@/model/watch-model";
+import { ObjectId } from "mongoose";
 
 export const CourseSidebar = async ({ courseId }) => {
   const course = await getCourseDetails(courseId);
@@ -48,6 +49,23 @@ export const CourseSidebar = async ({ courseId }) => {
 
   //console.log(updatedModules);
 
+  const updatedallModules = sanitizeData(updatedModules);
+
+  // Sanitize fucntion for handle ObjectID and Buffer
+  function sanitizeData(data) {
+    return JSON.parse(
+      JSON.stringify(data, (key, value) => {
+        if (value instanceof ObjectId) {
+          return value.toString();
+        }
+        if (Buffer.isBuffer(value)) {
+          return value.toString("base64");
+        }
+        return value;
+      }),
+    );
+  }
+
   return (
     <>
       <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
@@ -61,7 +79,7 @@ export const CourseSidebar = async ({ courseId }) => {
           }
         </div>
 
-        <SidebarModules courseId={courseId} modules={updatedModules} />
+        <SidebarModules courseId={courseId} modules={updatedallModules} />
 
         <div className="w-full px-6">
           <GiveReview />
