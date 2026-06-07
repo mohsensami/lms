@@ -5,7 +5,7 @@ import { PlayCircle } from "lucide-react";
 import { Lock } from "lucide-react";
 import Link from "next/link";
 
-export const SidebarLessonItem = () => {
+export const SidebarLessonItem = ({ courseId, lesson, module }) => {
   const isActive = true;
   const isCompleted = true;
 
@@ -27,7 +27,7 @@ export const SidebarLessonItem = () => {
             isCompleted && "text-emerald-700",
           )}
         />
-        Introduction
+        {lesson.title}
       </div>
     </Link>
   );
