@@ -8,6 +8,7 @@ import {
   replaceMongoIdInObject,
 } from "@/lib/convertData";
 import { getLessonBySlug } from "@/queries/lessons";
+import { LessonVideo } from "./_components/lesson-video";
 
 const Course = async ({ params: { id }, searchParams: { name, module } }) => {
   const course = await getCourseDetails(id);
@@ -29,7 +30,11 @@ const Course = async ({ params: { id }, searchParams: { name, module } }) => {
     <div>
       <div className="flex flex-col max-w-4xl mx-auto pb-20">
         <div className="p-4 w-full">
-          <VideoPlayer />
+          <LessonVideo
+            courseId={id}
+            lesson={lessonToPay}
+            module={defaultModule}
+          />
         </div>
         <div>
           <div className="p-4 flex flex-col md:flex-row items-center justify-between">
