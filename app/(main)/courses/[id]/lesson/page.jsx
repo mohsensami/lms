@@ -33,10 +33,10 @@ const Course = async ({ params: { id }, searchParams: { name, module } }) => {
         </div>
         <div>
           <div className="p-4 flex flex-col md:flex-row items-center justify-between">
-            <h2 className="text-2xl font-semibold mb-2">Introduction</h2>
+            <h2 className="text-2xl font-semibold mb-2">{lessonToPay.title}</h2>
           </div>
           <Separator />
-          <VideoDescription />
+          <VideoDescription description={lessonToPay.description} />
         </div>
       </div>
     </div>
