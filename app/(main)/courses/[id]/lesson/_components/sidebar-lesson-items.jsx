@@ -18,7 +18,7 @@ export const SidebarLessonItem = ({ courseId, lesson, module }) => {
       href={
         isPrivate(lesson)
           ? "#"
-          : `/courses/${courseId}/lesson?name=${lesson.slug}$module=${module}`
+          : `/courses/${courseId}/lesson?name=${lesson.slug}&module=${module}`
       }
       className={cn(
         "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600 ",
