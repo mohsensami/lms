@@ -17,6 +17,54 @@ export const LessonVideo = ({ courseId, lesson, module }) => {
     }
   }, []);
 
+  useEffect(() => {
+    async function updateLessonWatch() {
+      const response = await fetch("/api/lesson-watch", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseId: courseId,
+          lessonId: lesson.id,
+          moduleSlug: module,
+          state: "started",
+          lastTime: 0,
+        }),
+      });
+      if (response.status === 200) {
+        const result = await response.text();
+        console.log(result);
+        setStarted(false);
+      }
+    }
+    started && updateLessonWatch();
+  }, [started]);
+
+  useEffect(() => {
+    async function updateLessonWatch() {
+      const response = await fetch("/api/lesson-watch", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseId: courseId,
+          lessonId: lesson.id,
+          moduleSlug: module,
+          state: "completed",
+          lastTime: duration,
+        }),
+      });
+      if (response.status === 200) {
+        const result = await response.text();
+        setEnded(false);
+        router.refresh();
+      }
+    }
+    ended && updateLessonWatch();
+  }, [ended]);
+
   function handleOnStart() {
     console.log("handleOnStart");
     setStarted(true);
