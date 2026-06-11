@@ -15,3 +15,5 @@ export async function getReport(filter) {
     throw new Error(error);
   }
 }
+
+export async function createWatchReport(data) {}
