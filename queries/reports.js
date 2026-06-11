@@ -45,7 +45,7 @@ export async function createWatchReport(data) {
 
     const module = await Module.findById(data.moduleId);
     const lessonIdsToCheck = module.lessonIds;
-    const completedLessonsIds = report.totalCompletedModeules;
+    const completedLessonsIds = report.totalCompletedLessons;
 
     const isModuleComplete = lessonIdsToCheck.every((lesson) =>
       completedLessonsIds.includes(lesson),
