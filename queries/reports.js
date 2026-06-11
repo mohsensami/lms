@@ -3,6 +3,7 @@ import { Assessment } from "@/model/assessment-model";
 import { Module } from "@/model/module.model";
 import { Report } from "@/model/report-model";
 import mongoose from "mongoose";
+import { getCourseDetails } from "./courses";
 
 export async function getReport(filter) {
   try {
@@ -45,5 +46,36 @@ export async function createWatchReport(data) {
     const module = await Module.findById(data.moduleId);
     const lessonIdsToCheck = module.lessonIds;
     const completedLessonsIds = report.totalCompletedModeules;
-  } catch (error) {}
+
+    const isModuleComplete = lessonIdsToCheck.every((lesson) =>
+      completedLessonsIds.includes(lesson),
+    );
+
+    if (isModuleComplete) {
+      const foundModule = report.totalCompletedModeules.find(
+        (module) => module.toString() === data.moduleId,
+      );
+      if (!foundModule) {
+        report.totalCompletedModeules.push(
+          new mongoose.Types.ObjectId(data.moduleId),
+        );
+      }
+    }
+
+    /// Check if the course has completed
+
+    const course = await getCourseDetails(data.courseId);
+    const modulesInCourse = course?.modules;
+    const moduleCount = modulesInCourse?.length ?? 0;
+
+    const completedModule = report.totalCompletedModeules;
+    const completedModuleCount = completedModule?.length ?? 0;
+
+    if (completedModuleCount >= 1 && completedModuleCount === moduleCount) {
+      report.completion_date = Date.now();
+    }
+    report.save();
+  } catch (error) {
+    throw new Error(error);
+  }
 }
