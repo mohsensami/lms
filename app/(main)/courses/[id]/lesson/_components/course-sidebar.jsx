@@ -20,6 +20,7 @@ import { getLoggedInUser } from "@/lib/loggedin-user";
 import { Watch } from "@/model/watch-model";
 import { ObjectId } from "mongoose";
 import { getReport } from "@/queries/reports";
+import Quiz from "./quiz";
 
 export const CourseSidebar = async ({ courseId }) => {
   const course = await getCourseDetails(courseId);
@@ -96,7 +97,11 @@ export const CourseSidebar = async ({ courseId }) => {
 
         <SidebarModules courseId={courseId} modules={updatedallModules} />
 
-        <div className="w-full px-6">
+        <div className="w-full px-4 lg:px-14 pt-10 border-t">
+          <Quiz />
+        </div>
+
+        <div className="w-full px-6 mb-10">
           <GiveReview />
           <DownloadCertificate
             courseId={courseId}
