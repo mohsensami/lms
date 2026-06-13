@@ -10,12 +10,11 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useState } from "react";
 
-function QuizModal({ quizes }) {
-  const [open, setOpen] = useState(false);
-  const totalQuizes = quizes?.length;
+function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
+  const totalQuizes = quizzes?.length;
   const [quizIndex, setQuizIndex] = useState(0);
   const lastQuizIndex = totalQuizes - 1;
-  const currentQuiz = quizes[quizIndex];
+  const currentQuiz = quizzes[quizIndex];
 
   const quizChangeHanlder = (type) => {
     const nextQuizIndex = quizIndex + 1;
@@ -55,10 +54,8 @@ function QuizModal({ quizes }) {
                   d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 448c-110.532 0-200-89.431-200-200 0-110.495 89.472-200 200-200 110.491 0 200 89.471 200 200 0 110.53-89.431 200-200 200zm107.244-255.2c0 67.052-72.421 68.084-72.421 92.863V300c0 6.627-5.373 12-12 12h-45.647c-6.627 0-12-5.373-12-12v-8.659c0-35.745 27.1-50.034 47.579-61.516 17.561-9.845 28.324-16.541 28.324-29.579 0-17.246-21.999-28.693-39.784-28.693-23.189 0-33.894 10.977-48.942 29.969-4.057 5.12-11.46 6.071-16.666 2.124l-27.824-21.098c-5.107-3.872-6.251-11.066-2.644-16.363C184.846 131.491 214.94 112 261.794 112c49.071 0 101.45 38.304 101.45 88.8zM298 368c0 23.159-18.841 42-42 42s-42-18.841-42-42 18.841-42 42-42 42 18.841 42 42z"
                 ></path>
               </svg>
-              {
-                " What happens if the userId is not provided in the request parameters? "
-              }
-              {currentQuiz?.question}
+              {""}
+              {quizzes[quizIndex].title}
             </h3>
             <span className="text-[10px] block text-end">
               <svg
@@ -82,15 +79,16 @@ function QuizModal({ quizes }) {
           </div>
           <div className="grid md:grid-cols-2 gap-5 mb-6">
             {currentQuiz?.options.map((option) => (
-              <div key={option.id}>
+              <div key={option.label}>
                 <input
-                  className="opacity-0 invisible absolute [&:checked_+_label]:bg-success/5"
-                  type="checkbox"
-                  id={`option-${option.id}`}
+                  className="opacity-0 invisible absolute [&:checked_+_label]:bg-green-400"
+                  type="radio"
+                  name="answer"
+                  id={`option-${option.label}`}
                 />
                 <Label
                   className="border border-border rounded px-2 py-3 block cursor-pointer hover:bg-gray-50 transition-all font-normal"
-                  htmlFor={`option-${option.id}`}
+                  htmlFor={`option-${option.label}`}
                 >
                   {option.label}
                 </Label>
@@ -105,6 +103,11 @@ function QuizModal({ quizes }) {
             >
               <ArrowLeft /> Previous Quiz
             </Button>
+
+            <Button className="gap-2 rounded-3xl bg-green-600" type="submit">
+              Submit
+            </Button>
+
             <Button
               className="gap-2 rounded-3xl"
               disabled={quizIndex >= lastQuizIndex}
