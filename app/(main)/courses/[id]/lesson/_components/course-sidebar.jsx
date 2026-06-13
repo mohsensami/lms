@@ -86,8 +86,8 @@ export const CourseSidebar = async ({ courseId }) => {
   const isQuizComplete = report?.quizAssessment ? true : false;
   const quizSet = sanitizeData(quizSetall);
 
-  console.log({ quizSet });
-  console.log({ isQuizComplete });
+  // console.log({ quizSet });
+  // console.log({ isQuizComplete });
 
   return (
     <>
