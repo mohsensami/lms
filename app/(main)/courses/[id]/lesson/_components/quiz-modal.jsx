@@ -16,6 +16,8 @@ function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
   const lastQuizIndex = totalQuizes - 1;
   const currentQuiz = quizzes[quizIndex];
 
+  const [answers, setAnswers] = useState([]);
+
   const quizChangeHanlder = (type) => {
     const nextQuizIndex = quizIndex + 1;
     const prevQuizIndex = quizIndex - 1;
@@ -26,6 +28,34 @@ function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
       setQuizIndex((prev) => prev - 1);
     }
   };
+
+  const updateAnswer = (event, quizId, quizTitle, selected) => {
+    const key = event.target.name;
+    const checked = event.target.checked;
+
+    const obj = {};
+    if (checked) {
+      obj["option"] = selected;
+    }
+
+    const answer = {
+      quizId: quizId,
+      options: obj,
+    };
+
+    console.log(answer);
+
+    const found = answers.filter((a) => a.quizId === answer.quizId);
+
+    if (found) {
+      const filtered = answers.filter((a) => a.quizId !== answer.quizId);
+      setAnswers([...filtered, answer]);
+    } else {
+      setAnswers([...answers, answer]);
+    }
+  };
+
+  const submitQuiz = async (event) => {};
 
   return (
     <>
@@ -84,6 +114,14 @@ function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
                   className="opacity-0 invisible absolute [&:checked_+_label]:bg-green-400"
                   type="radio"
                   name="answer"
+                  onChange={(e, quizId, quizTitle, selected) =>
+                    updateAnswer(
+                      e,
+                      quizzes[quizIndex].id,
+                      quizzes[quizIndex].title,
+                      option.label,
+                    )
+                  }
                   id={`option-${option.label}`}
                 />
                 <Label
@@ -104,7 +142,11 @@ function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
               <ArrowLeft /> Previous Quiz
             </Button>
 
-            <Button className="gap-2 rounded-3xl bg-green-600" type="submit">
+            <Button
+              className="gap-2 rounded-3xl bg-green-600"
+              type="submit"
+              onClick={submitQuiz}
+            >
               Submit
             </Button>
 
