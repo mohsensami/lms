@@ -79,3 +79,26 @@ export async function createWatchReport(data) {
     throw new Error(error);
   }
 }
+
+export async function createAssessmentReport(data) {
+  try {
+    let report = await Report.findOne({
+      course: data.courseId,
+      student: data.userId,
+    });
+    if (!report) {
+      report = await Report.create({
+        course: data.courseId,
+        student: data.userId,
+        quizAssessment: data.quizAssessment,
+      });
+    } else {
+      if (!report.quizAssessment) {
+        report.quizAssessment = data.quizAssessment;
+        report.save();
+      }
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+}

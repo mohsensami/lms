@@ -44,7 +44,7 @@ function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
 
     const answer = {
       quizId: quizId,
-      options: obj,
+      options: [obj],
     };
 
     console.log(answer);
