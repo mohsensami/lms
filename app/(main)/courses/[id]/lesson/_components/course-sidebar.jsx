@@ -86,8 +86,8 @@ export const CourseSidebar = async ({ courseId }) => {
   const isQuizComplete = report?.quizAssessment ? true : false;
   const quizSet = sanitizeData(quizSetall);
 
-  // console.log({ quizSet });
-  // console.log({ isQuizComplete });
+  //console.log({quizSet});
+  //console.log({isQuizComplete});
 
   return (
     <>
@@ -115,7 +115,7 @@ export const CourseSidebar = async ({ courseId }) => {
         </div>
 
         <div className="w-full px-6 mb-10">
-          <GiveReview />
+          <GiveReview courseId={courseId} loginid={loggedinUser.id} />
           <DownloadCertificate
             courseId={courseId}
             totalProgress={totalProgress}
