@@ -10,7 +10,7 @@ import { SectionTitle } from "@/components/section-title";
 import StarRating from "@/components/start-rating";
 
 const Testimonials = ({ testimonials }) => {
-  //console.log(testimonials);
+  // console.log(testimonials);
 
   return (
     <section className="pb-8 md:pb-12 lg:pb-24">
@@ -34,16 +34,16 @@ const Testimonials = ({ testimonials }) => {
                   <blockquote className="rounded-lg bg-gray-50 p-6  sm:p-8 shadow-sm">
                     <div className="flex items-center gap-4">
                       <Image
-                        alt={`Profile ${testimonial?.user?.first_name} `}
-                        src={testimonial?.user?.profile_picture}
+                        alt={`Profile ${testimonial?.user?.firstName} `}
+                        src={testimonial?.user?.profilePicture}
                         width="56"
                         height="56"
                         className="size-14 rounded-full object-cover"
                       />
                       <div>
                         <p className="mt-0.5 text-lg font-medium text-gray-900">
-                          {testimonial?.user?.first_name}{" "}
-                          {testimonial?.user?.last_name}
+                          {testimonial?.user?.firstName}{" "}
+                          {testimonial?.user?.lastName}
                         </p>
                         <div className="flex justify-center gap-0.5 text-yellow-600">
                           <StarRating rating={testimonial?.rating} />
