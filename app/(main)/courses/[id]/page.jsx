@@ -5,9 +5,9 @@ import Testimonials from "./_components/Testimonials";
 import RelatedCourses from "./_components/RelatedCourses";
 import { getCourseDetails } from "@/queries/courses";
 import { replaceMongoIdInArray } from "@/lib/convertData";
+import MoneyBack from "@/components/money-back";
 
-const SingleCoursePage = async ({ params }) => {
-  const { id } = await params;
+const SingleCoursePage = async ({ params: { id } }) => {
   const course = await getCourseDetails(id);
   // console.log(course);
 
@@ -22,7 +22,13 @@ const SingleCoursePage = async ({ params }) => {
         />
       )}
 
-      <RelatedCourses />
+      <div className="mb-10">
+        <MoneyBack />
+      </div>
+
+      <div className="mb-12">
+        <RelatedCourses />
+      </div>
     </>
   );
 };
