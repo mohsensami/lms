@@ -8,21 +8,32 @@ import { getLoggedInUser } from "@/lib/loggedin-user";
 import { getReport } from "@/queries/reports";
 import { formatMyDate } from "@/lib/date";
 
-// Helper: read files from /public
+/* مهم: جلوگیری از build-time execution */
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+/* -----------------
+ * Helper
+ *-------------------*/
 const getAsset = async (relativePath) => {
-  return await fs.readFile(path.join(process.cwd(), "public", relativePath));
+  return fs.readFile(path.join(process.cwd(), "public", relativePath));
 };
 
 export async function GET(request) {
   try {
-    /* -----------------
-     * Data
-     *-------------------*/
     const searchParams = request.nextUrl.searchParams;
     const courseId = searchParams.get("courseId");
 
+    if (!courseId) {
+      return Response.json({ error: "courseId is required" }, { status: 400 });
+    }
+
     const course = await getCourseDetails(courseId);
     const loggedInUser = await getLoggedInUser();
+
+    if (!loggedInUser) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const report = await getReport({
       course: courseId,
@@ -34,32 +45,36 @@ export async function GET(request) {
       : formatMyDate(Date.now());
 
     const completionInfo = {
-      name: `${loggedInUser?.firstName} ${loggedInUser?.lastName}`,
+      name: `${loggedInUser.firstName} ${loggedInUser.lastName}`,
       completionDate,
-      courseName: course.title,
-      instructor: `${course?.instructor?.firstName} ${course?.instructor?.lastName}`,
-      instructorDesignation: course?.instructor?.designation,
+      courseName: course?.title || "Course",
+      instructor: `${course?.instructor?.firstName || ""} ${
+        course?.instructor?.lastName || ""
+      }`,
+      instructorDesignation: course?.instructor?.designation || "",
     };
 
     /* -----------------
-     * Load assets (NO FETCH)
+     * Assets
      *-------------------*/
-    const kalamFontBytes = await getAsset("fonts/kalam/Kalam-Regular.ttf");
-
-    const montserratItalicFontBytes = await getAsset(
-      "fonts/montserrat/Montserrat-Italic.ttf",
-    );
-
-    const montserratFontBytes = await getAsset(
-      "fonts/montserrat/Montserrat-Medium.ttf",
-    );
-
-    const logoBytes = await getAsset("logo.png");
-    const signBytes = await getAsset("sign.png");
-    const patternBytes = await getAsset("pattern.jpg");
+    const [
+      kalamFontBytes,
+      montserratItalicFontBytes,
+      montserratFontBytes,
+      logoBytes,
+      signBytes,
+      patternBytes,
+    ] = await Promise.all([
+      getAsset("fonts/kalam/Kalam-Regular.ttf"),
+      getAsset("fonts/montserrat/Montserrat-Italic.ttf"),
+      getAsset("fonts/montserrat/Montserrat-Medium.ttf"),
+      getAsset("logo.png"),
+      getAsset("sign.png"),
+      getAsset("pattern.jpg"),
+    ]);
 
     /* -----------------
-     * PDF setup
+     * PDF
      *-------------------*/
     const pdfDoc = await PDFDocument.create();
     pdfDoc.registerFontkit(fontkit);
@@ -70,6 +85,7 @@ export async function GET(request) {
 
     const page = pdfDoc.addPage([841.89, 595.28]);
     const { width, height } = page.getSize();
+
     const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
 
     /* -----------------
@@ -89,49 +105,26 @@ export async function GET(request) {
      * Title
      *-------------------*/
     const titleText = "Certificate Of Completion";
-    const titleFontSize = 30;
 
-    const titleWidth = montserrat.widthOfTextAtSize(titleText, titleFontSize);
+    const titleWidth = montserrat.widthOfTextAtSize(titleText, 30);
 
     page.drawText(titleText, {
       x: width / 2 - titleWidth / 2,
       y: height - (logoDim.height + 125),
-      size: titleFontSize,
+      size: 30,
       font: montserrat,
       color: rgb(0, 0.53, 0.71),
     });
 
     /* -----------------
-     * Subtitle
-     *-------------------*/
-    const labelText = "This certificate is hereby bestowed upon";
-
-    const labelFontSize = 20;
-
-    const labelWidth = montserratItalic.widthOfTextAtSize(
-      labelText,
-      labelFontSize,
-    );
-
-    page.drawText(labelText, {
-      x: width / 2 - labelWidth / 2,
-      y: height - (logoDim.height + 170),
-      size: labelFontSize,
-      font: montserratItalic,
-    });
-
-    /* -----------------
      * Name
      *-------------------*/
-    const nameText = completionInfo.name;
-    const nameFontSize = 40;
+    const nameWidth = kalamFont.widthOfTextAtSize(completionInfo.name, 40);
 
-    const nameWidth = kalamFont.widthOfTextAtSize(nameText, nameFontSize);
-
-    page.drawText(nameText, {
+    page.drawText(completionInfo.name, {
       x: width / 2 - nameWidth / 2,
-      y: height - (logoDim.height + 220),
-      size: nameFontSize,
+      y: height - 240,
+      size: 40,
       font: kalamFont,
     });
 
@@ -177,15 +170,8 @@ export async function GET(request) {
       maxWidth: 250,
     });
 
-    page.drawLine({
-      start: { x: width - signatureBoxWidth, y: 110 },
-      end: { x: width - 60, y: 110 },
-      thickness: 1,
-      color: rgb(0, 0, 0),
-    });
-
     /* -----------------
-     * Background pattern
+     * Background
      *-------------------*/
     const pattern = await pdfDoc.embedJpg(patternBytes);
 
@@ -198,7 +184,7 @@ export async function GET(request) {
     });
 
     /* -----------------
-     * Return PDF
+     * Response
      *-------------------*/
     const pdfBytes = await pdfDoc.save();
 
@@ -210,8 +196,9 @@ export async function GET(request) {
   } catch (error) {
     console.error("Certificate error:", error);
 
-    return new Response("Error generating certificate", {
-      status: 500,
-    });
+    return Response.json(
+      { error: "Failed to generate certificate" },
+      { status: 500 },
+    );
   }
 }
