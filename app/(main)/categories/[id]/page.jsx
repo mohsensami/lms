@@ -1,8 +1,14 @@
-import { getCourseList } from "@/queries/courses";
+import { getCourseList, getCoursesByCategory } from "@/queries/courses";
 import CourseCard from "../../courses/_components/CourseCard";
 
-const CoursesCatgoryPage = async () => {
-  const courses = await getCourseList();
+const CoursesCatgoryPage = async ({ params: { id } }) => {
+  const courses = await getCoursesByCategory(id);
+
+  const modifiedCourses = courses.map((course) => ({
+    ...course,
+    id: course._id.toString(),
+  }));
+  // console.log(modifiedCourses);
 
   return (
     <section
@@ -16,7 +22,7 @@ const CoursesCatgoryPage = async () => {
       <section className="pb-24 pt-6">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
           <div className="lg:col-span-4 grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3 gap-4">
-            {courses.map((course) => {
+            {modifiedCourses.map((course) => {
               return <CourseCard key={course.id} course={course} />;
             })}
           </div>
