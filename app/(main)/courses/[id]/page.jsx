@@ -15,7 +15,7 @@ const SingleCoursePage = async ({ params: { id } }) => {
 
   // Fetch related courses
   const relatedCourses = await getRelatedCourses(currentCourseId, categoryId);
-  console.log(relatedCourses);
+  // console.log(relatedCourses);
   return (
     <>
       <CourseDetailsIntro course={course} />
@@ -32,7 +32,7 @@ const SingleCoursePage = async ({ params: { id } }) => {
       </div>
 
       <div className="mb-12">
-        <RelatedCourses />
+        <RelatedCourses relatedCourses={relatedCourses} />
       </div>
     </>
   );
