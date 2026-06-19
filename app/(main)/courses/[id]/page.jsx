@@ -3,14 +3,19 @@ import CourseDetailsIntro from "./_components/CourseDetailsIntro";
 import CourseDetails from "./_components/CourseDetails";
 import Testimonials from "./_components/Testimonials";
 import RelatedCourses from "./_components/RelatedCourses";
-import { getCourseDetails } from "@/queries/courses";
+import { getCourseDetails, getRelatedCourses } from "@/queries/courses";
 import { replaceMongoIdInArray } from "@/lib/convertData";
 import MoneyBack from "@/components/money-back";
 
 const SingleCoursePage = async ({ params: { id } }) => {
   const course = await getCourseDetails(id);
-  // console.log(course);
+  //console.log(course);
+  const currentCourseId = course.id.toString();
+  const categoryId = course.category._id.toString();
 
+  // Fetch related courses
+  const relatedCourses = await getRelatedCourses(currentCourseId, categoryId);
+  console.log(relatedCourses);
   return (
     <>
       <CourseDetailsIntro course={course} />
