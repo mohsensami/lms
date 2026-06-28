@@ -11,22 +11,44 @@
 //   }
 // }
 
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
+
+const globalWithMongoose = globalThis;
+
+if (!globalWithMongoose._mongooseCache) {
+    globalWithMongoose._mongooseCache = {
+        conn: null,
+        promise: null,
+    };
+}
+
+const mongooseCache = globalWithMongoose._mongooseCache;
 
 export async function dbConnect() {
-  try {
-    if (mongoose.connections[0].readyState) {
-      return true;
+    if (mongooseCache.conn) {
+        return mongooseCache.conn;
     }
 
-    await mongoose.connect(String(process.env.MONGODB_CONNECTION_STRING));
+    if (!mongooseCache.promise) {
+        const uri = String(process.env.MONGODB_CONNECTION_STRING);
+        if (!uri) {
+            throw new Error('Missing MONGODB_CONNECTION_STRING environment variable');
+        }
 
-    console.log("MongoDB Connected");
+        mongoose.set('strictQuery', false);
 
-    return true;
-  } catch (error) {
-    console.log("MongoDB Error:", error);
+        mongooseCache.promise = mongoose
+            .connect(uri)
+            .then((mongooseInstance) => {
+                console.log('MongoDB Connected');
+                return mongooseInstance;
+            })
+            .catch((error) => {
+                mongooseCache.promise = null;
+                throw error;
+            });
+    }
 
-    return false;
-  }
+    mongooseCache.conn = await mongooseCache.promise;
+    return mongooseCache.conn;
 }
