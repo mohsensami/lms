@@ -36,9 +36,17 @@ export async function dbConnect() {
         }
 
         mongoose.set('strictQuery', false);
+        mongoose.set('bufferCommands', false);
 
         mongooseCache.promise = mongoose
-            .connect(uri)
+            .connect(uri, {
+                bufferCommands: false,
+                bufferTimeoutMS: 30000,
+                connectTimeoutMS: 30000,
+                serverSelectionTimeoutMS: 30000,
+                socketTimeoutMS: 45000,
+                family: 4,
+            })
             .then((mongooseInstance) => {
                 console.log('MongoDB Connected');
                 return mongooseInstance;
