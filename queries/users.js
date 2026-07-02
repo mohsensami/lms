@@ -1,4 +1,5 @@
 import { replaceMongoIdInArray, replaceMongoIdInObject } from '@/lib/convertData';
+import { withDb } from '@/lib/db';
 import { User } from '@/model/user-model';
 import bcrypt from 'bcryptjs';
 
@@ -6,13 +7,17 @@ export async function getUserByEmail(email) {
     if (!email) {
         return null;
     }
-    const user = await User.findOne({ email: email }).lean();
-    return replaceMongoIdInObject(user);
+    return withDb(async () => {
+        const user = await User.findOne({ email: email }).lean();
+        return replaceMongoIdInObject(user);
+    });
 }
 
 export async function getUserDetails(userId) {
-    const user = await User.findById(userId).lean();
-    return replaceMongoIdInObject(user);
+    return withDb(async () => {
+        const user = await User.findById(userId).lean();
+        return replaceMongoIdInObject(user);
+    });
 }
 
 export async function validatePassword(email, password) {
