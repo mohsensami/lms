@@ -33,9 +33,9 @@ const SingleCoursePage = async ({ params }) => {
             <CourseDetails course={course} />
             {course?.testimonials && <Testimonials testimonials={replaceMongoIdInArray(course?.testimonials)} />}
 
-            <div className="mb-10">
+            {/* <div className="mb-10">
                 <MoneyBack />
-            </div>
+            </div> */}
 
             <div className="mb-12">
                 <RelatedCourses relatedCourses={relatedCourses} />

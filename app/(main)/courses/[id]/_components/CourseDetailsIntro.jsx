@@ -42,10 +42,10 @@ const CourseDetailsIntro = async ({ course }) => {
                                 )}
 
                                 <Link href="" className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}>
-                                    See Intro
+                                    نمایش پیشنمایش
                                 </Link>
                                 <Link href="" className={cn(buttonVariants({ variant: 'destructive', size: 'lg' }))}>
-                                    Price : ${course?.price}
+                                    قیمت دوره : ${course?.price}
                                 </Link>
                             </div>
                         </div>

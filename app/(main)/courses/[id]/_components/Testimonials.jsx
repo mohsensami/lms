@@ -9,7 +9,7 @@ const Testimonials = ({ testimonials }) => {
     return (
         <section className="pb-8 md:pb-12 lg:pb-24">
             <div className="container">
-                <SectionTitle className="mb-6">Testimonials</SectionTitle>
+                <SectionTitle className="mb-6">نظرات</SectionTitle>
                 <Carousel
                     opts={{
                         align: 'start',

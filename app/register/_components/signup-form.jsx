@@ -68,35 +68,35 @@ export function SignupForm({ role }) {
                     <p className="mt-5 text-3xl font-bold leading-tight text-gray-900 sm:leading-tight sm:text-5xl lg:text-3xl lg:leading-tight font-pj">
                         <span className="relative inline-flex sm:inline">
                             <span className="bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] blur-lg filter opacity-30 w-full h-full absolute inset-0"></span>
-                            <span className="relative">Sign Up</span>
+                            <span className="relative">ثبت نام</span>
                         </span>
                     </p>
                 </CardTitle>
-                <CardDescription>Enter your information to create an account</CardDescription>
+                <CardDescription>برای ایجاد حساب کاربری، اطلاعات خود را وارد کنید</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={onSubmit}>
                     <div className="grid gap-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="first-name">First name</Label>
+                                <Label htmlFor="first-name">نام</Label>
                                 <Input id="first-name" name="first-name" placeholder="Max" required />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="last-name">Last name</Label>
+                                <Label htmlFor="last-name">نام خانوادگی</Label>
                                 <Input id="last-name" name="last-name" placeholder="Robinson" required />
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">ایمیل</Label>
                             <Input id="email" name="email" type="email" placeholder="m@example.com" required />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">رمز عبور</Label>
                             <Input id="password" name="password" type="password" required disabled={isSubmitting} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="confirmPassword">Confirm Password</Label>
+                            <Label htmlFor="confirmPassword">تکرار رمز عبور</Label>
                             <Input
                                 id="confirmPassword"
                                 name="confirmPassword"
@@ -106,13 +106,13 @@ export function SignupForm({ role }) {
                             />
                         </div>
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? 'Creating account...' : 'Create an account'}
+                            {isSubmitting ? 'در حال ارسال اطلاعات ...' : 'ثبت نام'}
                         </Button>
                     </div>
                     <div className="mt-4 text-center text-sm">
-                        Already have an account?{' '}
+                        قبلاً حساب کاربری دارید؟{' '}
                         <Link href="/login" className="underline">
-                            Sign in
+                            ورود
                         </Link>
                     </div>
                 </form>

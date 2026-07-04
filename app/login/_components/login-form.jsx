@@ -29,7 +29,7 @@ export function LoginForm() {
                 console.log(response.error);
                 setError(response.error);
             } else {
-                toast.success('Login Successfuly!');
+                toast.success('با موفقیت وارد شدید');
                 router.push('/courses');
             }
         } catch (e) {
@@ -46,22 +46,22 @@ export function LoginForm() {
                     <p className="mt-5 text-3xl font-bold leading-tight text-gray-900 sm:leading-tight sm:text-5xl lg:text-3xl lg:leading-tight font-pj">
                         <span className="relative inline-flex sm:inline">
                             <span className="bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] blur-lg filter opacity-30 w-full h-full absolute inset-0"></span>
-                            <span className="relative">Login</span>
+                            <span className="relative">ورود</span>
                         </span>
                     </p>
                 </CardTitle>
-                <CardDescription>Enter your email below to login to your account</CardDescription>
+                <CardDescription>برای ورود به حساب کاربری، ایمیل خود را در زیر وارد کنید</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={onSubmit}>
                     <div className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">ایمیل</Label>
                             <Input id="email" name="email" type="email" placeholder="m@example.com" required />
                         </div>
                         <div className="grid gap-2">
                             <div className="flex items-center">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">رمز عبور</Label>
                                 {/* <Link href="#" className="ml-auto inline-block text-sm underline">
                 Forgot your password?
               </Link> */}
@@ -72,7 +72,7 @@ export function LoginForm() {
                             {isSubmitting ? (
                                 <span className="inline-flex items-center gap-2">
                                     <Loader2 className="h-4 w-4 animate-spin" />
-                                    Logging in...
+                                    در حال ورود ...
                                 </span>
                             ) : (
                                 'Login'
@@ -81,13 +81,13 @@ export function LoginForm() {
                     </div>
                     {error ? <p className="mt-3 text-sm text-destructive">{error}</p> : null}
                     <div className="mt-4 text-center text-sm">
-                        Don&apos;t have an account?{' '}
+                        حساب کاربری ندارید؟
                         <Link href="/register/instructor" className="underline">
-                            Instructor
+                            استاد
                         </Link>{' '}
-                        or{' '}
+                        یا{' '}
                         <Link href="/register/student" className="underline">
-                            Student
+                            دانش آموز
                         </Link>
                     </div>
                 </form>

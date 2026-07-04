@@ -32,7 +32,7 @@ const CourseCard = ({ course }) => {
               <div>
                 <BookOpen className="w-4" />
               </div>
-              <span>{course?.modules?.length} Chapters</span>
+              <span>{course?.modules?.length} فصل</span>
             </div>
           </div>
 
