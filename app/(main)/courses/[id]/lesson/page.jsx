@@ -26,7 +26,7 @@ const Course = async ({ params, searchParams }) => {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-            <div className="grid gap-8 lg:grid-cols-[1.8fr_0.95fr]">
+            <div className="">
                 <section className="space-y-6">
                     <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 shadow-sm">
                         <div className="flex flex-col gap-6">
