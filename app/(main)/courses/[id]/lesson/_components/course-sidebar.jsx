@@ -1,11 +1,5 @@
 import { CourseProgress } from '@/components/course-progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { CheckCircle } from 'lucide-react';
-import { PlayCircle } from 'lucide-react';
-import { Lock } from 'lucide-react';
-import Link from 'next/link';
 import { ReviewModal } from './review-modal';
 import { DownloadCertificate } from './download-certificate';
 import { GiveReview } from './give-review';
@@ -27,10 +21,10 @@ export const CourseSidebar = async ({ courseId }) => {
     });
 
     const totalCompletedModules = report?.totalCompletedModeules ? report?.totalCompletedModeules.length : 0;
-
     const totalModules = course?.modules ? course.modules.length : 0;
-
     const totalProgress = totalModules > 0 ? (totalCompletedModules / totalModules) * 100 : 0;
+    const totalLessons = course?.modules?.reduce((sum, module) => sum + (module.lessonIds?.length ?? 0), 0);
+    const quizCount = course?.quizSet?.quizIds?.length ?? 0;
 
     const updatedModules = await Promise.all(
         course?.modules.map(async (module) => {
@@ -55,11 +49,8 @@ export const CourseSidebar = async ({ courseId }) => {
         }),
     );
 
-    //console.log(updatedModules);
-
     const updatedallModules = sanitizeData(updatedModules);
 
-    // Sanitize fucntion for handle ObjectID and Buffer
     function sanitizeData(data) {
         if (data == null) return data;
 
@@ -80,33 +71,49 @@ export const CourseSidebar = async ({ courseId }) => {
     const isQuizComplete = report?.quizAssessment ? true : false;
     const quizSet = sanitizeData(quizSetall);
 
-    //console.log({quizSet});
-    //console.log({isQuizComplete});
-
     return (
-        <>
-            <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
-                <div className="p-8 flex flex-col border-b">
-                    <h1 className="font-semibold">{course.title}</h1>
-                    {/* Check purchase */}
-                    {
-                        <div className="mt-10">
-                            <CourseProgress variant="success" value={totalProgress} />
+        <div className="flex flex-col gap-6">
+            <div className="sticky top-[calc(100px)] space-y-6">
+                <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                        {course?.category?.title ?? 'Course'}
+                    </p>
+                    <h2 className="mt-4 text-2xl font-semibold text-slate-900">{course.title}</h2>
+                    <p className="mt-3 text-sm leading-6 text-slate-600">{course.subtitle}</p>
+                    <div className="mt-6 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+                        <div className="rounded-3xl bg-slate-50 p-4">
+                            <p className="text-slate-500">Lessons</p>
+                            <p className="mt-2 font-semibold text-slate-900">{totalLessons}</p>
                         </div>
-                    }
+                        <div className="rounded-3xl bg-slate-50 p-4">
+                            <p className="text-slate-500">Quizzes</p>
+                            <p className="mt-2 font-semibold text-slate-900">{quizCount}</p>
+                        </div>
+                    </div>
+                    <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                        <CourseProgress variant="success" value={totalProgress} />
+                    </div>
                 </div>
 
-                <SidebarModules courseId={courseId} modules={updatedallModules} />
-
-                <div className="w-full px-4 lg:px-14 pt-10 border-t">
-                    {quizSet && <Quiz courseId={courseId} quizSet={quizSet} isTaken={isQuizComplete} />}
+                <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm">
+                    <SidebarModules courseId={courseId} modules={updatedallModules} />
                 </div>
 
-                <div className="w-full px-6 mb-10">
-                    <GiveReview courseId={courseId} loginid={loggedinUser.id} />
-                    <DownloadCertificate courseId={courseId} totalProgress={totalProgress} />
+                {quizSet && (
+                    <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm">
+                        <Quiz courseId={courseId} quizSet={quizSet} isTaken={isQuizComplete} />
+                    </div>
+                )}
+
+                <div className="space-y-4">
+                    <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm">
+                        <GiveReview courseId={courseId} loginid={loggedinUser.id} />
+                    </div>
+                    <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm">
+                        <DownloadCertificate courseId={courseId} totalProgress={totalProgress} />
+                    </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
