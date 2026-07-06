@@ -4,13 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
-import Link from "next/link";
 import { updateUserInfo } from "@/app/actions/account";
 import { toast } from "sonner";
 
 const PersonalDetails = ({ userInfo }) => {
-  // console.log(userInfo);
   const [infoState, setInfoState] = useState({
     firstName: userInfo.firstName,
     lastName: userInfo.lastName,
@@ -27,30 +24,29 @@ const PersonalDetails = ({ userInfo }) => {
       [field]: value,
     });
   };
-  /// console.log(infoState);
 
   const handleUpdate = async (event) => {
     event.preventDefault();
     try {
       await updateUserInfo(userInfo?.email, infoState);
-      toast.success("User details updated successfully");
+      toast.success("اطلاعات کاربر با موفقیت بروزرسانی شد");
     } catch (error) {
-      toast.error(`Error: ${error.message}`);
+      toast.error(`خطا: ${error.message}`);
     }
   };
 
   return (
-    <div className="p-6 rounded-md shadow dark:shadow-gray-800 bg-white dark:bg-slate-900">
-      <h5 className="text-lg font-semibold mb-4">Personal Detail :</h5>
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+      <h5 className="mb-4 text-lg font-bold text-foreground">اطلاعات شخصی</h5>
       <form onSubmit={handleUpdate}>
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-5">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <div>
             <Label className="mb-2 block">
-              First Name : <span className="text-red-600">*</span>
+              نام <span className="text-destructive">*</span>
             </Label>
             <Input
               type="text"
-              placeholder="First Name:"
+              placeholder="نام"
               id="firstName"
               name="firstName"
               value={infoState?.firstName}
@@ -60,11 +56,11 @@ const PersonalDetails = ({ userInfo }) => {
           </div>
           <div>
             <Label className="mb-2 block">
-              Last Name : <span className="text-red-600">*</span>
+              نام خانوادگی <span className="text-destructive">*</span>
             </Label>
             <Input
               type="text"
-              placeholder="Last Name:"
+              placeholder="نام خانوادگی"
               id="lastName"
               name="lastName"
               value={infoState?.lastName}
@@ -74,11 +70,11 @@ const PersonalDetails = ({ userInfo }) => {
           </div>
           <div>
             <Label className="mb-2 block">
-              Your Email : <span className="text-red-600">*</span>
+              ایمیل شما <span className="text-destructive">*</span>
             </Label>
             <Input
               type="email"
-              placeholder="Email"
+              placeholder="ایمیل"
               id="email"
               name="email"
               value={infoState?.email}
@@ -86,36 +82,33 @@ const PersonalDetails = ({ userInfo }) => {
             />
           </div>
           <div>
-            <Label className="mb-2 block">Occupation :</Label>
+            <Label className="mb-2 block">شغل</Label>
             <Input
               id="designation"
               name="designation"
               value={infoState?.designation}
               type="text"
               onChange={handleChange}
-              placeholder="Occupation :"
+              placeholder="شغل"
             />
           </div>
         </div>
-        {/*end grid*/}
         <div className="grid grid-cols-1">
           <div className="mt-5">
-            <Label className="mb-2 block">Description :</Label>
+            <Label className="mb-2 block">توضیحات</Label>
             <Textarea
               id="bio"
               name="bio"
               value={infoState?.bio}
               onChange={handleChange}
-              placeholder="Message :"
+              placeholder="درباره خودتون بنویسید..."
             />
           </div>
         </div>
-        {/*end row*/}
-        <Button className="mt-5" asChild>
-          <input type="submit" name="send" value="Save Changes" />
+        <Button className="mt-5 rounded-xl font-semibold" asChild>
+          <input type="submit" name="send" value="ذخیره تغییرات" />
         </Button>
       </form>
-      {/*end form*/}
     </div>
   );
 };

@@ -2,33 +2,29 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
-import Link from "next/link";
 
 const ContactInfo = () => {
   return (
     <div>
-      <h5 className="text-lg font-semibold mb-4">Contact Info :</h5>
+      <h5 className="mb-4 text-lg font-bold text-foreground">اطلاعات تماس</h5>
       <form>
         <div className="grid grid-cols-1 gap-5">
           <div>
-            <Label className="mb-2 block">Phone No. :</Label>
+            <Label className="mb-2 block">شماره تماس</Label>
             <Input
               name="number"
               id="number"
               type="number"
-              placeholder="Phone :"
+              placeholder="شماره تماس"
             />
           </div>
           <div>
-            <Label className="mb-2 block">Website :</Label>
-            <Input name="url" id="url" type="url" placeholder="Url :" />
+            <Label className="mb-2 block">وب‌سایت</Label>
+            <Input name="url" id="url" type="url" placeholder="آدرس وب‌سایت" />
           </div>
         </div>
-        {/*end grid*/}
-        <Button className="mt-5" type="submit">
-          Add
+        <Button className="mt-5 rounded-xl font-semibold" type="submit">
+          افزودن
         </Button>
       </form>
     </div>

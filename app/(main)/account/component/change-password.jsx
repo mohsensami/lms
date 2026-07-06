@@ -3,15 +3,10 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
-import Link from "next/link";
 import { changePassword } from "@/app/actions/account";
 import { toast } from "sonner";
 
 const ChangePassword = ({ email }) => {
-  //console.log(email);
-
   const [passwordState, setPasswordState] = useState({
     oldPassword: "",
     newPassword: "",
@@ -35,51 +30,50 @@ const ChangePassword = ({ email }) => {
         passwordState?.oldPassword,
         passwordState?.newPassword,
       );
-      toast.success("Password changed successfully");
+      toast.success("رمز عبور با موفقیت تغییر کرد");
     } catch (error) {
-      toast.error(`Error: ${error.message}`);
+      toast.error(`خطا: ${error.message}`);
     }
   }
 
   return (
     <div>
-      <h5 className="text-lg font-semibold mb-4">Change password :</h5>
+      <h5 className="mb-4 text-lg font-bold text-foreground">تغییر رمز عبور</h5>
       <form onSubmit={doPasswordChange}>
         <div className="grid grid-cols-1 gap-5">
           <div>
-            <Label className="mb-2 block">Old password :</Label>
+            <Label className="mb-2 block">رمز عبور فعلی</Label>
             <Input
               type="password"
               id="oldPassword"
               name="oldPassword"
               onChange={handleChange}
-              placeholder="Old password"
+              placeholder="رمز عبور فعلی"
               required=""
             />
           </div>
           <div>
-            <Label className="mb-2 block">New password :</Label>
+            <Label className="mb-2 block">رمز عبور جدید</Label>
             <Input
               type="password"
               id="newPassword"
               name="newPassword"
               onChange={handleChange}
-              placeholder="New password"
+              placeholder="رمز عبور جدید"
               required=""
             />
           </div>
           <div>
-            <Label className="mb-2 block">Re-type New password :</Label>
+            <Label className="mb-2 block">تکرار رمز عبور جدید</Label>
             <Input
               type="password"
-              placeholder="Re-type New password"
+              placeholder="تکرار رمز عبور جدید"
               required=""
             />
           </div>
         </div>
-        {/*end grid*/}
-        <Button className="mt-5" type="submit">
-          Save password
+        <Button className="mt-5 rounded-xl font-semibold" type="submit">
+          ذخیره رمز عبور
         </Button>
       </form>
     </div>

@@ -60,8 +60,8 @@ const EnrolledCourseCard = async ({ enrollment }) => {
   const totalMarks = marksFromQuizzes + otherMarks;
 
   return (
-    <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
-      <div className="relative w-full aspect-video rounded-md overflow-hidden">
+    <div className="group h-full overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-sm transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted">
         <Image
           src={`/assets/images/courses/${enrollment?.course?.thumbnail}`}
           alt={enrollment?.course?.title}
@@ -69,59 +69,59 @@ const EnrolledCourseCard = async ({ enrollment }) => {
           fill
         />
       </div>
-      <div className="flex flex-col pt-2">
-        <div className="text-lg md:text-base font-medium group-hover:text-sky-700 line-clamp-2">
+      <div className="flex flex-col pt-3">
+        <div className="line-clamp-2 text-base font-bold text-foreground group-hover:text-primary md:text-sm">
           {enrollment?.course?.title}
         </div>
         <span className="text-xs text-muted-foreground">
           {courseCategory?.title}
         </span>
         <div className="my-3 flex items-center gap-x-2 text-sm md:text-xs">
-          <div className="flex items-center gap-x-1 text-slate-500">
+          <div className="flex items-center gap-x-1.5 text-muted-foreground">
             <BookOpen className="w-4" />
-            <span>{enrollment?.course?.modules?.length} Chapters</span>
+            <span>{enrollment?.course?.modules?.length} فصل</span>
           </div>
         </div>
-        <div className="border-b pb-2 mb-2">
+        <div className="mb-2 border-b border-border pb-2 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-md md:text-sm font-medium text-slate-700">
-              Total Modules: {enrollment?.course?.modules?.length}
+            <span className="text-sm font-medium text-foreground/80">
+              مجموع سرفصل‌ها: {enrollment?.course?.modules?.length}
             </span>
-            <div className="text-md md:text-sm font-medium text-slate-700">
-              Completed Modules{" "}
+            <div className="flex items-center gap-1.5 text-sm font-medium text-foreground/80">
+              سرفصل‌های تکمیل‌شده{" "}
               <Badge variant="success">{totalCompletedModules}</Badge>
             </div>
           </div>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-md md:text-sm font-medium text-slate-700">
-              Total Quizzes: {totalQuizzes}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-foreground/80">
+              مجموع آزمون‌ها: {totalQuizzes}
             </span>
-            <div className="text-md md:text-sm font-medium text-slate-700">
-              Quiz taken <Badge variant="success">{quizzesTaken?.length}</Badge>
+            <div className="flex items-center gap-1.5 text-sm font-medium text-foreground/80">
+              آزمون‌های داده‌شده <Badge variant="success">{quizzesTaken?.length}</Badge>
             </div>
           </div>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-md md:text-sm font-medium text-slate-700">
-              Mark from Quizzes
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-foreground/80">
+              نمره از آزمون‌ها
             </span>
-            <span className="text-md md:text-sm font-medium text-slate-700">
+            <span className="text-sm font-medium text-foreground/80">
               {marksFromQuizzes}
             </span>
           </div>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-md md:text-sm font-medium text-slate-700">
-              Others
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-foreground/80">
+              سایر موارد
             </span>
-            <span className="text-md md:text-sm font-medium text-slate-700">
+            <span className="text-sm font-medium text-foreground/80">
               {otherMarks}
             </span>
           </div>
         </div>
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-md md:text-sm font-medium text-slate-700">
-            Total Marks
+        <div className="mb-4 flex items-center justify-between">
+          <span className="text-sm font-bold text-foreground">
+            مجموع نمرات
           </span>
-          <span className="text-md md:text-sm font-medium text-slate-700">
+          <span className="text-sm font-bold text-primary">
             {totalMarks}
           </span>
         </div>

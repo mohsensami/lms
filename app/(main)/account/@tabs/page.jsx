@@ -17,14 +17,12 @@ async function Profile() {
   return (
     <>
       <PersonalDetails userInfo={loggedInUser} />
-      <div className="p-6 rounded-md shadow dark:shadow-gray-800 bg-white dark:bg-slate-900 mt-[30px]">
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-5">
+      <div className="mt-[30px] rounded-2xl border border-border bg-card p-6 shadow-sm">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <ContactInfo />
 
           <ChangePassword email={loggedInUser?.email} />
-          {/*end col*/}
         </div>
-        {/*end row*/}
       </div>
     </>
   );

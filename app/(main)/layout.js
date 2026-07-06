@@ -10,7 +10,7 @@ const navLinks = [
     },
     {
         title: 'درباره ما',
-        href: '/pricing',
+        href: '/about-us',
     },
     {
         title: 'وبلاگ',
@@ -22,7 +22,7 @@ const navLinks = [
     },
     {
         title: 'تماس با ما',
-        href: '/documentation',
+        href: '/contact-us',
     },
 ];
 

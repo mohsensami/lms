@@ -21,9 +21,9 @@ const CoursesCatgoryPage = async ({ params: { id } }) => {
       id="courses"
       className="container space-y-6   dark:bg-transparent py-6"
     >
-      <div className="flex items-baseline justify-between  border-gray-200 border-b pb-6 flex-col gap-4 lg:flex-row">
-        <h2 className="text-3xl font-bold">
-          Category Name : {category?.title}
+      <div className="flex items-baseline justify-between border-b border-border pb-6 flex-col gap-4 lg:flex-row">
+        <h2 className="text-2xl font-extrabold text-foreground md:text-3xl">
+          دسته‌بندی: {category?.title}
         </h2>
       </div>
 

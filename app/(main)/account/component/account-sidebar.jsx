@@ -22,7 +22,7 @@ const AccountSidebar = async () => {
   return (
     <div className="lg:w-1/4 md:px-3">
       <div className="relative">
-        <div className="p-6 rounded-md shadow dark:shadow-gray-800 bg-white dark:bg-slate-900">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
           <div className="profile-pic text-center mb-5">
             <input
               id="pro-img"
@@ -34,7 +34,7 @@ const AccountSidebar = async () => {
               <div className="relative size-28 mx-auto">
                 <Image
                   src={loggedInUser?.profilePicture}
-                  className="rounded-full shadow dark:shadow-gray-800 ring-4 ring-slate-50 dark:ring-slate-800"
+                  className="rounded-full ring-4 ring-primary/10"
                   id="profile-banner"
                   alt={`${loggedInUser?.firstName}`}
                   width={112}
@@ -46,17 +46,17 @@ const AccountSidebar = async () => {
                 />
               </div>
               <div className="mt-4">
-                <h5 className="text-lg font-semibold">
+                <h5 className="text-lg font-bold text-foreground">
                   {`${loggedInUser?.firstName} ${loggedInUser?.lastName}`}
                 </h5>
-                <p className="text-slate-400">{loggedInUser?.email}</p>
-                <p className="text-slate-700 text-sm font-bold">
-                  Role: {loggedInUser?.role}
+                <p className="text-muted-foreground">{loggedInUser?.email}</p>
+                <p className="mt-1 text-sm font-bold text-primary">
+                  نقش: {loggedInUser?.role === 'instructor' ? 'مدرس' : loggedInUser?.role === 'admin' ? 'مدیر' : 'دانشجو'}
                 </p>
               </div>
             </div>
           </div>
-          <div className="border-t border-gray-100 dark:border-gray-700">
+          <div className="border-t border-border pt-2">
             <Menu />
           </div>
         </div>

@@ -66,17 +66,17 @@ const Success = async ({ searchParams: { Authority, Status, courseId } }) => {
           <>
             <CircleCheck className="w-32 h-32 bg-green-500 rounded-full p-0 text-white" />
             <h1 className="text-xl md:text-2xl lg:text-3xl">
-              Congratulations! <strong>{customerName}</strong> Your Enrollment
-              was Successful for <strong>{productName}</strong>
+              تبریک! <strong>{customerName}</strong> ثبت‌نام شما در دوره{" "}
+              <strong>{productName}</strong> با موفقیت انجام شد
             </h1>
           </>
         )}
 
-        {!paymentSuccess && <h1>Payment Failed!</h1>}
+        {!paymentSuccess && <h1>پرداخت ناموفق بود!</h1>}
 
         <div className="flex items-center gap-3">
           <Button asChild size="sm">
-            <Link href={`/courses/${courseId}/lesson`}>Play Course</Link>
+            <Link href={`/courses/${courseId}/lesson`}>مشاهده دوره</Link>
           </Button>
         </div>
       </div>

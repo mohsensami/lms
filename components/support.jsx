@@ -1,54 +1,52 @@
-import Image from "next/image";
-import React from "react";
+import Image from 'next/image';
+import React from 'react';
 
-const support = () => {
-  return (
-    <div className="bg-darkBlue text-black py-5 px-4 md:px-16 ">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center space-y-12 md:space-y-0 md:space-x-8">
-        <div className="flex-1">
-          <p className="mt-5 text-3xl font-bold leading-tight text-gray-900 sm:leading-tight sm:text-5xl lg:leading-tight font-poppins">
-            <span className="relative inline-flex sm:inline">
-              <span className="bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] blur-lg filter opacity-30 w-full h-full absolute inset-0"></span>
-              <span className="relative">Let us know for support</span>
-            </span>
-          </p>
+const Support = () => {
+    return (
+        <div className="bg-muted/40 px-4 py-12 md:px-16">
+            <div className="mx-auto flex max-w-7xl flex-col items-center gap-10 md:flex-row">
+                <div className="flex-1">
+                    <p className="mt-5 text-3xl font-bold leading-tight text-foreground sm:text-5xl sm:leading-tight">
+                        <span className="relative inline-flex sm:inline">
+                            <span className="absolute inset-0 h-full w-full bg-gradient-to-r from-primary via-fuchsia-400 to-primary blur-lg filter opacity-30"></span>
+                            <span className="relative">برای پشتیبانی با ما در تماس باشید</span>
+                        </span>
+                    </p>
 
-          <p className="text-black leading-relaxed mb-8 mt-8">
-            I Am Founder Of Easy Learning Academy And Best Selling Online
-            Instructor Around The World My life’s mission is to help novice and
-            professional software engineers increase their skills, make more
-            money, and ultimately change their lives for the better.
-          </p>
+                    <p className="mb-8 mt-8 leading-relaxed text-muted-foreground">
+                        من بنیان‌گذار آکادمی آموزش آنلاین و مدرسی با فروش موفق در سطح جهانی هستم. مأموریت من کمک به
+                        برنامه‌نویسان مبتدی و حرفه‌ای برای افزایش مهارت، درآمد بیشتر و در نهایت تغییر زندگی‌شان است.
+                    </p>
 
-          <div className="flex flex-wrap gap-4">
-            <a
-              href="#"
-              className="bg-fuchsia-500 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-fuchsia-800 transition"
-            >
-              Contact Us
-            </a>
+                    <div className="flex flex-wrap gap-4">
+                        <a
+                            href="/contact-us"
+                            className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground shadow transition hover:bg-primary/90"
+                        >
+                            تماس با ما
+                        </a>
 
-            <a
-              href="#"
-              className="bg-gray-700 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-gray-900 transition"
-            >
-              Call for Support
-            </a>
-          </div>
+                        <a
+                            href="#"
+                            className="rounded-lg bg-foreground px-6 py-3 font-semibold text-background shadow transition hover:opacity-90"
+                        >
+                            تماس با پشتیبانی
+                        </a>
+                    </div>
+                </div>
+
+                <div className="flex flex-1 justify-center">
+                    <Image
+                        src="/assets/images/support1.png"
+                        alt="پشتیبانی"
+                        width={500}
+                        height={400}
+                        className="rounded-lg"
+                    />
+                </div>
+            </div>
         </div>
-
-        <div className="flex-1 flex justify-center">
-          <Image
-            src="/assets/images/support1.png"
-            alt="Support"
-            width={500}
-            height={400}
-            className="rounded-lg"
-          />
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
-export default support;
+export default Support;

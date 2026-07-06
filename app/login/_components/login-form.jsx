@@ -33,7 +33,7 @@ export function LoginForm() {
                 router.push('/courses');
             }
         } catch (e) {
-            setError(e.message || 'Login failed. Please try again.');
+            setError(e.message || 'ورود ناموفق بود. دوباره امتحان کنید.');
         } finally {
             setIsSubmitting(false);
         }
@@ -75,7 +75,7 @@ export function LoginForm() {
                                     در حال ورود ...
                                 </span>
                             ) : (
-                                'Login'
+                                'ورود'
                             )}
                         </Button>
                     </div>

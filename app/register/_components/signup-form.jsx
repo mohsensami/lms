@@ -26,7 +26,7 @@ export function SignupForm({ role }) {
             const confirmPassword = formData.get('confirmPassword');
 
             if (password !== confirmPassword) {
-                toast.error('Passwords do not match.');
+                toast.error('رمزهای عبور با هم مطابقت ندارند.');
                 setIsSubmitting(false);
                 return;
             }
@@ -48,14 +48,14 @@ export function SignupForm({ role }) {
             });
 
             if (response.status === 201) {
-                toast.success('Account created successfully.');
+                toast.success('حساب کاربری با موفقیت ساخته شد.');
                 router.push('/login');
             } else {
                 const payload = await response.json().catch(() => null);
-                toast.error(payload?.message || 'Registration failed. Please try again.');
+                toast.error(payload?.message || 'ثبت‌نام ناموفق بود. دوباره امتحان کنید.');
             }
         } catch (e) {
-            toast.error(e.message || 'Registration failed. Please try again.');
+            toast.error(e.message || 'ثبت‌نام ناموفق بود. دوباره امتحان کنید.');
         } finally {
             setIsSubmitting(false);
         }
@@ -80,11 +80,11 @@ export function SignupForm({ role }) {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="first-name">نام</Label>
-                                <Input id="first-name" name="first-name" placeholder="Max" required />
+                                <Input id="first-name" name="first-name" placeholder="علی" required />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="last-name">نام خانوادگی</Label>
-                                <Input id="last-name" name="last-name" placeholder="Robinson" required />
+                                <Input id="last-name" name="last-name" placeholder="محمدی" required />
                             </div>
                         </div>
                         <div className="grid gap-2">
