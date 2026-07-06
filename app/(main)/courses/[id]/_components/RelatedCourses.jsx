@@ -3,44 +3,44 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
 import { formatPrice } from '@/lib/formatPrice';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 import { SectionTitle } from '@/components/section-title';
 
 const RelatedCourses = ({ relatedCourses }) => {
     return (
-        <section className="">
+        <section>
             <div className="container">
-                <SectionTitle className="mb-6">دوره های مرتبط</SectionTitle>
+                <SectionTitle className="mb-6">دوره‌های مرتبط</SectionTitle>
                 <Carousel
                     opts={{
                         align: 'start',
                     }}
                     className="max-2xl:w-[90%] w-full mx-auto"
                 >
-                    <CarouselPrevious />
-                    <CarouselNext />
+                    <CarouselPrevious className="border-border bg-card text-foreground hover:bg-primary hover:text-primary-foreground" />
+                    <CarouselNext className="border-border bg-card text-foreground hover:bg-primary hover:text-primary-foreground" />
                     <CarouselContent>
                         {relatedCourses.map((course) => (
                             <CarouselItem key={course._id} className="md:basis-1/2 lg:basis-1/3">
                                 <Link href={`/courses/${course._id.toString()}`}>
-                                    <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
-                                        <div className="relative w-full aspect-video rounded-md overflow-hidden">
+                                    <div className="group h-full overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-sm transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
+                                        <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted">
                                             <Image
                                                 src={`/assets/images/courses/${course.thumbnail}`}
                                                 alt={course.title}
-                                                className="object-cover"
+                                                className="object-cover transition-transform duration-500 group-hover:scale-105"
                                                 fill
                                             />
                                         </div>
-                                        <div className="flex flex-col pt-2">
-                                            <div className="text-lg md:text-base font-medium group-hover:text-sky-700 line-clamp-2">
+                                        <div className="flex flex-col gap-2 pt-3">
+                                            <div className="line-clamp-2 text-sm font-bold text-foreground group-hover:text-primary">
                                                 {course.title}
                                             </div>
-                                            <p className="text-xs text-muted-foreground">Development</p>
-
-                                            <div className="flex items-center justify-between mt-4">
-                                                <p className="text-md md:text-sm font-medium text-slate-700">
+                                            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                <BookOpen className="h-3.5 w-3.5" />
+                                                توسعه
+                                            </p>
+                                            <div className="mt-1 flex items-center justify-between">
+                                                <p className="text-sm font-bold text-primary">
                                                     {formatPrice(course.price)}
                                                 </p>
                                             </div>

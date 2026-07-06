@@ -1,54 +1,45 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { formatPrice } from "@/lib/formatPrice";
-import { ArrowRightIcon } from "lucide-react";
 import { BookOpen } from "lucide-react";
+import { formatPrice } from "@/lib/formatPrice";
+import { Badge } from "@/components/ui/badge";
 import EnrollCourse from "@/components/enroll-course";
 
 const CourseCard = ({ course }) => {
   return (
-    <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
-      <Link key={course.id} href={`/courses/${course.id}`}>
-        <div className="relative w-full aspect-video rounded-md overflow-hidden">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
+      <Link href={`/courses/${course.id}`} className="flex flex-1 flex-col">
+        <div className="relative aspect-video w-full overflow-hidden bg-muted">
           <Image
             src={`/assets/images/courses/${course?.thumbnail}`}
-            alt={"course"}
-            className="object-cover"
+            alt={course?.title || "course"}
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             fill
           />
+          {course?.category?.title && (
+            <Badge className="absolute right-3 top-3 border-none bg-background/90 text-foreground shadow backdrop-blur">
+              {course.category.title}
+            </Badge>
+          )}
         </div>
-        <div className="flex flex-col pt-2">
-          <div className="text-lg md:text-base font-medium group-hover:text-sky-700 line-clamp-2">
-            {course?.title}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {course?.category?.title}
-          </p>
-          <div className="my-3 flex items-center gap-x-2 text-sm md:text-xs">
-            <div className="flex items-center gap-x-1 text-slate-500">
-              <div>
-                <BookOpen className="w-4" />
-              </div>
-              <span>{course?.modules?.length} فصل</span>
-            </div>
-          </div>
 
-          {/* <CourseProgress
-              size="sm"
-              value={80}
-              variant={110 === 100 ? "success" : ""}
-            /> */}
+        <div className="flex flex-1 flex-col gap-2 p-4">
+          <h3 className="line-clamp-2 text-base font-bold leading-7 text-foreground transition-colors group-hover:text-primary">
+            {course?.title}
+          </h3>
+
+          <div className="mt-auto flex items-center gap-1.5 text-xs text-muted-foreground">
+            <BookOpen className="h-3.5 w-3.5" />
+            <span>{course?.modules?.length ?? 0} فصل</span>
+          </div>
         </div>
       </Link>
 
-      <div className="flex items-center justify-between mt-4">
-        <p className="text-md md:text-sm font-medium text-slate-700">
+      <div className="flex items-center justify-between gap-2 border-t border-border px-4 py-3">
+        <span className="text-sm font-bold text-primary">
           {formatPrice(course?.price)}
-        </p>
-
+        </span>
         <EnrollCourse asLink={true} courseId={course?.id} />
       </div>
     </div>

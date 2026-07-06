@@ -5,22 +5,17 @@ import { getLesson } from "@/queries/lessons";
 
 const CourseLessonList = async ({ lessonId }) => {
   const lesson = await getLesson(lessonId);
-  //console.log(lesson);
 
   return (
-    <div>
-      <button
-        type="button"
-        className={cn(
-          "flex items-center gap-x-2 text-slate-500 text-sm font-[500]  transition-all hover:text-slate-600  w-full",
-        )}
-      >
-        <div className="flex items-center gap-x-2">
-          <Tv size={16} className={cn("text-slate-500")} />
-          {lesson?.title}
-        </div>
-      </button>
-    </div>
+    <button
+      type="button"
+      className={cn(
+        "flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary",
+      )}
+    >
+      <Tv size={16} className="flex-none text-primary/70" />
+      <span className="truncate">{lesson?.title}</span>
+    </button>
   );
 };
 

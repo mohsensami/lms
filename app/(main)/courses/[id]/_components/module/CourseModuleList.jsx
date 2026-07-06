@@ -1,11 +1,7 @@
 import React from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-import { Radio } from 'lucide-react';
-
-import { Video } from 'lucide-react';
-import { NotepadText } from 'lucide-react';
-import { FileQuestion } from 'lucide-react';
+import { Radio, Video, FileQuestion } from 'lucide-react';
 import CourseLessonList from './CourseLessonList';
 
 const CourseModuleList = ({ module, index }) => {
@@ -14,27 +10,32 @@ const CourseModuleList = ({ module, index }) => {
     }, 0);
 
     return (
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-border bg-muted/40">
             <AccordionItem className="border-none" value={`item-${index + 1}`}>
-                <AccordionTrigger className="flex items-center justify-between gap-3 px-5 py-4 text-base font-semibold text-slate-900 transition hover:bg-slate-100">
-                    {module?.title}
+                <AccordionTrigger className="gap-3 px-5 py-4 text-sm font-bold text-foreground hover:bg-muted/70 hover:no-underline [&[data-state=open]]:bg-primary/5 [&[data-state=open]]:text-primary">
+                    <span className="flex items-center gap-3">
+                        <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-primary/10 text-xs text-primary">
+                            {index + 1}
+                        </span>
+                        {module?.title}
+                    </span>
                 </AccordionTrigger>
-                <AccordionContent className="px-5 pb-5 pt-3">
-                    <div className="flex flex-wrap gap-5 rounded-3xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
+                <AccordionContent className="px-5 pb-5 pt-1">
+                    <div className="flex flex-wrap gap-3 rounded-xl border border-border bg-card p-3 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1.5">
-                            <Video className="w-4 h-4" />
-                            {(totalDuration / 3660).toPrecision(2)} Hours
+                            <Video className="h-3.5 w-3.5 text-primary" />
+                            {(totalDuration / 3660).toPrecision(2)} ساعت
                         </span>
                         <span className="flex items-center gap-1.5">
-                            <FileQuestion className="w-4 h-4" />
-                            10 Quiz
+                            <FileQuestion className="h-3.5 w-3.5 text-primary" />
+                            10 آزمون
                         </span>
                         <span className="flex items-center gap-1.5">
-                            <Radio className="w-4 h-4" />1 Live Class
+                            <Radio className="h-3.5 w-3.5 text-primary" />1 کلاس زنده
                         </span>
                     </div>
 
-                    <div className="mt-5 space-y-3">
+                    <div className="mt-4 space-y-1">
                         {module.lessonIds &&
                             module.lessonIds.map((lessonId) => <CourseLessonList key={lessonId} lessonId={lessonId} />)}
                     </div>

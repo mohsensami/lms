@@ -18,12 +18,15 @@ const EnrollCourse = ({ asLink, courseId }) => {
             <form action={formAction}>
                 <input type="hidden" name="courseId" value={courseId} />
                 {asLink ? (
-                    <Button type="submit" variant="ghost" className="text-xs text-sky-700 h-7 gap-1">
+                    <Button type="submit" variant="secondary" className="h-8 gap-1 rounded-full text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground">
                         Enroll
                         <ArrowRight className="w-3" />
                     </Button>
                 ) : (
-                    <Button type="submit" className={cn(buttonVariants({ size: 'lg' }))}>
+                    <Button
+                        type="submit"
+                        className={cn(buttonVariants({ size: 'lg' }), 'w-full rounded-xl text-base font-bold shadow-lg shadow-primary/25')}
+                    >
                         ثبت نام در دوره
                     </Button>
                 )}
