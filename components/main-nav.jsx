@@ -47,7 +47,7 @@ const MainNav = ({ items, children }) => {
                                 key={index}
                                 href={item.disable ? '#' : item.href}
                                 className={cn(
-                                    'flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm ',
+                                    'flex items-center text-sm font-semibold text-foreground/70 transition-colors hover:text-primary',
                                 )}
                             >
                                 {item.title}
@@ -61,13 +61,16 @@ const MainNav = ({ items, children }) => {
 
             <nav className="flex items-center gap-3">
                 {!loginSession && (
-                    <div className="items-center gap-3 hidden lg:flex">
-                        <Link href="/login" className={cn(buttonVariants({ size: 'sm' }), 'px-4')}>
+                    <div className="items-center gap-2 hidden lg:flex">
+                        <Link
+                            href="/login"
+                            className={cn(buttonVariants({ size: 'sm' }), 'rounded-full px-5 font-semibold shadow-sm shadow-primary/20')}
+                        >
                             ورود
                         </Link>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm">
+                                <Button variant="outline" size="sm" className="rounded-full px-5 font-semibold">
                                     ثبت نام
                                 </Button>
                             </DropdownMenuTrigger>
@@ -86,7 +89,7 @@ const MainNav = ({ items, children }) => {
                 {loginSession && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <div className="cursor-pointer">
+                            <div className="cursor-pointer rounded-full ring-2 ring-transparent transition hover:ring-primary/40">
                                 <Avatar>
                                     <AvatarImage src={loggedInUser?.profilePicture} alt="@ariyan" />
                                     <AvatarFallback>CN</AvatarFallback>
@@ -130,10 +133,10 @@ const MainNav = ({ items, children }) => {
                 )}
 
                 <button
-                    className="flex items-center space-x-2 lg:hidden"
+                    className="flex items-center justify-center rounded-full border border-border p-2 text-foreground/70 transition hover:border-primary hover:text-primary lg:hidden"
                     onClick={() => setShowMobileMenu(!showMobileMenu)}
                 >
-                    {showMobileMenu ? <X /> : <Menu />}
+                    {showMobileMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </button>
             </nav>
         </>

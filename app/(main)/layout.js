@@ -29,7 +29,7 @@ const navLinks = [
 const MainLayout = ({ children }) => {
     return (
         <div className="flex min-h-screen flex-col">
-            <header className="z-40 bg-background/60 backdrop-blur-md fixed top-0 left-0 right-0 border-b">
+            <header className="z-40 bg-background/70 backdrop-blur-md fixed top-0 left-0 right-0 border-b border-border shadow-sm">
                 <SessionProvider>
                     <div className="container flex h-20 items-center justify-between py-6">
                         <MainNav items={navLinks} />
@@ -37,7 +37,7 @@ const MainLayout = ({ children }) => {
                 </SessionProvider>
             </header>
 
-            <main className="flex-1 pt-20 flex flex-col border-b border-gray-700"> {children} </main>
+            <main className="flex-1 pt-20 flex flex-col"> {children} </main>
             <SiteFooter />
         </div>
     );

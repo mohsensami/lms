@@ -25,14 +25,14 @@ const MobileNav = ({ items, children }) => {
                 'fixed inset-0 top-16 z-30 grid h-[calc(100vh-4rem)] grid-flow-row auto-rows-max overflow-auto p-6 pb-32 shadow-md animate-in slide-in-from-bottom-80 lg:hidden',
             )}
         >
-            <div className="relative z-20 grid gap-6 rounded-md bg-popover p-4 text-popover-foreground shadow-md border">
-                <nav className="grid grid-flow-row auto-rows-auto text-sm">
+            <div className="relative z-20 grid gap-6 rounded-2xl bg-popover p-4 text-popover-foreground shadow-lg border border-border">
+                <nav className="grid grid-flow-row auto-rows-auto gap-1 text-sm">
                     {items.map((item, index) => (
                         <Link
                             key={index}
                             href={item.disable ? '#' : item.href}
                             className={cn(
-                                'flex w-full items-center rounded-md p-2 text-sm font-medium hover:underline',
+                                'flex w-full items-center rounded-xl p-3 text-sm font-semibold transition-colors hover:bg-primary/10 hover:text-primary',
                                 item.disable && 'cursor-not-allowed opacity-60',
                             )}
                         >
@@ -42,13 +42,16 @@ const MobileNav = ({ items, children }) => {
                 </nav>
 
                 {!loginSession && (
-                    <div className="items-center gap-3 flex lg:hidden">
-                        <Link href="/login" className={cn(buttonVariants({ size: 'sm' }), 'px-4')}>
+                    <div className="items-center gap-2 flex lg:hidden">
+                        <Link
+                            href="/login"
+                            className={cn(buttonVariants({ size: 'sm' }), 'flex-1 rounded-full font-semibold')}
+                        >
                             ورود
                         </Link>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm">
+                                <Button variant="outline" size="sm" className="flex-1 rounded-full font-semibold">
                                     ثبت نام
                                 </Button>
                             </DropdownMenuTrigger>

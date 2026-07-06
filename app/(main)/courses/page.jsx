@@ -10,25 +10,22 @@ const CoursesPage = async () => {
   const courses = await getCourseList();
 
   return (
-    <section
-      id="courses"
-      className="container space-y-6   dark:bg-transparent py-6"
-    >
-      {/* <h2 className="text-xl md:text-2xl font-medium">All Courses</h2> */}
+    <section id="courses" className="container space-y-6 py-8">
+      <div>
+        <h1 className="text-2xl font-extrabold text-foreground md:text-3xl">دوره‌ها</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{courses.length} دوره در دسترس</p>
+      </div>
+
       {/* header */}
-      <div className="flex items-baseline justify-between  border-gray-200 border-b pb-6 flex-col gap-4 lg:flex-row">
+      <div className="flex flex-col gap-4 border-b border-border pb-6 lg:flex-row lg:items-center lg:justify-between">
         <SearchCourse />
 
         <div className="flex items-center justify-end gap-2 max-lg:w-full">
           <SortCourse />
-
-          {/* Filter Menus For Mobile */}
-
           <FilterCourseMobile />
         </div>
       </div>
       {/* header ends */}
-      {/* active filters */}
 
       <ActiveFilters
         filter={{
@@ -38,13 +35,10 @@ const CoursesPage = async () => {
         }}
       />
 
-      <section className="pb-24 pt-6">
+      <section className="pb-24 pt-2">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
-          {/* Filters */}
-          {/* these component can be re use for mobile also */}
           <FilterCourse />
-          {/* Course grid */}
-          <div className="lg:col-span-3 grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
             {courses.map((course) => {
               return <CourseCard key={course.id} course={course} />;
             })}

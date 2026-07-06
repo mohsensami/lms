@@ -11,53 +11,21 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 
 const PRICE_OPTIONS = [
-  { label: "Free", value: "free" },
-  { label: "Paid", value: "paid" },
+  { label: "رایگان", value: "free" },
+  { label: "پولی", value: "paid" },
 ];
 
 const CATEGORY_OPTIONS = [
-  {
-    id: 1,
-    label: "Design",
-    value: "design",
-  },
-
-  {
-    id: 3,
-    label: "Development",
-    value: "development",
-  },
-  {
-    id: 4,
-    label: "Marketing",
-    value: "marketing",
-  },
-  {
-    id: 5,
-    label: "IT & Software",
-    value: "it-software",
-  },
-  {
-    id: 6,
-    label: "Personal Development",
-    value: "personal-development",
-  },
-  {
-    id: 7,
-    label: "Business",
-    value: "business",
-  },
-  {
-    id: 8,
-    label: "Photography",
-    value: "photography",
-  },
-  {
-    id: 9,
-    label: "Music",
-    value: "music",
-  },
+  { id: 1, label: "طراحی", value: "design" },
+  { id: 3, label: "برنامه‌نویسی", value: "development" },
+  { id: 4, label: "بازاریابی", value: "marketing" },
+  { id: 5, label: "آی‌تی و نرم‌افزار", value: "it-software" },
+  { id: 6, label: "توسعه فردی", value: "personal-development" },
+  { id: 7, label: "کسب‌وکار", value: "business" },
+  { id: 8, label: "عکاسی", value: "photography" },
+  { id: 9, label: "موسیقی", value: "music" },
 ];
+
 const FilterCourse = () => {
   const [filter, setFilter] = useState({
     categories: ["development"],
@@ -65,7 +33,6 @@ const FilterCourse = () => {
     sort: "",
   });
 
-  //   apply checkbox filter
   const applyArrayFilter = ({ type, value }) => {
     const isFilterApplied = filter[type].includes(value);
 
@@ -83,21 +50,22 @@ const FilterCourse = () => {
   };
 
   return (
-    <div className="hidden lg:block">
-      <Accordion defaultValue={["categories"]} type="multiple">
+    <div className="hidden rounded-2xl border border-border bg-card p-5 lg:block lg:h-fit">
+      <Accordion defaultValue={["categories", "price"]} type="multiple">
         {/* Categories filter */}
-        <AccordionItem value="categories">
-          <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
-            <span className="font-medium text-gray-900">Categories</span>
+        <AccordionItem value="categories" className="border-border">
+          <AccordionTrigger className="py-3 text-sm hover:no-underline">
+            <span className="font-bold text-foreground">دسته‌بندی</span>
           </AccordionTrigger>
 
-          <AccordionContent className="pt-6 animate-none">
-            <ul className="space-y-4">
+          <AccordionContent className="pt-2">
+            <ul className="space-y-3">
               {CATEGORY_OPTIONS.map((option, optionIdx) => (
-                <li key={option.value} className="flex items-center">
+                <li key={option.value} className="flex items-center gap-3">
                   <Checkbox
                     type="checkbox"
                     id={`category-${optionIdx}`}
+                    className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     onCheckedChange={() => {
                       applyArrayFilter({
                         type: "categories",
@@ -108,7 +76,7 @@ const FilterCourse = () => {
                   />
                   <label
                     htmlFor={`category-${optionIdx}`}
-                    className="ml-3 text-sm text-gray-600 cursor-pointer"
+                    className="cursor-pointer text-sm text-muted-foreground transition hover:text-foreground"
                   >
                     {option.label}
                   </label>
@@ -118,18 +86,19 @@ const FilterCourse = () => {
           </AccordionContent>
         </AccordionItem>
         {/* Price filter */}
-        <AccordionItem value="price">
-          <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
-            <span className="font-medium text-gray-900">Price</span>
+        <AccordionItem value="price" className="border-none">
+          <AccordionTrigger className="py-3 text-sm hover:no-underline">
+            <span className="font-bold text-foreground">قیمت</span>
           </AccordionTrigger>
 
-          <AccordionContent className="pt-6 animate-none">
-            <ul className="space-y-4">
+          <AccordionContent className="pt-2">
+            <ul className="space-y-3">
               {PRICE_OPTIONS.map((option, optionIdx) => (
-                <li key={option.value} className="flex items-center">
+                <li key={option.value} className="flex items-center gap-3">
                   <Checkbox
                     type="checkbox"
                     id={`price-${optionIdx}`}
+                    className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     onCheckedChange={() => {
                       applyArrayFilter({
                         type: "price",
@@ -140,7 +109,7 @@ const FilterCourse = () => {
                   />
                   <label
                     htmlFor={`price-${optionIdx}`}
-                    className="ml-3 text-sm text-gray-600 cursor-pointer"
+                    className="cursor-pointer text-sm text-muted-foreground transition hover:text-foreground"
                   >
                     {option.label}
                   </label>

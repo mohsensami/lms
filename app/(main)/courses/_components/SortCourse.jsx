@@ -12,19 +12,19 @@ import {
 } from "@/components/ui/select";
 
 const SORT_OPTIONS = [
-  { label: "Price: Low to High", value: "price-asc" },
-  { label: "Price: High to Low", value: "price-desc" },
+  { label: "ارزان‌ترین", value: "price-asc" },
+  { label: "گران‌ترین", value: "price-desc" },
 ];
 
 const SortCourse = () => {
   return (
     <Select>
-      <SelectTrigger className="w-[180px] border-none !border-b focus:ring-0 focus:ring-offset-0  overflow-hidden">
-        <SelectValue placeholder="Sort By" />
+      <SelectTrigger className="h-11 w-[160px] rounded-full border-border text-sm focus:ring-primary">
+        <SelectValue placeholder="مرتب‌سازی" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Fruits</SelectLabel>
+          <SelectLabel>مرتب‌سازی بر اساس</SelectLabel>
           {SORT_OPTIONS.map((option) => (
             <SelectItem
               className="cursor-pointer"

@@ -9,10 +9,7 @@ import {
 
 import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -23,52 +20,19 @@ import { Filter } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const PRICE_OPTIONS = [
-  { label: "Free", value: "free" },
-  { label: "Paid", value: "paid" },
+  { label: "رایگان", value: "free" },
+  { label: "پولی", value: "paid" },
 ];
 
 const CATEGORY_OPTIONS = [
-  {
-    id: 1,
-    label: "Design",
-    value: "design",
-  },
-
-  {
-    id: 3,
-    label: "Development",
-    value: "development",
-  },
-  {
-    id: 4,
-    label: "Marketing",
-    value: "marketing",
-  },
-  {
-    id: 5,
-    label: "IT & Software",
-    value: "it-software",
-  },
-  {
-    id: 6,
-    label: "Personal Development",
-    value: "personal-development",
-  },
-  {
-    id: 7,
-    label: "Business",
-    value: "business",
-  },
-  {
-    id: 8,
-    label: "Photography",
-    value: "photography",
-  },
-  {
-    id: 9,
-    label: "Music",
-    value: "music",
-  },
+  { id: 1, label: "طراحی", value: "design" },
+  { id: 3, label: "برنامه‌نویسی", value: "development" },
+  { id: 4, label: "بازاریابی", value: "marketing" },
+  { id: 5, label: "آی‌تی و نرم‌افزار", value: "it-software" },
+  { id: 6, label: "توسعه فردی", value: "personal-development" },
+  { id: 7, label: "کسب‌وکار", value: "business" },
+  { id: 8, label: "عکاسی", value: "photography" },
+  { id: 9, label: "موسیقی", value: "music" },
 ];
 
 const FilterCourseMobile = () => {
@@ -78,7 +42,6 @@ const FilterCourseMobile = () => {
     sort: "",
   });
 
-  //   apply checkbox filter
   const applyArrayFilter = ({ type, value }) => {
     const isFilterApplied = filter[type].includes(value);
 
@@ -98,26 +61,27 @@ const FilterCourseMobile = () => {
   return (
     <div className="lg:hidden">
       <Sheet>
-        <SheetTrigger>
-          <Filter className="h-6 w-6" />
+        <SheetTrigger className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground/70 transition hover:border-primary hover:text-primary">
+          <Filter className="h-5 w-5" />
         </SheetTrigger>
         <SheetContent side="left">
           <SheetHeader>
-            <SheetTitle className="text-left">Filter Courses</SheetTitle>
+            <SheetTitle className="text-right">فیلتر دوره‌ها</SheetTitle>
             <Accordion defaultValue={["categories"]} type="multiple">
               {/* Categories filter */}
               <AccordionItem value="categories">
-                <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
-                  <span className="font-medium text-gray-900">Categories</span>
+                <AccordionTrigger className="py-3 text-sm hover:no-underline">
+                  <span className="font-bold text-foreground">دسته‌بندی</span>
                 </AccordionTrigger>
 
-                <AccordionContent className="pt-6 animate-none">
+                <AccordionContent className="pt-4 animate-none">
                   <ul className="space-y-4">
                     {CATEGORY_OPTIONS.map((option, optionIdx) => (
-                      <li key={option.value} className="flex items-center">
+                      <li key={option.value} className="flex items-center gap-3">
                         <Checkbox
                           type="checkbox"
-                          id={`category-${optionIdx}`}
+                          id={`category-mobile-${optionIdx}`}
+                          className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           onCheckedChange={() => {
                             applyArrayFilter({
                               type: "categories",
@@ -127,8 +91,8 @@ const FilterCourseMobile = () => {
                           checked={filter.categories.includes(option.value)}
                         />
                         <label
-                          htmlFor={`category-${optionIdx}`}
-                          className="ml-3 text-sm text-gray-600 cursor-pointer"
+                          htmlFor={`category-mobile-${optionIdx}`}
+                          className="cursor-pointer text-sm text-muted-foreground"
                         >
                           {option.label}
                         </label>
@@ -139,17 +103,18 @@ const FilterCourseMobile = () => {
               </AccordionItem>
               {/* Price filter */}
               <AccordionItem value="price">
-                <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
-                  <span className="font-medium text-gray-900">Price</span>
+                <AccordionTrigger className="py-3 text-sm hover:no-underline">
+                  <span className="font-bold text-foreground">قیمت</span>
                 </AccordionTrigger>
 
-                <AccordionContent className="pt-6 animate-none">
+                <AccordionContent className="pt-4 animate-none">
                   <ul className="space-y-4">
                     {PRICE_OPTIONS.map((option, optionIdx) => (
-                      <li key={option.value} className="flex items-center">
+                      <li key={option.value} className="flex items-center gap-3">
                         <Checkbox
                           type="checkbox"
-                          id={`price-${optionIdx}`}
+                          id={`price-mobile-${optionIdx}`}
+                          className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           onCheckedChange={() => {
                             applyArrayFilter({
                               type: "price",
@@ -159,8 +124,8 @@ const FilterCourseMobile = () => {
                           checked={filter.price.includes(option.value)}
                         />
                         <label
-                          htmlFor={`price-${optionIdx}`}
-                          className="ml-3 text-sm text-gray-600 cursor-pointer"
+                          htmlFor={`price-mobile-${optionIdx}`}
+                          className="cursor-pointer text-sm text-muted-foreground"
                         >
                           {option.label}
                         </label>
