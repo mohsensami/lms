@@ -39,7 +39,10 @@ const SiteFooter = () => {
                         <ul className="space-y-3">
                             {footerLinks.map((link) => (
                                 <li key={link.href}>
-                                    <Link href={link.href} className="text-sm text-muted-foreground transition hover:text-primary">
+                                    <Link
+                                        href={link.href}
+                                        className="text-sm text-muted-foreground transition hover:text-primary"
+                                    >
                                         {link.title}
                                     </Link>
                                 </li>
@@ -52,7 +55,7 @@ const SiteFooter = () => {
             <div className="border-t border-border">
                 <div className="container flex flex-col items-center gap-2 py-5 text-xs text-muted-foreground sm:flex-row sm:justify-between">
                     <p>© {new Date().getFullYear()} تمامی حقوق محفوظ است.</p>
-                    <p>ساخته شده با ❤ توسط Easy Learning</p>
+                    <p>ساخته شده با ❤ توسط محسن سامی</p>
                 </div>
             </div>
         </footer>

@@ -14,10 +14,7 @@ const support = () => {
           </p>
 
           <p className="text-black leading-relaxed mb-8 mt-8">
-            I Am Founder Of Easy Learning Academy And Best Selling Online
-            Instructor Around The World My life’s mission is to help novice and
-            professional software engineers increase their skills, make more
-            money, and ultimately change their lives for the better.
+            من بنیانگذار آکادمی یادگیری آسان و مدرس پرفروش آنلاین در سراسر جهان هستم. ماموریت زندگی من کمک به مهندسان نرم‌افزار تازه‌کار و حرفه‌ای است تا مهارت‌های خود را افزایش دهند، پول بیشتری به دست آورند و در نهایت زندگی خود را به سمت بهتر شدن تغییر دهند.
           </p>
 
           <div className="flex flex-wrap gap-4">

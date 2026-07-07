@@ -83,11 +83,11 @@ export function LoginForm() {
                     <div className="mt-4 text-center text-sm">
                         حساب کاربری ندارید؟
                         <Link href="/register/instructor" className="underline">
-                            استاد
+                            مدرس
                         </Link>{' '}
                         یا{' '}
                         <Link href="/register/student" className="underline">
-                            دانش آموز
+                            دانشجو
                         </Link>
                     </div>
                 </form>

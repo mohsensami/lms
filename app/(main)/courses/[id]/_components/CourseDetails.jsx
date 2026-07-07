@@ -8,7 +8,7 @@ const CourseDetails = ({ course }) => {
     return (
         <section className="py-8 md:py-12">
             <div className="container">
-                <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6 lg:max-w-4xl">
+                <div dir="rtl" className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6 text-right">
                     <Tabs defaultValue="overview" className="w-full">
                         <TabsList className="grid w-full grid-cols-3 gap-2 rounded-xl bg-muted p-1">
                             <TabsTrigger
