@@ -5,7 +5,7 @@ const quizes = [
     {
         id: 'quiz-1',
         title: 'Quiz title 1',
-        description: 'Quiz description',
+        description: 'توضیحات آزمون',
         options: [
             { label: 'Option-1', id: 1, isCorrect: true },
             { label: 'Option-2', id: 2, isCorrect: false },
@@ -16,7 +16,7 @@ const quizes = [
     {
         id: 'quiz-2',
         title: 'Quiz title 2',
-        description: 'Quiz description',
+        description: 'توضیحات آزمون',
         options: [
             { label: 'Quiz-2 Option-1', id: 1, isCorrect: true },
             { label: 'Quiz-2 Option-2', id: 2, isCorrect: false },
@@ -35,7 +35,7 @@ function VideoDescription({ description }) {
                         className="data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm font-semibold text-slate-700 px-4 py-2 rounded-3xl"
                         value="details"
                     >
-                        Description
+                        توضیحات
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value="details" className="mt-4 text-sm leading-7 text-slate-700">

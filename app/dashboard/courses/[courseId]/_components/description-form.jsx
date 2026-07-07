@@ -15,7 +15,7 @@ import { updateCourse } from '@/app/actions/course';
 
 const formSchema = z.object({
     description: z.string().min(1, {
-        message: 'Description is required',
+        message: 'توضیحات الزامی است',
     }),
 });
 

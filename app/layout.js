@@ -19,8 +19,8 @@ import localFont from 'next/font/local';
 // });
 
 export const metadata = {
-    title: 'Easy Learning Academy - Best Online Professional Courses',
-    description: 'Best Online Professional Courses',
+    title: 'آکادمی آموزشی - آموزش متلب',
+    description: 'بهترین آموزشگاه',
 };
 
 // const poppins = Inter({ subsets: ["latin"], variable: "--font-poppins" });

@@ -64,7 +64,10 @@ const MainNav = ({ items, children }) => {
                     <div className="items-center gap-2 hidden lg:flex">
                         <Link
                             href="/login"
-                            className={cn(buttonVariants({ size: 'sm' }), 'rounded-full px-5 font-semibold shadow-sm shadow-primary/20')}
+                            className={cn(
+                                buttonVariants({ size: 'sm' }),
+                                'rounded-full px-5 font-semibold shadow-sm shadow-primary/20',
+                            )}
                         >
                             ورود
                         </Link>
@@ -76,10 +79,10 @@ const MainNav = ({ items, children }) => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56 mt-4">
                                 <DropdownMenuItem className="cursor-pointer">
-                                    <Link href="/register/student">دانش آموز</Link>
+                                    <Link href="/register/student">دانشجو</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="cursor-pointer">
-                                    <Link href="/register/instructor">استاد</Link>
+                                    <Link href="/register/instructor">مدرس</Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

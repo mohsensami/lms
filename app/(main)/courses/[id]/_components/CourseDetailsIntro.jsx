@@ -15,9 +15,7 @@ const CourseDetailsIntro = async ({ course }) => {
     const loggedInUser = session?.user?.email ? await getUserByEmail(session.user.email) : null;
     const hasEnrollment =
         loggedInUser?.id && course?.id ? await hasEnrollmentForCourse(course.id, loggedInUser.id) : false;
-    const instructorName = course?.instructor
-        ? `${course.instructor.firstName} ${course.instructor.lastName}`
-        : 'مدرس';
+    const instructorName = course?.instructor ? `${course.instructor.firstName} ${course.instructor.lastName}` : 'مدرس';
     const lessonCount = course?.modules?.reduce((sum, module) => sum + (module.lessonIds?.length ?? 0), 0) ?? 0;
     const quizCount = course?.quizSet?.quizIds?.length ?? 0;
     const chapterCount = course?.modules?.length ?? 0;
@@ -28,9 +26,13 @@ const CourseDetailsIntro = async ({ course }) => {
                 <div className="container">
                     {/* breadcrumb */}
                     <div className="mb-6 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <Link href="/" className="hover:text-primary">خانه</Link>
+                        <Link href="/" className="hover:text-primary">
+                            خانه
+                        </Link>
                         <span>/</span>
-                        <Link href="/courses" className="hover:text-primary">دوره‌ها</Link>
+                        <Link href="/courses" className="hover:text-primary">
+                            دوره‌ها
+                        </Link>
                         {course?.category?.title && (
                             <>
                                 <span>/</span>
@@ -53,33 +55,13 @@ const CourseDetailsIntro = async ({ course }) => {
                             {course?.subtitle && (
                                 <p className="max-w-2xl text-base leading-8 text-muted-foreground">{course.subtitle}</p>
                             )}
-
-                            <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 sm:w-fit">
-                                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                                    {course?.instructor?.firstName?.[0]}
-                                </div>
-                                <div>
-                                    <p className="text-xs text-muted-foreground">مدرس دوره</p>
-                                    <p className="text-sm font-bold text-foreground">{instructorName}</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-3 sm:max-w-md">
-                                <div className="rounded-2xl border border-border bg-card p-4 text-center">
-                                    <BookOpen className="mx-auto mb-2 h-5 w-5 text-primary" />
-                                    <p className="text-sm font-bold text-foreground">{chapterCount}</p>
-                                    <p className="text-[11px] text-muted-foreground">سرفصل</p>
-                                </div>
-                                <div className="rounded-2xl border border-border bg-card p-4 text-center">
-                                    <PlayCircle className="mx-auto mb-2 h-5 w-5 text-primary" />
-                                    <p className="text-sm font-bold text-foreground">{lessonCount}</p>
-                                    <p className="text-[11px] text-muted-foreground">جلسه</p>
-                                </div>
-                                <div className="rounded-2xl border border-border bg-card p-4 text-center">
-                                    <ListChecks className="mx-auto mb-2 h-5 w-5 text-primary" />
-                                    <p className="text-sm font-bold text-foreground">{quizCount}</p>
-                                    <p className="text-[11px] text-muted-foreground">آزمون</p>
-                                </div>
+                            <div className="relative aspect-video w-full bg-muted">
+                                <Image
+                                    className="object-cover"
+                                    fill
+                                    src={`/assets/images/courses/${course?.thumbnail}`}
+                                    alt={course?.title || 'Course image'}
+                                />
                             </div>
 
                             {course?.learning?.length > 0 && (
@@ -106,20 +88,10 @@ const CourseDetailsIntro = async ({ course }) => {
                         {/* sticky purchase box */}
                         <div className="lg:sticky lg:top-24">
                             <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-                                <div className="relative aspect-video w-full bg-muted">
-                                    <Image
-                                        className="object-cover"
-                                        fill
-                                        src={`/assets/images/courses/${course?.thumbnail}`}
-                                        alt={course?.title || 'Course image'}
-                                    />
-                                </div>
                                 <div className="space-y-5 p-6">
                                     <div className="flex items-baseline justify-between">
                                         <span className="text-xs text-muted-foreground">قیمت دوره</span>
-                                        <span className="text-2xl font-extrabold text-primary">
-                                            ${course?.price}
-                                        </span>
+                                        <span className="text-2xl font-extrabold text-primary">${course?.price}</span>
                                     </div>
 
                                     {hasEnrollment ? (
@@ -127,7 +99,7 @@ const CourseDetailsIntro = async ({ course }) => {
                                             href={`/courses/${course?.id}/lesson`}
                                             className={cn(
                                                 buttonVariants({ size: 'lg' }),
-                                                'w-full rounded-xl text-base font-bold shadow-lg shadow-primary/25'
+                                                'w-full rounded-xl text-base font-bold shadow-lg shadow-primary/25',
                                             )}
                                         >
                                             ورود به دوره
@@ -140,11 +112,38 @@ const CourseDetailsIntro = async ({ course }) => {
                                         href=""
                                         className={cn(
                                             buttonVariants({ variant: 'outline', size: 'lg' }),
-                                            'w-full rounded-xl font-semibold'
+                                            'w-full rounded-xl font-semibold',
                                         )}
                                     >
                                         نمایش پیش‌نمایش
                                     </Link>
+                                    <div className="grid grid-cols-3 gap-3 sm:max-w-md">
+                                        <div className="rounded-2xl border border-border bg-card p-4 text-center">
+                                            <BookOpen className="mx-auto mb-2 h-5 w-5 text-primary" />
+                                            <p className="text-sm font-bold text-foreground">{chapterCount}</p>
+                                            <p className="text-[11px] text-muted-foreground">سرفصل</p>
+                                        </div>
+                                        <div className="rounded-2xl border border-border bg-card p-4 text-center">
+                                            <PlayCircle className="mx-auto mb-2 h-5 w-5 text-primary" />
+                                            <p className="text-sm font-bold text-foreground">{lessonCount}</p>
+                                            <p className="text-[11px] text-muted-foreground">جلسه</p>
+                                        </div>
+                                        <div className="rounded-2xl border border-border bg-card p-4 text-center">
+                                            <ListChecks className="mx-auto mb-2 h-5 w-5 text-primary" />
+                                            <p className="text-sm font-bold text-foreground">{quizCount}</p>
+                                            <p className="text-[11px] text-muted-foreground">آزمون</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 sm:w-fit">
+                                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                                            {course?.instructor?.firstName?.[0]}
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">مدرس دوره</p>
+                                            <p className="text-sm font-bold text-foreground">{instructorName}</p>
+                                        </div>
+                                    </div>
 
                                     <ul className="space-y-3 border-t border-border pt-4 text-sm text-muted-foreground">
                                         <li className="flex items-center justify-between">
