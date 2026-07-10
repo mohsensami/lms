@@ -1,54 +1,56 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { useLockBody } from '@/hooks/use-lock-body';
-import { X } from 'lucide-react';
 import { Button, buttonVariants } from './ui/button';
-import { Menu } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from './ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import Logo from './logo';
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
-const MobileNav = ({ items, children }) => {
-    useLockBody();
-
+const MobileNav = ({ items, open, onOpenChange }) => {
     const { data: session } = useSession();
     const [loginSession, setLoginSession] = useState(null);
+
     useEffect(() => {
-        console.log('Test information');
         setLoginSession(session);
     }, [session]);
 
     return (
-        <div
-            className={cn(
-                'fixed inset-0 top-16 z-30 grid h-[calc(100vh-4rem)] grid-flow-row auto-rows-max overflow-auto p-6 pb-32 shadow-md animate-in slide-in-from-bottom-80 lg:hidden',
-            )}
-        >
-            <div className="relative z-20 grid gap-6 rounded-2xl bg-popover p-4 text-popover-foreground shadow-lg border border-border">
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetContent side="right" className="flex w-3/4 flex-col gap-6 sm:max-w-sm">
+                <SheetHeader>
+                    <SheetTitle>
+                        <Logo className="max-w-[140px]" />
+                    </SheetTitle>
+                </SheetHeader>
+
                 <nav className="grid grid-flow-row auto-rows-auto gap-1 text-sm">
-                    {items.map((item, index) => (
-                        <Link
-                            key={index}
-                            href={item.disable ? '#' : item.href}
-                            className={cn(
-                                'flex w-full items-center rounded-xl p-3 text-sm font-semibold transition-colors hover:bg-primary/10 hover:text-primary',
-                                item.disable && 'cursor-not-allowed opacity-60',
-                            )}
-                        >
-                            {item.title}
-                        </Link>
+                    {items?.map((item, index) => (
+                        <SheetClose asChild key={index}>
+                            <Link
+                                href={item.disable ? '#' : item.href}
+                                className={cn(
+                                    'flex w-full items-center rounded-xl p-3 text-sm font-semibold transition-colors hover:bg-primary/10 hover:text-primary',
+                                    item.disable && 'cursor-not-allowed opacity-60',
+                                )}
+                            >
+                                {item.title}
+                            </Link>
+                        </SheetClose>
                     ))}
                 </nav>
 
                 {!loginSession && (
-                    <div className="items-center gap-2 flex lg:hidden">
-                        <Link
-                            href="/login"
-                            className={cn(buttonVariants({ size: 'sm' }), 'flex-1 rounded-full font-semibold')}
-                        >
-                            ورود
-                        </Link>
+                    <div className="flex items-center gap-2">
+                        <SheetClose asChild>
+                            <Link
+                                href="/login"
+                                className={cn(buttonVariants({ size: 'sm' }), 'flex-1 rounded-full font-semibold')}
+                            >
+                                ورود
+                            </Link>
+                        </SheetClose>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="flex-1 rounded-full font-semibold">
@@ -56,18 +58,18 @@ const MobileNav = ({ items, children }) => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56 mt-4">
-                                <DropdownMenuItem className="cursor-pointer">
+                                <DropdownMenuItem className="cursor-pointer" asChild>
                                     <Link href="/register/student">دانشجو</Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="cursor-pointer">
+                                <DropdownMenuItem className="cursor-pointer" asChild>
                                     <Link href="/register/instructor">مدرس</Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
                 )}
-            </div>
-        </div>
+            </SheetContent>
+        </Sheet>
     );
 };
 

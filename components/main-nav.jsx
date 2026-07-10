@@ -56,8 +56,9 @@ const MainNav = ({ items, children }) => {
                     </nav>
                 ) : null}
 
-                {showMobileMenu && items && <MobileNav items={items}>{children}</MobileNav>}
             </div>
+
+            {items && <MobileNav items={items} open={showMobileMenu} onOpenChange={setShowMobileMenu} />}
 
             <nav className="flex items-center gap-3">
                 {!loginSession && (
