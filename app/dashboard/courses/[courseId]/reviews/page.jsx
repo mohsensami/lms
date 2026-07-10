@@ -5,7 +5,6 @@ import {
   getInstructorDashboardData,
   REVIEW_DATA,
 } from "@/lib/dashboard-helper";
-import { ObjectId } from "mongoose";
 
 const ReviewsPage = async ({ params: { courseId } }) => {
   const course = await getCourseDetails(courseId);
@@ -30,9 +29,6 @@ const ReviewsPage = async ({ params: { courseId } }) => {
 function sanitizeData(data) {
   return JSON.parse(
     JSON.stringify(data, (key, value) => {
-      if (value instanceof ObjectId) {
-        return value.toString();
-      }
       if (Buffer.isBuffer(value)) {
         return value.toString("base64");
       }

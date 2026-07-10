@@ -7,7 +7,6 @@ import { LessonForm } from './_components/lesson-form';
 import { CourseActions } from '../../_components/course-action';
 import { getModule } from '@/queries/modules';
 import { replaceMongoIdInArray } from '@/lib/convertData';
-import { ObjectId } from 'mongoose';
 import { ModuleActions } from './_components/module-action';
 
 const Module = async ({ params: { courseId, moduleId } }) => {
@@ -17,9 +16,6 @@ const Module = async ({ params: { courseId, moduleId } }) => {
     function sanitizeData(data) {
         return JSON.parse(
             JSON.stringify(data, (key, value) => {
-                if (value instanceof ObjectId) {
-                    return value.toString();
-                }
                 if (Buffer.isBuffer(value)) {
                     return value.toString('base64');
                 }

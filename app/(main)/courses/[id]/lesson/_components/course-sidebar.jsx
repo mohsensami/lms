@@ -6,8 +6,7 @@ import { GiveReview } from './give-review';
 import { SidebarModules } from './sidebar-modules';
 import { getCourseDetails } from '@/queries/courses';
 import { getLoggedInUser } from '@/lib/loggedin-user';
-import { Watch } from '@/model/watch-model';
-import { ObjectId } from 'mongoose';
+import { prisma } from '@/lib/prisma';
 import { getReport } from '@/queries/reports';
 import Quiz from './quiz';
 
@@ -34,11 +33,13 @@ export const CourseSidebar = async ({ courseId }) => {
             const updatedLessons = await Promise.all(
                 lessons.map(async (lesson) => {
                     const lessonId = lesson._id.toString();
-                    const watch = await Watch.findOne({
-                        lesson: lessonId,
-                        module: moduleId,
-                        user: loggedinUser.id,
-                    }).lean();
+                    const watch = await prisma.watch.findFirst({
+                        where: {
+                            lessonId: lessonId,
+                            moduleId: moduleId,
+                            userId: loggedinUser.id,
+                        },
+                    });
                     if (watch?.state === 'completed') {
                         lesson.state = 'completed';
                     }
@@ -56,9 +57,6 @@ export const CourseSidebar = async ({ courseId }) => {
 
         return JSON.parse(
             JSON.stringify(data, (key, value) => {
-                if (value instanceof ObjectId) {
-                    return value.toString();
-                }
                 if (typeof Buffer !== 'undefined' && Buffer.isBuffer(value)) {
                     return value.toString('base64');
                 }

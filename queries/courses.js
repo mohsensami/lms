@@ -1,80 +1,74 @@
-import { Category } from '@/model/category-model';
-import { Course } from '@/model/course-model';
-import { Module } from '@/model/module.model';
-import { Testimonial } from '@/model/testimonial-model';
-import { User } from '@/model/user-model';
-import { replaceMongoIdInArray, replaceMongoIdInObject } from '@/lib/convertData';
+import { replaceMongoIdInArray, replaceMongoIdInObject, toIdString } from '@/lib/convertData';
 import { getEnrollmentsForCourse } from './enrollments';
 import { getTestimonialsForCourse } from './testimonials';
-import { Lesson } from '@/model/lesson.model';
-import { Quizset } from '@/model/quizset-model';
-import { Quiz } from '@/model/quizzes-model';
-import mongoose from 'mongoose';
 import { withDb } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
+import { unstable_cache } from 'next/cache';
+
+// Public, read-heavy course data is cached with Next.js's Data Cache so
+// revisiting a page (course list, course details, ...) doesn't hit
+// Postgres again until something actually changes. Every mutating action
+// (create/update/delete course, module, lesson, quiz, review, ...) calls
+// `revalidateTag('courses')` so the cache is invalidated immediately when
+// content is edited — the 5 minute `revalidate` below is just a safety net.
+export const COURSES_CACHE_TAG = 'courses';
+
+const getCachedCourseList = unstable_cache(
+    async () => {
+        return withDb(async () => {
+            const courses = await prisma.course.findMany({
+                where: { active: true },
+                include: {
+                    category: true,
+                    instructor: true,
+                    testimonials: true,
+                    modules: true,
+                },
+            });
+            return replaceMongoIdInArray(courses);
+        });
+    },
+    ['course-list'],
+    { tags: [COURSES_CACHE_TAG], revalidate: 300 },
+);
 
 export async function getCourseList() {
-    return withDb(async () => {
-        const courses = await Course.find({ active: true })
-            .select(['title', 'subtitle', 'thumbnail', 'modules', 'price', 'category', 'instructor'])
-            .populate({
-                path: 'category',
-                model: Category,
-            })
-            .populate({
-                path: 'instructor',
-                model: User,
-            })
-            .populate({
-                path: 'testimonials',
-                model: Testimonial,
-            })
-            .populate({
-                path: 'modules',
-                model: Module,
-            })
-            .lean();
-        return replaceMongoIdInArray(courses);
-    });
+    return getCachedCourseList();
 }
 
+const getCachedCourseDetails = unstable_cache(
+    async (courseId) => {
+        return withDb(async () => {
+            const course = await prisma.course.findUnique({
+                where: { id: courseId },
+                include: {
+                    category: true,
+                    instructor: true,
+                    testimonials: {
+                        include: { user: true },
+                    },
+                    modules: {
+                        orderBy: { order: 'asc' },
+                        include: {
+                            lessonIds: { orderBy: { order: 'asc' } },
+                        },
+                    },
+                    quizSet: {
+                        include: { quizIds: true },
+                    },
+                },
+            });
+            return replaceMongoIdInObject(course);
+        });
+    },
+    ['course-details'],
+    { tags: [COURSES_CACHE_TAG], revalidate: 300 },
+);
+
 export async function getCourseDetails(id) {
-    return withDb(async () => {
-        const course = await Course.findById(id)
-            .populate({
-                path: 'category',
-                model: Category,
-            })
-            .populate({
-                path: 'instructor',
-                model: User,
-            })
-            .populate({
-                path: 'testimonials',
-                model: Testimonial,
-                populate: {
-                    path: 'user',
-                    model: User,
-                },
-            })
-            .populate({
-                path: 'modules',
-                model: Module,
-                populate: {
-                    path: 'lessonIds',
-                    model: Lesson,
-                },
-            })
-            .populate({
-                path: 'quizSet',
-                model: Quizset,
-                populate: {
-                    path: 'quizIds',
-                    model: Quiz,
-                },
-            })
-            .lean();
-        return replaceMongoIdInObject(course);
-    });
+    const courseId = toIdString(id);
+    if (!courseId) return null;
+    return getCachedCourseDetails(courseId);
 }
 
 function groupBy(array, keyFn) {
@@ -90,18 +84,21 @@ function groupBy(array, keyFn) {
 
 export async function getCourseDetailsByInstructor(instructorId, expand) {
     return withDb(async () => {
-        const publishCourses = await Course.find({
-            instructor: instructorId,
-            active: true,
-        })
-            .populate({ path: 'category', model: Category })
-            .populate({ path: 'testimonials', model: Testimonial })
-            .populate({ path: 'instructor', model: User })
-            .lean();
+        const publishCourses = await prisma.course.findMany({
+            where: {
+                instructorId,
+                active: true,
+            },
+            include: {
+                category: true,
+                testimonials: true,
+                instructor: true,
+            },
+        });
 
         const enrollments = await Promise.all(
             publishCourses.map(async (course) => {
-                const enrollment = await getEnrollmentsForCourse(course._id.toString());
+                const enrollment = await getEnrollmentsForCourse(course._id);
                 return enrollment;
             }),
         );
@@ -115,15 +112,13 @@ export async function getCourseDetailsByInstructor(instructorId, expand) {
             return acc + enrollmentsForCourse.length * course.price;
         }, 0);
 
-        //console.log(totalRevenue);
-
         const totalEnrollments = enrollments.reduce((acc, obj) => {
             return acc + obj.length;
         }, 0);
 
         const tesimonials = await Promise.all(
             publishCourses.map(async (course) => {
-                const tesimonial = await getTestimonialsForCourse(course._id.toString());
+                const tesimonial = await getTestimonialsForCourse(course._id);
                 return tesimonial;
             }),
         );
@@ -143,9 +138,9 @@ export async function getCourseDetailsByInstructor(instructorId, expand) {
         const insImage = publishCourses.length > 0 ? publishCourses[0]?.instructor?.profilePicture : 'Unknown';
 
         if (expand) {
-            const allCourses = await Course.find({ instructor: instructorId }).lean();
+            const allCourses = await prisma.course.findMany({ where: { instructorId } });
             return {
-                courses: allCourses?.flat(),
+                courses: allCourses,
                 enrollments: enrollments?.flat(),
                 reviews: totalTestimonials,
             };
@@ -168,7 +163,7 @@ export async function getCourseDetailsByInstructor(instructorId, expand) {
 export async function create(courseData) {
     try {
         return await withDb(async () => {
-            const course = await Course.create(courseData);
+            const course = await prisma.course.create({ data: courseData });
             return JSON.parse(JSON.stringify(course));
         });
     } catch (error) {
@@ -176,42 +171,75 @@ export async function create(courseData) {
     }
 }
 
-export async function getCoursesByCategory(categoryId) {
-    try {
-        return await withDb(async () => {
-            const courses = await Course.find({ category: categoryId }).populate('category').lean();
+const getCachedCoursesByCategory = unstable_cache(
+    async (categoryId) => {
+        return withDb(async () => {
+            const courses = await prisma.course.findMany({
+                where: { categoryId },
+                include: { category: true },
+            });
             return courses;
         });
+    },
+    ['courses-by-category'],
+    { tags: [COURSES_CACHE_TAG], revalidate: 300 },
+);
+
+export async function getCoursesByCategory(categoryId) {
+    try {
+        return await getCachedCoursesByCategory(categoryId);
     } catch (error) {
         throw new Error(error);
     }
 }
 
-export const getCategoryById = async (categoryId) => {
-    try {
-        return await withDb(async () => {
-            const category = await Category.findById(categoryId);
+const getCachedCategoryById = unstable_cache(
+    async (id) => {
+        return withDb(async () => {
+            const category = await prisma.category.findUnique({ where: { id } });
             return category;
         });
+    },
+    ['category-by-id'],
+    { tags: [COURSES_CACHE_TAG], revalidate: 300 },
+);
+
+export const getCategoryById = async (categoryId) => {
+    try {
+        const id = toIdString(categoryId);
+        if (!id) return null;
+        return await getCachedCategoryById(id);
     } catch (error) {
         throw new Error(error);
     }
 };
 
-export async function getRelatedCourses(currentCourseId, categoryId) {
-    try {
-        return await withDb(async () => {
-            const currentCourseObjectId = new mongoose.Types.ObjectId(currentCourseId);
-            const categoryObjectId = new mongoose.Types.ObjectId(categoryId);
-            const relatedCourses = await Course.find({
-                category: categoryObjectId,
-                _id: { $ne: currentCourseObjectId },
-                active: true,
-            })
-                .select('title thumbnail price')
-                .lean();
+const getCachedRelatedCourses = unstable_cache(
+    async (currentCourseId, categoryId) => {
+        return withDb(async () => {
+            const relatedCourses = await prisma.course.findMany({
+                where: {
+                    categoryId,
+                    id: { not: currentCourseId },
+                    active: true,
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    thumbnail: true,
+                    price: true,
+                },
+            });
             return relatedCourses;
         });
+    },
+    ['related-courses'],
+    { tags: [COURSES_CACHE_TAG], revalidate: 300 },
+);
+
+export async function getRelatedCourses(currentCourseId, categoryId) {
+    try {
+        return await getCachedRelatedCourses(currentCourseId, categoryId);
     } catch (error) {
         throw new Error(error);
     }

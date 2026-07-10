@@ -9,6 +9,7 @@ import EnrollCourse from '@/components/enroll-course';
 import { auth } from '@/auth';
 import { getUserByEmail } from '@/queries/users';
 import { hasEnrollmentForCourse } from '@/queries/enrollments';
+import { formatPrice } from '@/lib/formatPrice';
 
 const CourseDetailsIntro = async ({ course }) => {
     const session = await auth();
@@ -41,9 +42,9 @@ const CourseDetailsIntro = async ({ course }) => {
                         )}
                     </div>
 
-                    <div className="grid gap-8 lg:grid-cols-[1.55fr_1fr] items-start">
+                    <div className="grid gap-8 xl:grid-cols-12 items-start">
                         {/* main info */}
-                        <div className="space-y-6">
+                        <div className="border border-border bg-card shadow-sm rounded-2xl md:p-6 p-2 col-span-8 space-y-6">
                             {course?.category?.title && (
                                 <Badge className="rounded-full border-none bg-primary/10 px-4 py-1 text-xs font-semibold text-primary">
                                     {course.category.title}
@@ -86,12 +87,14 @@ const CourseDetailsIntro = async ({ course }) => {
                         </div>
 
                         {/* sticky purchase box */}
-                        <div className="lg:sticky lg:top-24">
+                        <div className="col-span-4 lg:sticky lg:top-24">
                             <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
                                 <div className="space-y-5 p-6">
                                     <div className="flex items-baseline justify-between">
                                         <span className="text-xs text-muted-foreground">قیمت دوره</span>
-                                        <span className="text-2xl font-extrabold text-primary">${course?.price}</span>
+                                        <span className="text-2xl font-extrabold text-primary">
+                                            {formatPrice(course?.price)}
+                                        </span>
                                     </div>
 
                                     {hasEnrollment ? (

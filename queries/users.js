@@ -1,6 +1,6 @@
-import { replaceMongoIdInArray, replaceMongoIdInObject } from '@/lib/convertData';
+import { replaceMongoIdInObject, toIdString } from '@/lib/convertData';
 import { withDb } from '@/lib/db';
-import { User } from '@/model/user-model';
+import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 
 export async function getUserByEmail(email) {
@@ -8,14 +8,16 @@ export async function getUserByEmail(email) {
         return null;
     }
     return withDb(async () => {
-        const user = await User.findOne({ email: email }).lean();
+        const user = await prisma.user.findUnique({ where: { email } });
         return replaceMongoIdInObject(user);
     });
 }
 
 export async function getUserDetails(userId) {
     return withDb(async () => {
-        const user = await User.findById(userId).lean();
+        const id = toIdString(userId);
+        if (!id) return null;
+        const user = await prisma.user.findUnique({ where: { id } });
         return replaceMongoIdInObject(user);
     });
 }

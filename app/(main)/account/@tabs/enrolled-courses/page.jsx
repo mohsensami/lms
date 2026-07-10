@@ -39,7 +39,7 @@ async function EnrolledCourses() {
                     })}
                 </>
             ) : (
-                <p className="font-bold text-muted-foreground">هنوز در هیچ دوره‌ای ثبت‌نام نکرده‌اید!</p>
+                <div className="font-bold bg-red-400 text-white p-2 w-100">هنوز در هیچ دوره‌ای ثبت‌نام نکرده‌اید!</div>
             )}
         </div>
     );

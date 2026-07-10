@@ -3,7 +3,6 @@
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/sonner';
-import { dbConnect } from '@/service/mongo';
 import { ProgressProvider } from '@/components/providers/progress-provider';
 import localFont from 'next/font/local';
 
@@ -49,8 +48,6 @@ const IranSans = localFont({
 });
 
 export default async function RootLayout({ children }) {
-    await dbConnect();
-
     return (
         <html lang="fa" dir="rtl" className={cn(`antialiased, ${IranSans.variable}`)}>
             <body className={cn(`antialiased, poppins.className`)}>

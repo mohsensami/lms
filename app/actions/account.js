@@ -1,18 +1,34 @@
 "use server";
 
-import { User } from "@/model/user-model";
+
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 import { validatePassword } from "@/queries/users";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 
+
 export async function updateUserInfo(email, updatedData) {
   try {
-    const filter = { email: email };
-    await User.findOneAndUpdate(filter, updatedData);
+    await prisma.user.update({
+      where: { email },
+      data: updatedData,
+    });
     revalidatePath("/account");
   } catch (error) {
     throw new Error(error);
   }
+}
+// End method
+
+export async function updateProfilePicture(profilePicture) {
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    throw new Error("شما وارد حساب کاربری خود نشده‌اید.");
+  }
+
+  await updateUserInfo(session.user.email, { profilePicture });
 }
 // End method
 
@@ -22,15 +38,13 @@ export async function changePassword(email, oldPassword, newPassword) {
   if (!isMatch) {
     throw new Error("Please enter a valid current password");
   }
-  const filter = { email: email };
   const hashedPassword = await bcrypt.hash(newPassword, 5);
 
-  const dataToUpadate = {
-    password: hashedPassword,
-  };
-
   try {
-    await User.findOneAndUpdate(filter, dataToUpadate);
+    await prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword },
+    });
     revalidatePath("/account");
   } catch (error) {
     throw new Error(error);

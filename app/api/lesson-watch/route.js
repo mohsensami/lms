@@ -1,9 +1,9 @@
 import { getLoggedInUser } from "@/lib/loggedin-user";
-import { Watch } from "@/model/watch-model";
+import { prisma } from "@/lib/prisma";
 import { getLesson } from "@/queries/lessons";
 import { getModuleBySlug } from "@/queries/modules";
 import { createWatchReport } from "@/queries/reports";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const STARTED = "started";
 const COMPLETED = "completed";
@@ -22,7 +22,7 @@ export async function POST(request) {
 
   const loggedinUser = await getLoggedInUser();
   const lesson = await getLesson(lessonId);
-  const module = await getModuleBySlug(moduleSlug);
+  const foundModule = await getModuleBySlug(moduleSlug);
 
   if (!loggedinUser) {
     return new NextResponse(`You are not authenticated.`, {
@@ -44,36 +44,36 @@ export async function POST(request) {
 
   const watchEntry = {
     lastTime,
-    lesson: lesson.id,
-    module: module.id,
-    user: loggedinUser.id,
+    lessonId: lesson.id,
+    moduleId: foundModule.id,
+    userId: loggedinUser.id,
     state,
   };
 
   try {
-    const found = await Watch.findOne({
-      lesson: lessonId,
-      module: module.id,
-      user: loggedinUser.id,
-    }).lean();
+    const found = await prisma.watch.findFirst({
+      where: {
+        lessonId: lessonId,
+        moduleId: foundModule.id,
+        userId: loggedinUser.id,
+      },
+    });
 
     if (state === STARTED) {
       if (!found) {
-        watchEntry["created_at"] = Date.now();
-        await Watch.create(watchEntry);
+        await prisma.watch.create({ data: { ...watchEntry, created_at: new Date() } });
       }
     } else if (state === COMPLETED) {
       if (!found) {
-        watchEntry["created_at"] = Date.now();
-        await Watch.create(watchEntry);
-        await updateReport(loggedinUser.id, courseId, module.id, lessonId);
+        await prisma.watch.create({ data: { ...watchEntry, created_at: new Date() } });
+        await updateReport(loggedinUser.id, courseId, foundModule.id, lessonId);
       } else {
         if (found.state === STARTED) {
-          watchEntry["modified_at"] = Date.now();
-          await Watch.findByIdAndUpdate(found._id, {
-            state: COMPLETED,
+          await prisma.watch.update({
+            where: { id: found._id },
+            data: { state: COMPLETED, modified_at: new Date() },
           });
-          await updateReport(loggedinUser.id, courseId, module.id, lessonId);
+          await updateReport(loggedinUser.id, courseId, foundModule.id, lessonId);
         }
       }
     }

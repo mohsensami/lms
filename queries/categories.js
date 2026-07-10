@@ -1,20 +1,41 @@
-import { replaceMongoIdInArray, replaceMongoIdInObject } from '@/lib/convertData';
+import { replaceMongoIdInArray, replaceMongoIdInObject, toIdString } from '@/lib/convertData';
 import { withDb } from '@/lib/db';
-import { Category } from '@/model/category-model';
+import { prisma } from '@/lib/prisma';
+import { unstable_cache } from 'next/cache';
+
+export const CATEGORIES_CACHE_TAG = 'categories';
+
+const getCachedCategories = unstable_cache(
+    async () => {
+        return withDb(async () => {
+            const categories = await prisma.category.findMany();
+            return replaceMongoIdInArray(categories);
+        });
+    },
+    ['category-list'],
+    { tags: [CATEGORIES_CACHE_TAG], revalidate: 300 },
+);
 
 export async function getCategories() {
-    return withDb(async () => {
-        const categories = await Category.find({}).lean();
-        return replaceMongoIdInArray(categories);
-    });
+    return getCachedCategories();
 }
+
+const getCachedCategoryDetails = unstable_cache(
+    async (id) => {
+        return withDb(async () => {
+            const category = await prisma.category.findUnique({ where: { id } });
+            return replaceMongoIdInObject(category);
+        });
+    },
+    ['category-details'],
+    { tags: [CATEGORIES_CACHE_TAG], revalidate: 300 },
+);
 
 export async function getCategoryDetails(categoryId) {
     try {
-        return await withDb(async () => {
-            const category = await Category.findById(categoryId).lean();
-            return replaceMongoIdInObject(category);
-        });
+        const id = toIdString(categoryId);
+        if (!id) return null;
+        return await getCachedCategoryDetails(id);
     } catch (error) {
         throw new Error(error);
     }

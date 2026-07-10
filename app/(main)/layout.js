@@ -16,10 +16,10 @@ const navLinks = [
         title: 'وبلاگ',
         href: '/blog',
     },
-    {
-        title: 'دوره ها',
-        href: '/courses',
-    },
+    // {
+    //     title: 'دوره ها',
+    //     href: '/courses',
+    // },
     {
         title: 'تماس با ما',
         href: '/contact-us',

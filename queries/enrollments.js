@@ -1,26 +1,27 @@
-import { replaceMongoIdInArray, replaceMongoIdInObject } from '@/lib/convertData';
+import { replaceMongoIdInArray, mapScalarRefsInArray } from '@/lib/convertData';
 import { withDb } from '@/lib/db';
-import { Course } from '@/model/course-model';
-import { Enrollment } from '@/model/enrollment-model';
+import { prisma } from '@/lib/prisma';
 
 export async function getEnrollmentsForCourse(courseId) {
     return withDb(async () => {
-        const enrollments = await Enrollment.find({ course: courseId }).lean();
-        return replaceMongoIdInArray(enrollments);
+        const enrollments = await prisma.enrollment.findMany({ where: { courseId } });
+        const mapped = mapScalarRefsInArray(enrollments, { courseId: 'course', studentId: 'student' });
+        return replaceMongoIdInArray(mapped);
     });
 }
 
 export async function enrollForCourse(courseId, userId, paymentMethod) {
-    const newEnrollment = {
-        course: courseId,
-        student: userId,
-        method: paymentMethod,
-        enrollment_date: Date.now(),
-        status: 'not-started',
-    };
     try {
         return await withDb(async () => {
-            const response = await Enrollment.create(newEnrollment);
+            const response = await prisma.enrollment.create({
+                data: {
+                    courseId,
+                    studentId: userId,
+                    method: paymentMethod,
+                    enrollment_date: new Date(),
+                    status: 'not-started',
+                },
+            });
             return response;
         });
     } catch (error) {
@@ -31,12 +32,17 @@ export async function enrollForCourse(courseId, userId, paymentMethod) {
 export async function getEnrollmentsForUser(userId) {
     try {
         return await withDb(async () => {
-            const enrollments = await Enrollment.find({ student: userId })
-                .populate({
-                    path: 'course',
-                    model: Course,
-                })
-                .lean();
+            const enrollments = await prisma.enrollment.findMany({
+                where: { studentId: userId },
+                include: {
+                    course: {
+                        include: {
+                            category: true,
+                            modules: true,
+                        },
+                    },
+                },
+            });
             return replaceMongoIdInArray(enrollments);
         });
     } catch (err) {
@@ -51,15 +57,15 @@ export async function hasEnrollmentForCourse(courseId, studentId) {
 
     try {
         return await withDb(async () => {
-            const enrollment = await Enrollment.findOne({
-                course: courseId,
-                student: studentId,
-            })
-                .populate({
-                    path: 'course',
-                    model: Course,
-                })
-                .lean();
+            const enrollment = await prisma.enrollment.findFirst({
+                where: {
+                    courseId,
+                    studentId,
+                },
+                include: {
+                    course: true,
+                },
+            });
 
             return Boolean(enrollment);
         });

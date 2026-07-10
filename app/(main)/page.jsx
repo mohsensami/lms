@@ -25,12 +25,12 @@ const HomePage = async () => {
             <section id="courses" className="container space-y-8 py-12 md:py-16 lg:py-20">
                 <div className="flex items-center justify-between">
                     <SectionTitle>دوره‌ها</SectionTitle>
-                    <Link
+                    {/* <Link
                         href={'/courses'}
                         className="flex items-center gap-1 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground/80 transition hover:border-primary hover:text-primary"
                     >
                         نمایش همه <ArrowLeftIcon className="h-4 w-4" />
-                    </Link>
+                    </Link> */}
                 </div>
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {courses.map((course) => {

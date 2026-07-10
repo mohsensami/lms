@@ -1,0 +1,205 @@
+// Prisma schema — migrated from Mongoose/MongoDB to PostgreSQL (Neon)
+//
+// NOTE: Prisma field names can't start with an underscore, so the primary
+// key here is the standard `id`. The already-finished frontend/UI code
+// reads `._id` directly all over the app (e.g. `course._id.toString()`), so
+// instead of touching every one of those call sites, `lib/prisma.js` wraps
+// the Prisma Client with an extension that automatically renames `id` to
+// `_id` (recursively, including nested `include`d relations) on every
+// query result. Nothing outside the DB layer needed to change.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  firstName      String
+  lastName       String
+  password       String
+  email          String   @unique
+  role           String
+  phone          String?
+  bio            String?  @default("")
+  socialMedia    Json?
+  profilePicture String?  @default("https://i.pravatar.cc")
+  designation    String?  @default("")
+  createdAt      DateTime @default(now())
+
+  coursesTaught Course[]      @relation("CourseInstructor")
+  enrollments   Enrollment[]
+  testimonials  Testimonial[]
+  reports       Report[]
+  watches       Watch[]
+}
+
+model Category {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  thumbnail   String
+
+  courses Course[]
+}
+
+model Course {
+  id         String   @id @default(cuid())
+  title      String
+  subtitle   String?  @default("subtitle")
+  description String
+  thumbnail  String?
+  price      Float    @default(0)
+  active     Boolean  @default(false)
+  learning   String[] @default([])
+  createdOn  DateTime @default(now())
+  modifiedOn DateTime @updatedAt
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  instructorId String?
+  instructor   User?   @relation("CourseInstructor", fields: [instructorId], references: [id])
+
+  quizSetId String?
+  quizSet   Quizset? @relation(fields: [quizSetId], references: [id])
+
+  modules      Module[]
+  testimonials Testimonial[]
+  enrollments  Enrollment[]
+  reports      Report[]
+}
+
+model Module {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  active      Boolean @default(false)
+  slug        String
+  order       Int
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  // Relation field intentionally named `lessonIds` to match existing
+  // frontend usage of `module.lessonIds`.
+  lessonIds Lesson[]
+  watches   Watch[]
+}
+
+model Lesson {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  duration    Int     @default(0)
+  video_url   String?
+  active      Boolean @default(false)
+  slug        String
+  access      String  @default("private")
+  order       Int
+
+  moduleId String?
+  module   Module? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  watches Watch[]
+}
+
+model Quizset {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  slug        String?
+  active      Boolean @default(false)
+
+  // Relation field intentionally named `quizIds` to match existing
+  // frontend usage of `quizSet.quizIds`.
+  quizIds Quiz[]
+  courses Course[]
+}
+
+model Quiz {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  slug         String?
+  explanations String?
+  options      Json?
+  mark         Int      @default(5)
+  createdAt    DateTime @default(now())
+
+  quizsetId String?
+  quizset   Quizset? @relation(fields: [quizsetId], references: [id], onDelete: Cascade)
+}
+
+model Enrollment {
+  id              String    @id @default(cuid())
+  enrollment_date DateTime
+  status          String
+  completion_date DateTime?
+  method          String
+
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  studentId String?
+  student   User?   @relation(fields: [studentId], references: [id])
+}
+
+model Testimonial {
+  id      String @id @default(cuid())
+  content String
+  rating  Int
+  createdAt DateTime @default(now())
+
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+}
+
+model Assessment {
+  id         String @id @default(cuid())
+  assessments Json
+  otherMarks Int    @default(0)
+
+  report Report?
+}
+
+model Report {
+  id                     String    @id @default(cuid())
+  totalCompletedLessons  String[]  @default([])
+  totalCompletedModeules String[]  @default([])
+  completion_date        DateTime?
+
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  studentId String?
+  student   User?   @relation(fields: [studentId], references: [id])
+
+  quizAssessmentId String?     @unique
+  quizAssessment   Assessment? @relation(fields: [quizAssessmentId], references: [id])
+}
+
+model Watch {
+  id         String   @id @default(cuid())
+  state       String   @default("started")
+  created_at  DateTime @default(now())
+  modified_at DateTime @default(now())
+  lastTime    Int      @default(0)
+
+  lessonId String?
+  lesson   Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  moduleId String?
+  module   Module? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+}

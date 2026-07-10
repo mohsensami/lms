@@ -4,7 +4,6 @@ import {
 } from "@/lib/dashboard-helper";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
-import { ObjectId } from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -25,9 +24,6 @@ const CoursesPage = async () => {
 function sanitizeData(data) {
   return JSON.parse(
     JSON.stringify(data, (key, value) => {
-      if (value instanceof ObjectId) {
-        return value.toString();
-      }
       if (Buffer.isBuffer(value)) {
         return value.toString("base64");
       }

@@ -1,10 +1,12 @@
-import { replaceMongoIdInArray, replaceMongoIdInObject } from '@/lib/convertData';
+import { replaceMongoIdInObject, toIdString } from '@/lib/convertData';
 import { withDb } from '@/lib/db';
-import { Lesson } from '@/model/lesson.model';
+import { prisma } from '@/lib/prisma';
 
 export async function getLesson(lessonId) {
     return withDb(async () => {
-        const lesson = await Lesson.findById(lessonId).lean();
+        const id = toIdString(lessonId);
+        if (!id) return null;
+        const lesson = await prisma.lesson.findUnique({ where: { id } });
         return replaceMongoIdInObject(lesson);
     });
 }
@@ -12,7 +14,7 @@ export async function getLesson(lessonId) {
 export async function create(lessonData) {
     try {
         return await withDb(async () => {
-            const lesson = await Lesson.create(lessonData);
+            const lesson = await prisma.lesson.create({ data: lessonData });
             return JSON.parse(JSON.stringify(lesson));
         });
     } catch (error) {
@@ -23,7 +25,7 @@ export async function create(lessonData) {
 export async function getLessonBySlug(slug) {
     try {
         return await withDb(async () => {
-            const lesson = await Lesson.findOne({ slug: slug }).lean();
+            const lesson = await prisma.lesson.findFirst({ where: { slug } });
             return replaceMongoIdInObject(lesson);
         });
     } catch (error) {

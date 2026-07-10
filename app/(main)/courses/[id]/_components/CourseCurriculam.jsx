@@ -32,12 +32,13 @@ const CourseCurriculam = ({ course }) => {
                 </span>
             </div>
 
-            <Accordion
+            {/* <Accordion
                 defaultValue={course?.modules?.map((module, index) => `item-${index + 1}`)}
                 type="multiple"
                 collapsible
                 className="mt-6 w-full space-y-3"
-            >
+            > */}
+            <Accordion defaultValue={[]} type="multiple" className="mt-6 w-full space-y-3">
                 {course?.modules &&
                     course.modules.map((module, index) => (
                         <CourseModuleList key={module.id || index} module={module} index={index} />

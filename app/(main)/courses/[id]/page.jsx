@@ -37,9 +37,9 @@ const SingleCoursePage = async ({ params }) => {
                 <MoneyBack />
             </div> */}
 
-            <div className="mb-12">
+            {/* <div className="mb-12">
                 <RelatedCourses relatedCourses={relatedCourses} />
-            </div>
+            </div> */}
         </>
     );
 };

@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import { getUserByEmail } from "@/queries/users";
-import { dbConnect } from "@/service/mongo";
 import { NextResponse } from "next/server";
 
 export const GET = async (request) => {
@@ -10,7 +9,6 @@ export const GET = async (request) => {
       status: 401,
     });
   }
-  await dbConnect();
 
   try {
     const user = await getUserByEmail(session?.user?.email);

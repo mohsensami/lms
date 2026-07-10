@@ -1,15 +1,36 @@
 "use server";
 
 import { getLoggedInUser } from "@/lib/loggedin-user";
-import { Course } from "@/model/course-model";
-import { create } from "@/queries/courses";
-import mongoose from "mongoose";
+import { prisma } from "@/lib/prisma";
+import { create, COURSES_CACHE_TAG } from "@/queries/courses";
+import { revalidateTag } from "next/cache";
+
+// The UI still passes Mongoose-style ref field names (category, instructor,
+// quizSet) — map them to the Prisma scalar FK column names before hitting
+// the database.
+function mapCourseRefKeys(data) {
+  const mapped = { ...data };
+  if ("category" in mapped) {
+    mapped.categoryId = mapped.category;
+    delete mapped.category;
+  }
+  if ("instructor" in mapped) {
+    mapped.instructorId = mapped.instructor;
+    delete mapped.instructor;
+  }
+  if ("quizSet" in mapped) {
+    mapped.quizSetId = mapped.quizSet;
+    delete mapped.quizSet;
+  }
+  return mapped;
+}
 
 export async function createCourse(data) {
   try {
     const loggedinUser = await getLoggedInUser();
-    data["instructor"] = loggedinUser?.id;
-    const course = await create(data);
+    const courseData = mapCourseRefKeys({ ...data, instructor: loggedinUser?.id });
+    const course = await create(courseData);
+    revalidateTag(COURSES_CACHE_TAG);
     return course;
   } catch (e) {
     throw new Error(e);
@@ -18,20 +39,24 @@ export async function createCourse(data) {
 
 export async function updateCourse(courseId, dataToUpdate) {
   try {
-    await Course.findByIdAndUpdate(courseId, dataToUpdate);
+    await prisma.course.update({
+      where: { id: courseId },
+      data: mapCourseRefKeys(dataToUpdate),
+    });
+    revalidateTag(COURSES_CACHE_TAG);
   } catch (e) {
     throw new Error(e);
   }
 }
 
 export async function changeCoursePublishState(courseId) {
-  const course = await Course.findById(courseId);
+  const course = await prisma.course.findUnique({ where: { id: courseId } });
   try {
-    const res = await Course.findByIdAndUpdate(
-      courseId,
-      { active: !course.active },
-      { lean: true },
-    );
+    const res = await prisma.course.update({
+      where: { id: courseId },
+      data: { active: !course.active },
+    });
+    revalidateTag(COURSES_CACHE_TAG);
     return res.active;
   } catch (error) {
     throw new Error(error);
@@ -40,19 +65,21 @@ export async function changeCoursePublishState(courseId) {
 
 export async function deleteCourse(courseId) {
   try {
-    await Course.findByIdAndDelete(courseId);
+    await prisma.course.delete({ where: { id: courseId } });
+    revalidateTag(COURSES_CACHE_TAG);
   } catch (err) {
     throw new Error(err);
   }
 }
 
 export async function updateQuizSetForCourse(courseId, dataUpdated) {
-  //console.log(courseId,dataUpdated);
-  const data = {};
-  data["quizSet"] = new mongoose.Types.ObjectId(dataUpdated.quizSetId);
   try {
-    await Course.findByIdAndUpdate(courseId, data);
+    await prisma.course.update({
+      where: { id: courseId },
+      data: { quizSetId: dataUpdated.quizSetId },
+    });
+    revalidateTag(COURSES_CACHE_TAG);
   } catch (error) {
-    throw new Error(err);
+    throw new Error(error);
   }
 }

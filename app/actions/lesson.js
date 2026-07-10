@@ -1,9 +1,9 @@
 "use server";
 
-import { Lesson } from "@/model/lesson.model";
-import { Module } from "@/model/module.model";
+import { prisma } from "@/lib/prisma";
 import { create } from "@/queries/lessons";
-import mongoose from "mongoose";
+import { COURSES_CACHE_TAG } from "@/queries/courses";
+import { revalidateTag } from "next/cache";
 
 export async function createLesson(data) {
   try {
@@ -12,12 +12,14 @@ export async function createLesson(data) {
     const moduleId = data.get("moduleId");
     const order = data.get("order");
 
-    const createdLesson = await create({ title, slug, order });
+    const createdLesson = await create({
+      title,
+      slug,
+      order: Number(order),
+      moduleId,
+    });
 
-    const module = await Module.findById(moduleId);
-    module.lessonIds.push(createdLesson._id);
-    module.save();
-
+    revalidateTag(COURSES_CACHE_TAG);
     return createdLesson;
   } catch (e) {
     throw new Error(e);
@@ -28,9 +30,13 @@ export async function reOrderLesson(data) {
   try {
     await Promise.all(
       data.map(async (element) => {
-        await Lesson.findByIdAndUpdate(element.id, { order: element.position });
+        await prisma.lesson.update({
+          where: { id: element.id },
+          data: { order: element.position },
+        });
       }),
     );
+    revalidateTag(COURSES_CACHE_TAG);
   } catch (e) {
     throw new Error(e);
   }
@@ -38,20 +44,21 @@ export async function reOrderLesson(data) {
 
 export async function updateLesson(lessonId, data) {
   try {
-    await Lesson.findByIdAndUpdate(lessonId, data);
+    await prisma.lesson.update({ where: { id: lessonId }, data });
+    revalidateTag(COURSES_CACHE_TAG);
   } catch (error) {
-    throw new Error(e);
+    throw new Error(error);
   }
 }
 
 export async function changeLessonPublishState(lessonId) {
-  const lesson = await Lesson.findById(lessonId);
+  const lesson = await prisma.lesson.findUnique({ where: { id: lessonId } });
   try {
-    const res = await Lesson.findByIdAndUpdate(
-      lessonId,
-      { active: !lesson.active },
-      { lean: true },
-    );
+    const res = await prisma.lesson.update({
+      where: { id: lessonId },
+      data: { active: !lesson.active },
+    });
+    revalidateTag(COURSES_CACHE_TAG);
     return res.active;
   } catch (error) {
     throw new Error(error);
@@ -60,10 +67,8 @@ export async function changeLessonPublishState(lessonId) {
 
 export async function deleteLesson(lessonId, moduleId) {
   try {
-    const module = await Module.findById(moduleId);
-    module.lessonIds.pull(new mongoose.Types.ObjectId(lessonId));
-    await Lesson.findByIdAndDelete(lessonId);
-    module.save();
+    await prisma.lesson.delete({ where: { id: lessonId } });
+    revalidateTag(COURSES_CACHE_TAG);
   } catch (err) {
     throw new Error(err);
   }

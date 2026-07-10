@@ -2,7 +2,16 @@ import { SectionTitle } from '@/components/section-title';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/formatPrice';
 import { getCourseDetailsByInstructor } from '@/queries/courses';
-import { ArrowRight, ArrowRightIcon, BookOpen, MessageSquare, Presentation, Star, UsersRound } from 'lucide-react';
+import {
+    ArrowLeft,
+    ArrowRight,
+    ArrowRightIcon,
+    BookOpen,
+    MessageSquare,
+    Presentation,
+    Star,
+    UsersRound,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -94,7 +103,7 @@ const InstructorProfile = async ({ params: { id } }) => {
                                                             <div>
                                                                 <BookOpen className="w-4" />
                                                             </div>
-                                                            <span>{course?.modules?.length} Chapters</span>
+                                                            <span>{course?.modules?.length} فصل ها</span>
                                                         </div>
                                                     </div>
 
@@ -107,8 +116,8 @@ const InstructorProfile = async ({ params: { id } }) => {
                                                             variant="ghost"
                                                             className="text-xs text-sky-700 h-7 gap-1"
                                                         >
-                                                            Enroll
-                                                            <ArrowRight className="w-3" />
+                                                            ثبت نام
+                                                            <ArrowLeft className="w-3" />
                                                         </Button>
                                                     </div>
                                                 </div>

@@ -1,9 +1,9 @@
 "use server";
 
-import { Course } from "@/model/course-model";
-import { Module } from "@/model/module.model";
+import { prisma } from "@/lib/prisma";
 import { create } from "@/queries/modules";
-import mongoose from "mongoose";
+import { COURSES_CACHE_TAG } from "@/queries/courses";
+import { revalidateTag } from "next/cache";
 
 export async function createModule(data) {
   try {
@@ -15,13 +15,11 @@ export async function createModule(data) {
     const createdModule = await create({
       title,
       slug,
-      course: courseId,
-      order,
+      courseId,
+      order: Number(order),
     });
-    const course = await Course.findById(courseId);
-    course.modules.push(createdModule._id);
-    course.save();
 
+    revalidateTag(COURSES_CACHE_TAG);
     return createdModule;
   } catch (e) {
     throw new Error(e);
@@ -32,9 +30,13 @@ export async function reOrderModules(data) {
   try {
     await Promise.all(
       data.map(async (element) => {
-        await Module.findByIdAndUpdate(element.id, { order: element.position });
+        await prisma.module.update({
+          where: { id: element.id },
+          data: { order: element.position },
+        });
       }),
     );
+    revalidateTag(COURSES_CACHE_TAG);
   } catch (e) {
     throw new Error(e);
   }
@@ -42,20 +44,21 @@ export async function reOrderModules(data) {
 
 export async function updateModule(moduleId, data) {
   try {
-    await Module.findByIdAndUpdate(moduleId, data);
+    await prisma.module.update({ where: { id: moduleId }, data });
+    revalidateTag(COURSES_CACHE_TAG);
   } catch (error) {
-    throw new Error(e);
+    throw new Error(error);
   }
 }
 
 export async function changeModulePublishState(moduleId) {
-  const module = await Module.findById(moduleId);
+  const foundModule = await prisma.module.findUnique({ where: { id: moduleId } });
   try {
-    const res = await Module.findByIdAndUpdate(
-      moduleId,
-      { active: !module.active },
-      { lean: true },
-    );
+    const res = await prisma.module.update({
+      where: { id: moduleId },
+      data: { active: !foundModule.active },
+    });
+    revalidateTag(COURSES_CACHE_TAG);
     return res.active;
   } catch (error) {
     throw new Error(error);
@@ -64,10 +67,8 @@ export async function changeModulePublishState(moduleId) {
 
 export async function deleteModule(moduleId, courseId) {
   try {
-    const course = await Course.findById(courseId);
-    course.modules.pull(new mongoose.Types.ObjectId(moduleId));
-    await Module.findByIdAndDelete(moduleId);
-    course.save();
+    await prisma.module.delete({ where: { id: moduleId } });
+    revalidateTag(COURSES_CACHE_TAG);
   } catch (err) {
     throw new Error(err);
   }

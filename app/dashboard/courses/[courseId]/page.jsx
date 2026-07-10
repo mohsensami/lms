@@ -13,7 +13,6 @@ import { getCourseDetails } from '@/queries/courses';
 import { SubTitleForm } from './_components/subtitle-form';
 import { getCategories } from '@/queries/categories';
 import { replaceMongoIdInArray } from '@/lib/convertData';
-import { ObjectId } from 'mongoose';
 import { getAllQuizSets } from '@/queries/quizzes';
 
 const EditCourse = async ({ params: { courseId } }) => {
@@ -32,9 +31,6 @@ const EditCourse = async ({ params: { courseId } }) => {
     function sanitizeData(data) {
         return JSON.parse(
             JSON.stringify(data, (key, value) => {
-                if (value instanceof ObjectId) {
-                    return value.toString();
-                }
                 if (Buffer.isBuffer(value)) {
                     return value.toString('base64');
                 }
