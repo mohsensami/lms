@@ -5,7 +5,6 @@ import { Instagram, Send, Youtube } from 'lucide-react';
 
 const footerLinks = [
     { title: 'صفحه نخست', href: '/' },
-    { title: 'دوره‌ها', href: '/courses' },
     { title: 'درباره ما', href: '/about-us' },
     { title: 'وبلاگ', href: '/blog' },
     { title: 'تماس با ما', href: '/contact-us' },

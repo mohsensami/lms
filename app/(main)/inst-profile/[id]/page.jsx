@@ -76,7 +76,7 @@ const InstructorProfile = async ({ params: { id } }) => {
                 {/* Courses */}
                 <div className="col-span-12 lg:col-span-8">
                     <div>
-                        <SectionTitle className="mb-6">Courses</SectionTitle>
+                        <SectionTitle className="mb-6">دوره ها</SectionTitle>
                         <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                             {Array.isArray(courseDetailsByInstructor?.inscourses) &&
                                 courseDetailsByInstructor?.inscourses.map((course) => {

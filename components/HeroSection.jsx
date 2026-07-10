@@ -1,84 +1,83 @@
-'use client';
-
-import { motion } from 'framer-motion';
-
-export default function StartupHero() {
+export default function HeroSection() {
     return (
-        <div className="relative overflow-hidden bg-[#070312] text-white">
-            {/* 🌈 Purple Gradient Mesh Background */}
-            <div className="absolute inset-0">
-                <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-purple-600/40 blur-[140px]" />
-                <div className="absolute top-40 right-[-100px] h-[500px] w-[500px] rounded-full bg-fuchsia-500/30 blur-[160px]" />
-                <div className="absolute bottom-[-120px] left-1/3 h-[500px] w-[500px] rounded-full bg-indigo-500/20 blur-[160px]" />
-            </div>
+        <section className="relative overflow-hidden bg-gray-950 text-white">
+            {/* Background glow */}
+            <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-purple-600/30 blur-3xl"></div>
+            <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-blue-600/20 blur-3xl"></div>
 
-            {/* subtle grid */}
-            <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:30px_30px] opacity-30" />
-
-            <div className="relative mx-auto max-w-6xl px-6 py-24">
-                {/* Badge */}
-                <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mx-auto mb-6 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-300 backdrop-blur"
-                >
-                    ⚡ پلتفرم آموزش مدرن + پروژه واقعی + بازار کار
-                </motion.div>
-
-                {/* Title */}
-                <motion.h1
-                    initial={{ opacity: 0, y: 25 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="text-center text-5xl font-bold leading-tight md:text-7xl"
-                >
-                    یاد بگیر، بساز،
-                    <span className="bg-gradient-to-r from-purple-400 via-fuchsia-400 to-indigo-400 bg-clip-text text-transparent">
-                        رشد کن
+            <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 py-20 md:grid-cols-2">
+                {/* Left content */}
+                <div>
+                    <span className="mb-4 inline-block rounded-full bg-white/10 px-4 py-1 text-sm text-gray-300">
+                        🎓 یادگیری حرفه‌ای آنلاین
                     </span>
-                </motion.h1>
 
-                {/* Subtitle */}
-                <p className="mx-auto mt-6 max-w-2xl text-center text-gray-400">
-                    آموزش‌های ویدیویی مدرن برای ورود سریع به بازار کار. از مبتدی تا حرفه‌ای، با پروژه‌های واقعی و مسیر
-                    یادگیری مشخص.
-                </p>
+                    <h1 className="text-xl font-bold leading-tight md:text-3xl">
+                        مهارت‌های جدید یاد بگیر،
+                        <span className="text-purple-400"> آینده‌تو بساز</span>
+                    </h1>
 
-                {/* SEARCH */}
-                <div className="mx-auto mt-10 max-w-2xl">
-                    <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-2 backdrop-blur-xl transition hover:border-purple-400/30">
-                        <input
-                            className="w-full bg-transparent px-4 py-3 text-sm outline-none placeholder:text-gray-500"
-                            placeholder="چی می‌خوای یاد بگیری؟ React، UI، Python..."
-                        />
-                        <button className="rounded-xl bg-gradient-to-r from-purple-500 to-fuchsia-500 px-6 py-3 text-sm font-medium hover:opacity-90 transition">
-                            جستجو
+                    <p className="mt-5 text-gray-300 leading-relaxed">
+                        به بهترین دوره ویدیویی دسترسی داشته باش و از سطح مبتدی تا پیشرفته رشد کن. مناسب برنامه‌نویسی،
+                        طراحی، بیزینس و بیشتر.
+                    </p>
+
+                    <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                        <button className="rounded-xl bg-purple-500 px-6 py-3 font-medium hover:bg-purple-600 transition">
+                            شروع یادگیری
                         </button>
+                        {/* <button className="rounded-xl border border-white/20 px-6 py-3 text-gray-200 hover:bg-white/10 transition">
+                            مشاهده دوره‌ها
+                        </button> */}
                     </div>
 
-                    {/* quick tags */}
-                    <div className="mt-3 flex flex-wrap justify-center gap-2">
-                        {['React', 'Next.js', 'UI Design', 'Node.js', 'Python'].map((t) => (
-                            <span
-                                key={t}
-                                className="cursor-pointer rounded-full bg-white/5 px-3 py-1 text-xs text-gray-300 hover:bg-white/10 transition"
-                            >
-                                {t}
-                            </span>
-                        ))}
+                    {/* stats */}
+                    <div className="mt-10 flex gap-8 text-sm text-gray-400">
+                        <div>
+                            <div className="text-white text-xl font-bold">1200</div>
+                            دیدگاه
+                        </div>
+                        <div>
+                            <div className="text-white text-xl font-bold">85</div>
+                            دانشجو
+                        </div>
+                        <div>
+                            <div className="text-white text-xl font-bold">4.5</div>
+                            رضایت
+                        </div>
                     </div>
                 </div>
 
-                {/* CTA */}
-                <div className="mt-10 flex justify-center gap-4">
-                    <button className="rounded-xl bg-white px-6 py-3 font-medium text-black hover:bg-gray-200 transition">
-                        شروع رایگان
-                    </button>
-                    <button className="rounded-xl border border-white/15 px-6 py-3 text-white hover:bg-white/10 transition">
-                        دیدن مسیر یادگیری
-                    </button>
+                {/* Right content (video preview) */}
+                <div className="relative">
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-3 shadow-2xl backdrop-blur">
+                        {/* fake video player */}
+                        <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
+                            <img
+                                src="https://oompg81ca6.ufs.sh/f/a9eZat1sZEl6sGdvMwCnWRf4OPYloe6JZST3m81z2ihtVrwk"
+                                alt="video preview"
+                                className="h-full w-full object-cover opacity-80"
+                            />
+
+                            {/* play button */}
+                            {/* <div className="absolute inset-0 flex items-center justify-center">
+                                <button className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur hover:bg-white/30 transition">
+                                    <div className="ml-1 h-0 w-0 border-y-8 border-y-transparent border-l-12 border-l-white"></div>
+                                </button>
+                            </div> */}
+                        </div>
+
+                        {/* caption */}
+                        <div className="mt-3 text-sm text-gray-300">پیش‌نمایش دوره: آموزش متلب از صفر تا پیشرفته</div>
+                    </div>
+
+                    {/* floating card */}
+                    <div className="absolute -bottom-6 -left-6 rounded-xl bg-white/10 px-4 py-3 backdrop-blur border border-white/10">
+                        <div className="text-xs text-gray-300">🔥 محبوب‌ترین دوره</div>
+                        <div className="text-white font-semibold">آموزش متلب</div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
 }

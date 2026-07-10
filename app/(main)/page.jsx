@@ -1,17 +1,13 @@
 import { SectionTitle } from '@/components/section-title';
 
-import { Button, buttonVariants } from '@/components/ui/button';
-import { formatPrice } from '@/lib/formatPrice';
-import { cn } from '@/lib/utils';
 import { getCourseList } from '@/queries/courses';
-import { ArrowLeftIcon, BookOpen } from 'lucide-react';
-import { ArrowRightIcon } from 'lucide-react';
-import { ArrowRight } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import CourseCard from './courses/_components/CourseCard';
+
+// import CourseCard from './courses/_components/CourseCard';
 import { getCategories } from '@/queries/categories';
 import HeroSection from '@/components/HeroSection';
+
+
+import FullWidthCourseCard from './courses/_components/FullWidthCourseCard';
 
 const HomePage = async () => {
     const courses = await getCourseList();
@@ -32,11 +28,15 @@ const HomePage = async () => {
                         نمایش همه <ArrowLeftIcon className="h-4 w-4" />
                     </Link> */}
                 </div>
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {courses.map((course) => {
                         return <CourseCard key={course.id} course={course} />;
                     })}
-                </div>
+                </div> */}
+                {/* {JSON.stringify(courses)} */}
+                {courses.map((course, index) => {
+                    return <FullWidthCourseCard key={course.id} course={course} />;
+                })}
             </section>
 
             {/* Categories Section */}

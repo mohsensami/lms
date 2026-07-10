@@ -30,7 +30,7 @@ export function LoginForm() {
                 setError(response.error);
             } else {
                 toast.success('با موفقیت وارد شدید');
-                router.push('/courses');
+                router.push('/');
             }
         } catch (e) {
             setError(e.message || 'ورود ناموفق بود. دوباره امتحان کنید.');

@@ -1,9 +1,10 @@
 // prisma/seed.mjs
 //
 // Seed data in Persian, suitable for a Farsi-language LMS demo.
-// One course only, but fleshed out completely: many modules, lessons in
-// each module, a quiz set with several questions, an instructor, a few
-// students, enrollments, testimonials/reviews, and progress reports.
+// One course only ("آموزش متلب"), but fleshed out completely: many
+// modules, lessons in each module, a quiz set with several questions, an
+// instructor, a few students, enrollments, testimonials/reviews, and
+// progress reports.
 //
 // Run with:
 //   npx prisma db seed
@@ -15,9 +16,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 function slugify(title) {
-    return title
-        .replace(/ /g, '-')
-        .replace(/[^\w\u0600-\u06FF-]+/g, '');
+    return title.replace(/ /g, '-').replace(/[^\w\u0600-\u06FF-]+/g, '');
 }
 
 async function clearExistingData() {
@@ -43,9 +42,10 @@ async function main() {
     console.log('در حال ساخت دسته‌بندی...');
     const category = await prisma.category.create({
         data: {
-            title: 'برنامه‌نویسی وب',
-            description: 'آموزش‌های تخصصی توسعه وب، از مبانی تا مفاهیم پیشرفته فرانت‌اند و بک‌اند.',
-            thumbnail: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=800',
+            title: 'ریاضیات و محاسبات مهندسی',
+            description:
+                'آموزش نرم‌افزارها و ابزارهای محاسباتی مورد نیاز دانشجویان و مهندسین، از جمله متلب، شبیه‌سازی و تحلیل عددی.',
+            thumbnail: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800',
         },
     });
 
@@ -54,19 +54,19 @@ async function main() {
 
     const instructor = await prisma.user.create({
         data: {
-            firstName: 'علی',
-            lastName: 'محمدی',
-            email: 'ali.mohammadi@example.com',
+            firstName: 'امیرحسین',
+            lastName: 'صادقی',
+            email: 'amirhossein.sadeghi@example.com',
             password: hashedPassword,
             role: 'instructor',
             phone: '09121234567',
-            bio: 'مدرس و توسعه‌دهنده وب با بیش از ۱۰ سال سابقه‌ی کار در پروژه‌های بزرگ تجاری. علاقه‌مند به آموزش جاوااسکریپت و فریم‌ورک‌های مدرن فرانت‌اند.',
-            designation: 'مدرس ارشد توسعه وب',
-            profilePicture: 'https://i.pravatar.cc/300?img=12',
+            bio: 'دکتری مهندسی برق و مدرس دانشگاه با بیش از ۸ سال سابقه‌ی تدریس متلب و شبیه‌سازی سیستم‌های مهندسی. علاقه‌مند به آموزش کاربردی و پروژه‌محور نرم‌افزارهای محاسباتی.',
+            designation: 'مدرس متلب و شبیه‌سازی مهندسی',
+            profilePicture: 'https://i.pravatar.cc/300?img=15',
             socialMedia: {
-                twitter: 'https://twitter.com/ali_dev',
-                linkedin: 'https://linkedin.com/in/ali-mohammadi',
-                github: 'https://github.com/ali-mohammadi',
+                twitter: 'https://twitter.com/amirsadeghi',
+                linkedin: 'https://linkedin.com/in/amirhossein-sadeghi',
+                github: 'https://github.com/amirsadeghi',
             },
         },
     });
@@ -80,7 +80,7 @@ async function main() {
                 password: hashedPassword,
                 role: 'student',
                 phone: '09123456789',
-                bio: 'علاقه‌مند به طراحی رابط کاربری و توسعه فرانت‌اند.',
+                bio: 'دانشجوی کارشناسی مهندسی برق، در حال یادگیری متلب برای پروژه‌های درسی.',
                 profilePicture: 'https://i.pravatar.cc/300?img=45',
             },
         }),
@@ -92,7 +92,7 @@ async function main() {
                 password: hashedPassword,
                 role: 'student',
                 phone: '09351234567',
-                bio: 'دانشجوی مهندسی کامپیوتر و علاقه‌مند به برنامه‌نویسی وب.',
+                bio: 'دانشجوی مهندسی مکانیک و علاقه‌مند به شبیه‌سازی و تحلیل عددی با متلب.',
                 profilePicture: 'https://i.pravatar.cc/300?img=33',
             },
         }),
@@ -104,7 +104,7 @@ async function main() {
                 password: hashedPassword,
                 role: 'student',
                 phone: '09191234567',
-                bio: 'در حال یادگیری برنامه‌نویسی برای تغییر مسیر شغلی.',
+                bio: 'دانشجوی ارشد مهندسی صنایع، به دنبال یادگیری تحلیل داده با متلب.',
                 profilePicture: 'https://i.pravatar.cc/300?img=48',
             },
         }),
@@ -116,7 +116,7 @@ async function main() {
                 password: hashedPassword,
                 role: 'student',
                 phone: '09301234567',
-                bio: 'برنامه‌نویس بک‌اند که می‌خواهد فرانت‌اند را هم یاد بگیرد.',
+                bio: 'مهندس عمران که می‌خواهد از متلب برای محاسبات سازه‌ای استفاده کند.',
                 profilePicture: 'https://i.pravatar.cc/300?img=53',
             },
         }),
@@ -127,23 +127,24 @@ async function main() {
     console.log('در حال ساخت دوره...');
     const course = await prisma.course.create({
         data: {
-            title: 'آموزش کامل توسعه وب با جاوااسکریپت مدرن',
-            subtitle: 'از صفر تا ساخت اپلیکیشن‌های واقعی با HTML، CSS، جاوااسکریپت و React',
+            title: 'آموزش متلب (MATLAB) از مقدماتی تا پیشرفته',
+            subtitle: 'یادگیری کامل نرم‌افزار متلب برای دانشجویان و مهندسین رشته‌های فنی و علوم پایه',
             description:
-                'این دوره یک مسیر یادگیری کامل برای تبدیل شدن به یک توسعه‌دهنده وب حرفه‌ای است. ' +
-                'در طول این دوره، مفاهیم پایه‌ای HTML و CSS را یاد می‌گیرید، سپس وارد دنیای جاوااسکریپت مدرن می‌شوید ' +
-                'و در نهایت با کتابخانه React اولین اپلیکیشن واقعی خود را می‌سازید. ' +
-                'تمام مباحث با مثال‌های عملی و پروژه‌محور تدریس شده‌اند تا بتوانید آموخته‌های خود را بلافاصله به کار بگیرید.',
-            thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',
-            price: 1250000,
+                'این دوره یک مسیر یادگیری کامل برای تسلط بر نرم‌افزار متلب (MATLAB) است، مناسب برای دانشجویان مهندسی برق، مکانیک، عمران، صنایع و علوم پایه. ' +
+                'در طول این دوره، از آشنایی اولیه با محیط نرم‌افزار شروع می‌کنیم، سپس مفاهیم پایه‌ای مثل متغیرها، ماتریس‌ها، حلقه‌ها و شرط‌ها را یاد می‌گیرید، ' +
+                'و در نهایت با نوشتن توابع، رسم نمودارهای دو و سه‌بعدی و کار با فایل‌های داده، آماده‌ی استفاده از متلب در پروژه‌ها و تحقیقات دانشگاهی خود خواهید بود. ' +
+                'تمام مباحث با مثال‌های عملی و تمرین‌های کاربردی تدریس شده‌اند.',
+            thumbnail: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800',
+            price: 890000,
             active: true,
             learning: [
-                'ساخت صفحات وب استاندارد و ریسپانسیو با HTML5 و CSS3',
-                'تسلط کامل بر مفاهیم پایه و پیشرفته جاوااسکریپت (ES6+)',
-                'کار با DOM، مدیریت رویدادها و برنامه‌نویسی ناهمگام (Async/Await)',
-                'آشنایی با Git و مدیریت نسخه پروژه‌ها',
-                'ساخت اولین اپلیکیشن با کتابخانه React',
-                'اصول بهینه‌سازی و استقرار (Deploy) پروژه‌های وب',
+                'آشنایی کامل با محیط و ابزارهای نرم‌افزار متلب',
+                'کار با متغیرها، ماتریس‌ها و آرایه‌ها به‌صورت حرفه‌ای',
+                'نوشتن اسکریپت و توابع (m-file) در متلب',
+                'استفاده از حلقه‌ها و دستورات شرطی برای حل مسائل مهندسی',
+                'رسم نمودارهای دو بعدی و سه بعدی برای تحلیل داده‌ها',
+                'وارد و خارج کردن داده از فایل‌های اکسل و متنی',
+                'آشنایی مقدماتی با جعبه‌ابزارهای تخصصی متلب (Simulink، پردازش سیگنال و تصویر)',
             ],
             categoryId: category.id,
             instructorId: instructor.id,
@@ -154,96 +155,102 @@ async function main() {
 
     const modulesData = [
         {
-            title: 'مقدمه و آشنایی با وب',
-            description: 'آشنایی با نحوه کار وب، مرورگرها و ابزارهای مورد نیاز برای شروع برنامه‌نویسی.',
+            title: 'آشنایی با متلب و نصب نرم‌افزار',
+            description: 'آشنایی اولیه با کاربردهای متلب در صنعت و دانشگاه و راه‌اندازی نرم‌افزار.',
             lessons: [
-                { title: 'وب چگونه کار می‌کند؟', duration: 480, access: 'public' },
-                { title: 'نصب و راه‌اندازی ابزارهای توسعه (VS Code)', duration: 620, access: 'public' },
-                { title: 'آشنایی با ساختار یک پروژه وب', duration: 540, access: 'private' },
-                { title: 'آشنایی با Git و GitHub', duration: 900, access: 'private' },
+                { title: 'متلب چیست و در چه صنایعی کاربرد دارد؟', duration: 480, access: 'public' },
+                { title: 'دانلود و نصب متلب روی ویندوز و مک', duration: 600, access: 'public' },
+                { title: 'آشنایی با نسخه‌های مختلف و جعبه‌ابزارهای متلب', duration: 420, access: 'private' },
+                { title: 'آشنایی با MATLAB Online و جایگزین‌های رایگان', duration: 480, access: 'private' },
             ],
         },
         {
-            title: 'مبانی HTML5',
-            description: 'یادگیری تگ‌های اصلی HTML و ساخت اسکلت صفحات وب.',
+            title: 'آشنایی با محیط و رابط کاربری متلب',
+            description: 'شناخت بخش‌های مختلف محیط متلب و نحوه‌ی کار با آن‌ها.',
             lessons: [
-                { title: 'ساختار کلی یک سند HTML', duration: 600, access: 'public' },
-                { title: 'تگ‌های متنی و لیست‌ها', duration: 540, access: 'private' },
-                { title: 'فرم‌ها و ورودی‌های کاربر', duration: 780, access: 'private' },
-                { title: 'تگ‌های معنایی (Semantic HTML)', duration: 500, access: 'private' },
-                { title: 'پروژه عملی: ساخت صفحه معرفی شخصی', duration: 1020, access: 'private' },
+                { title: 'معرفی Command Window و Workspace', duration: 540, access: 'public' },
+                { title: 'کار با Editor و نوشتن اولین اسکریپت', duration: 660, access: 'private' },
+                { title: 'مدیریت فایل‌ها با Current Folder', duration: 480, access: 'private' },
+                { title: 'استفاده از راهنما و مستندات متلب (Help و Documentation)', duration: 420, access: 'private' },
             ],
         },
         {
-            title: 'مبانی CSS3 و طراحی ریسپانسیو',
-            description: 'استایل‌دهی به صفحات وب و طراحی واکنش‌گرا برای موبایل و دسکتاپ.',
+            title: 'متغیرها، انواع داده و عملگرها',
+            description: 'یادگیری نحوه‌ی تعریف متغیر، انواع داده و عملگرهای محاسباتی و منطقی در متلب.',
             lessons: [
-                { title: 'سلکتورها و مدل جعبه‌ای (Box Model)', duration: 660, access: 'private' },
-                { title: 'Flexbox در عمل', duration: 900, access: 'private' },
-                { title: 'CSS Grid در عمل', duration: 900, access: 'private' },
-                { title: 'رسپانسیو با Media Query', duration: 720, access: 'private' },
-                { title: 'انیمیشن و ترنزیشن‌ها در CSS', duration: 660, access: 'private' },
+                { title: 'تعریف و مقداردهی متغیرها', duration: 600, access: 'private' },
+                { title: 'انواع داده در متلب (عددی، رشته‌ای، منطقی)', duration: 660, access: 'private' },
+                { title: 'عملگرهای محاسباتی (جمع، تفریق، ضرب، توان)', duration: 540, access: 'private' },
+                { title: 'عملگرهای منطقی و مقایسه‌ای', duration: 480, access: 'private' },
+                { title: 'تمرین عملی: محاسبات ریاضی پایه با متلب', duration: 720, access: 'private' },
             ],
         },
         {
-            title: 'جاوااسکریپت پایه',
-            description: 'شروع برنامه‌نویسی با جاوااسکریپت: متغیرها، توابع، حلقه‌ها و شرط‌ها.',
+            title: 'کار با ماتریس‌ها و آرایه‌ها',
+            description: 'مهم‌ترین بخش متلب: ساخت، دستکاری و انجام محاسبات روی ماتریس‌ها و آرایه‌ها.',
             lessons: [
-                { title: 'متغیرها و انواع داده', duration: 660, access: 'private' },
-                { title: 'عملگرها و شرط‌ها', duration: 600, access: 'private' },
-                { title: 'حلقه‌ها (for و while)', duration: 660, access: 'private' },
-                { title: 'توابع و پارامترها', duration: 720, access: 'private' },
-                { title: 'آرایه‌ها و متدهای پرکاربرد', duration: 840, access: 'private' },
-                { title: 'آبجکت‌ها در جاوااسکریپت', duration: 780, access: 'private' },
+                { title: 'ساخت ماتریس و آرایه در متلب', duration: 660, access: 'private' },
+                { title: 'دسترسی به عناصر ماتریس (Indexing)', duration: 720, access: 'private' },
+                { title: 'عملیات ماتریسی (ضرب، ترانهاده، معکوس)', duration: 840, access: 'private' },
+                { title: 'توابع پرکاربرد روی ماتریس‌ها (size، sum، sort)', duration: 660, access: 'private' },
+                { title: 'حل دستگاه معادلات خطی با ماتریس', duration: 900, access: 'private' },
             ],
         },
         {
-            title: 'جاوااسکریپت پیشرفته و ES6+',
-            description: 'مفاهیم مدرن جاوااسکریپت شامل Arrow Function، Destructuring، Promise و بیشتر.',
+            title: 'حلقه‌ها و دستورات شرطی',
+            description: 'کنترل روند اجرای برنامه با استفاده از حلقه‌ها و شرط‌ها برای حل مسائل تکرارشونده.',
             lessons: [
-                { title: 'Arrow Function و this', duration: 600, access: 'private' },
-                { title: 'Destructuring و Spread Operator', duration: 660, access: 'private' },
-                { title: 'برنامه‌نویسی ناهمگام: Callback تا Promise', duration: 900, access: 'private' },
-                { title: 'Async/Await در عمل', duration: 780, access: 'private' },
-                { title: 'کار با Fetch API و درخواست‌های HTTP', duration: 840, access: 'private' },
+                { title: 'دستور شرطی if و else', duration: 600, access: 'private' },
+                { title: 'دستور switch-case', duration: 480, access: 'private' },
+                { title: 'حلقه‌ی for در متلب', duration: 660, access: 'private' },
+                { title: 'حلقه‌ی while و کنترل تکرار', duration: 600, access: 'private' },
+                { title: 'تمرین عملی: محاسبه‌ی سری‌های عددی با حلقه', duration: 780, access: 'private' },
             ],
         },
         {
-            title: 'کار با DOM و رویدادها',
-            description: 'دستکاری صفحه وب به‌صورت پویا با استفاده از DOM API.',
+            title: 'نوشتن توابع در متلب',
+            description: 'یادگیری ساخت توابع کاربر برای سازمان‌دهی و بازاستفاده از کد.',
             lessons: [
-                { title: 'انتخاب و تغییر عناصر HTML با جاوااسکریپت', duration: 660, access: 'private' },
-                { title: 'مدیریت رویدادها (Event Listener)', duration: 720, access: 'private' },
-                { title: 'ساخت و حذف پویای عناصر', duration: 660, access: 'private' },
-                { title: 'پروژه عملی: ساخت یک لیست کارها (To-Do List)', duration: 1200, access: 'private' },
+                { title: 'تفاوت Script و Function در متلب', duration: 540, access: 'private' },
+                { title: 'نوشتن اولین تابع (function) با ورودی و خروجی', duration: 720, access: 'private' },
+                { title: 'توابع با چند خروجی و آرگومان‌های اختیاری', duration: 660, access: 'private' },
+                { title: 'توابع ناشناس (Anonymous Functions) و Handle', duration: 600, access: 'private' },
+                { title: 'پروژه عملی: نوشتن یک ماشین‌حساب ساده با تابع', duration: 900, access: 'private' },
             ],
         },
         {
-            title: 'آشنایی با React',
-            description: 'شروع کار با کتابخانه React برای ساخت رابط‌های کاربری واکنش‌گرا.',
+            title: 'رسم نمودار و تجسم داده‌ها',
+            description: 'رسم نمودارهای دو بعدی و سه بعدی برای نمایش و تحلیل داده‌ها.',
             lessons: [
-                { title: 'React چیست و چرا از آن استفاده کنیم؟', duration: 540, access: 'private' },
-                { title: 'کامپوننت‌ها و JSX', duration: 720, access: 'private' },
-                { title: 'مدیریت State با useState', duration: 780, access: 'private' },
-                { title: 'کار با Props', duration: 660, access: 'private' },
-                { title: 'useEffect و چرخه حیات کامپوننت', duration: 840, access: 'private' },
-                { title: 'پروژه عملی: ساخت اپلیکیشن لیست وظایف با React', duration: 1500, access: 'private' },
+                { title: 'رسم نمودار دو بعدی با دستور plot', duration: 660, access: 'private' },
+                { title: 'شخصی‌سازی نمودار (رنگ، عنوان، برچسب محورها)', duration: 600, access: 'private' },
+                { title: 'رسم چند نمودار هم‌زمان و Subplot', duration: 600, access: 'private' },
+                { title: 'نمودارهای سه‌بعدی با mesh و surf', duration: 780, access: 'private' },
+                { title: 'ذخیره و خروجی گرفتن از نمودارها', duration: 420, access: 'private' },
             ],
         },
         {
-            title: 'پروژه نهایی و استقرار (Deployment)',
-            description: 'جمع‌بندی مطالب دوره و آموزش انتشار پروژه روی اینترنت.',
+            title: 'کار با فایل‌ها و ورود و خروج داده',
+            description: 'یادگیری خواندن و نوشتن داده از فایل‌های اکسل و متنی برای پردازش در متلب.',
             lessons: [
-                { title: 'برنامه‌ریزی و طراحی پروژه نهایی', duration: 600, access: 'private' },
-                { title: 'پیاده‌سازی پروژه نهایی - بخش اول', duration: 1500, access: 'private' },
-                { title: 'پیاده‌سازی پروژه نهایی - بخش دوم', duration: 1500, access: 'private' },
-                { title: 'استقرار پروژه با Vercel', duration: 660, access: 'private' },
-                { title: 'جمع‌بندی و مسیر یادگیری بعدی', duration: 480, access: 'private' },
+                { title: 'وارد کردن داده از فایل اکسل (xlsread و readtable)', duration: 660, access: 'private' },
+                { title: 'خروجی گرفتن نتایج به فایل اکسل و CSV', duration: 600, access: 'private' },
+                { title: 'کار با فایل‌های متنی (txt) در متلب', duration: 540, access: 'private' },
+                { title: 'ذخیره و بارگذاری متغیرها با save و load', duration: 480, access: 'private' },
+            ],
+        },
+        {
+            title: 'آشنایی مقدماتی با Simulink و پردازش سیگنال/تصویر',
+            description: 'جمع‌بندی دوره و نگاهی مقدماتی به جعبه‌ابزارهای تخصصی متلب برای ادامه‌ی مسیر یادگیری.',
+            lessons: [
+                { title: 'Simulink چیست و چه کاربردی دارد؟', duration: 600, access: 'private' },
+                { title: 'ساخت اولین مدل ساده در Simulink', duration: 900, access: 'private' },
+                { title: 'آشنایی مقدماتی با پردازش سیگنال در متلب', duration: 720, access: 'private' },
+                { title: 'آشنایی مقدماتی با پردازش تصویر در متلب', duration: 720, access: 'private' },
+                { title: 'جمع‌بندی دوره و مسیر یادگیری پیشرفته', duration: 480, access: 'private' },
             ],
         },
     ];
-
-    let firstLesson = null;
 
     for (let m = 0; m < modulesData.length; m++) {
         const moduleInfo = modulesData[m];
@@ -260,7 +267,7 @@ async function main() {
 
         for (let l = 0; l < moduleInfo.lessons.length; l++) {
             const lessonInfo = moduleInfo.lessons[l];
-            const createdLesson = await prisma.lesson.create({
+            await prisma.lesson.create({
                 data: {
                     title: lessonInfo.title,
                     description: `در این درس با موضوع «${lessonInfo.title}» به‌صورت کامل و همراه با مثال آشنا می‌شوید.`,
@@ -273,94 +280,90 @@ async function main() {
                     moduleId: createdModule.id,
                 },
             });
-
-            if (!firstLesson) {
-                firstLesson = createdLesson;
-            }
         }
     }
 
     console.log('در حال ساخت آزمون پایانی دوره...');
     const quizSet = await prisma.quizset.create({
         data: {
-            title: 'آزمون پایانی دوره توسعه وب',
-            description: 'این آزمون میزان یادگیری شما از مباحث مطرح‌شده در دوره را می‌سنجد.',
-            slug: 'final-web-development-quiz',
+            title: 'آزمون پایانی دوره متلب',
+            description: 'این آزمون میزان یادگیری شما از مباحث مطرح‌شده در دوره متلب را می‌سنجد.',
+            slug: 'final-matlab-quiz',
             active: true,
         },
     });
 
     const quizzesData = [
         {
-            title: 'کدام تگ برای ساخت لیست مرتب در HTML استفاده می‌شود؟',
+            title: 'کدام دستور برای ساخت یک ماتریس ۳ در ۳ پر شده از صفر استفاده می‌شود؟',
             options: [
-                { text: '<ul>', is_correct: false },
-                { text: '<ol>', is_correct: true },
-                { text: '<list>', is_correct: false },
-                { text: '<li>', is_correct: false },
+                { text: 'zeros(3,3)', is_correct: true },
+                { text: 'null(3,3)', is_correct: false },
+                { text: 'empty(3,3)', is_correct: false },
+                { text: 'zero_matrix(3)', is_correct: false },
             ],
         },
         {
-            title: 'کدام ویژگی CSS برای چیدمان فلکسی (Flexbox) استفاده می‌شود؟',
+            title: 'برای ترانهاده کردن یک ماتریس در متلب از کدام علامت استفاده می‌شود؟',
             options: [
-                { text: 'display: flex;', is_correct: true },
-                { text: 'position: flex;', is_correct: false },
-                { text: 'float: flex;', is_correct: false },
-                { text: 'layout: flex;', is_correct: false },
+                { text: '*', is_correct: false },
+                { text: '^', is_correct: false },
+                { text: "'", is_correct: true },
+                { text: '~', is_correct: false },
             ],
         },
         {
-            title: 'کدام کلمه کلیدی برای تعریف متغیر غیرقابل تغییر در جاوااسکریپت استفاده می‌شود؟',
+            title: 'کدام دستور برای رسم نمودار دو بعدی در متلب استفاده می‌شود؟',
             options: [
-                { text: 'var', is_correct: false },
-                { text: 'let', is_correct: false },
-                { text: 'const', is_correct: true },
-                { text: 'static', is_correct: false },
+                { text: 'draw()', is_correct: false },
+                { text: 'plot()', is_correct: true },
+                { text: 'chart()', is_correct: false },
+                { text: 'graph2d()', is_correct: false },
             ],
         },
         {
-            title: 'خروجی typeof [] در جاوااسکریپت چیست؟',
+            title: 'خروجی دستور size([1 2 3; 4 5 6]) چیست؟',
             options: [
-                { text: 'array', is_correct: false },
-                { text: 'object', is_correct: true },
-                { text: 'undefined', is_correct: false },
-                { text: 'list', is_correct: false },
+                { text: '[3 2]', is_correct: false },
+                { text: '[2 3]', is_correct: true },
+                { text: '[6 1]', is_correct: false },
+                { text: '[2 2]', is_correct: false },
             ],
         },
         {
-            title: 'کدام متد برای ارسال درخواست HTTP در جاوااسکریپت مدرن استفاده می‌شود؟',
+            title: 'کدام حلقه برای تعداد تکرار مشخص و از پیش تعیین‌شده مناسب‌تر است؟',
             options: [
-                { text: 'request()', is_correct: false },
-                { text: 'fetch()', is_correct: true },
-                { text: 'ajaxCall()', is_correct: false },
-                { text: 'http.get()', is_correct: false },
+                { text: 'while', is_correct: false },
+                { text: 'for', is_correct: true },
+                { text: 'if', is_correct: false },
+                { text: 'switch', is_correct: false },
             ],
         },
         {
-            title: 'در React، برای مدیریت state درون یک کامپوننت تابعی از چه چیزی استفاده می‌کنیم؟',
+            title: 'برای تعریف یک تابع در متلب، فایل باید با کدام کلمه‌ی کلیدی شروع شود؟',
             options: [
-                { text: 'useEffect', is_correct: false },
-                { text: 'useState', is_correct: true },
-                { text: 'useRef', is_correct: false },
-                { text: 'useContext', is_correct: false },
+                { text: 'def', is_correct: false },
+                { text: 'func', is_correct: false },
+                { text: 'function', is_correct: true },
+                { text: 'method', is_correct: false },
             ],
         },
         {
-            title: 'کدام گزینه یک Pseudo-class در CSS است؟',
+            title: 'کدام دستور برای خواندن داده از یک فایل اکسل در متلب مناسب‌تر است؟',
             options: [
-                { text: '::before', is_correct: false },
-                { text: ':hover', is_correct: true },
-                { text: '@media', is_correct: false },
-                { text: '#id', is_correct: false },
+                { text: 'readtable()', is_correct: true },
+                { text: 'importExcel()', is_correct: false },
+                { text: 'loadxls()', is_correct: false },
+                { text: 'openfile()', is_correct: false },
             ],
         },
         {
-            title: 'کدام روش صحیح برای await کردن یک Promise است؟',
+            title: 'Simulink در متلب بیشتر برای چه کاری استفاده می‌شود؟',
             options: [
-                { text: 'استفاده از await درون یک تابع async', is_correct: true },
-                { text: 'استفاده از await در سطح فایل بدون async', is_correct: false },
-                { text: 'استفاده از then به‌جای await همیشه اجباری است', is_correct: false },
-                { text: 'await فقط در جاوااسکریپت سمت سرور کار می‌کند', is_correct: false },
+                { text: 'ویرایش متن', is_correct: false },
+                { text: 'مدل‌سازی و شبیه‌سازی سیستم‌های دینامیکی', is_correct: true },
+                { text: 'مدیریت فایل‌ها', is_correct: false },
+                { text: 'طراحی رابط کاربری وب', is_correct: false },
             ],
         },
     ];
@@ -428,7 +431,7 @@ async function main() {
         prisma.testimonial.create({
             data: {
                 content:
-                    'یکی از بهترین دوره‌های فارسی برنامه‌نویسی وب که دیدم. توضیحات آقای محمدی خیلی روان و قابل فهم بود و پروژه‌های عملی دوره کمک زیادی به یادگیری من کرد.',
+                    'دوره‌ی خیلی خوبی بود، مخصوصاً بخش کار با ماتریس‌ها که پایه‌ی خیلی از پروژه‌های دانشگاهی منه. توضیحات آقای صادقی کاملاً قابل فهم و همراه با مثال بود.',
                 rating: 5,
                 courseId: course.id,
                 userId: sara.id,
@@ -437,7 +440,7 @@ async function main() {
         prisma.testimonial.create({
             data: {
                 content:
-                    'دوره کامل و جامعی بود، به خصوص بخش جاوااسکریپت پیشرفته که خیلی خوب توضیح داده شده بود. پیشنهاد می‌کنم اگر می‌خواهید React یاد بگیرید حتما این دوره را ببینید.',
+                    'برای پروژه پایان‌نامه‌م به متلب نیاز داشتم و این دوره دقیقاً همون چیزی بود که لازم داشتم. بخش رسم نمودار و Simulink خیلی کاربردی بود.',
                 rating: 5,
                 courseId: course.id,
                 userId: mohammad.id,
@@ -446,7 +449,7 @@ async function main() {
         prisma.testimonial.create({
             data: {
                 content:
-                    'محتوای دوره خوب بود ولی جای چند تا پروژه عملی بیشتر توی بخش CSS خالی بود. در کل راضی‌ام و پیشنهادش می‌کنم.',
+                    'محتوای دوره کامل و مرتب بود، فقط جای چند تا تمرین بیشتر برای بخش توابع خالی بود. در کل خیلی راضی‌ام.',
                 rating: 4,
                 courseId: course.id,
                 userId: amir.id,
@@ -503,7 +506,7 @@ async function main() {
     console.log(`- ${modulesData.reduce((acc, m) => acc + m.lessons.length, 0)} درس`);
     console.log(`- ${quizzesData.length} سوال آزمون`);
     console.log(`- ${enrollments.length} ثبت‌نام`);
-    console.log('اطلاعات ورود مدرس: ali.mohammadi@example.com / Password123!');
+    console.log('اطلاعات ورود مدرس: amirhossein.sadeghi@example.com / Password123!');
     console.log('اطلاعات ورود دانشجو: sara.ahmadi@example.com / Password123!');
 }
 
