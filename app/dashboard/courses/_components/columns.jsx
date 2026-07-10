@@ -70,7 +70,7 @@ export const columns = [
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-4 w-8 p-0">
-                            <span className="sr-only">Open Menu</span>
+                            <span className="sr-only">منو</span>
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
@@ -78,19 +78,19 @@ export const columns = [
                         <Link href={`/dashboard/courses/${id}`}>
                             <DropdownMenuItem className="cursor-pointer">
                                 <Pencil className="h-4 w-4 mr-2" />
-                                Edit
+                                ویرایش
                             </DropdownMenuItem>
                         </Link>
                         <Link href={`/dashboard/courses/${id}/enrollments`}>
                             <DropdownMenuItem className="cursor-pointer">
                                 <GraduationCap className="h-4 w-4 mr-2" />
-                                View Enrollments
+                                مشاهده ثبت‌نام‌ها
                             </DropdownMenuItem>
                         </Link>
                         <Link href={`/dashboard/courses/${id}/reviews`}>
                             <DropdownMenuItem className="cursor-pointer">
                                 <Star className="h-4 w-4 mr-2 fill-primary" />
-                                View Reviews
+                                مشاهده نظرات
                             </DropdownMenuItem>
                         </Link>
                     </DropdownMenuContent>

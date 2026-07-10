@@ -34,10 +34,10 @@ const CourseDetailsIntro = async ({ course }) => {
                         <span href="/courses" className="hover:text-primary">
                             دوره‌ها
                         </span>
-                        {course?.category?.title && (
+                        {course?.title && (
                             <>
                                 <span>/</span>
-                                <span className="text-foreground">{course.category.title}</span>
+                                <span className="text-foreground">{course?.title}</span>
                             </>
                         )}
                     </div>
