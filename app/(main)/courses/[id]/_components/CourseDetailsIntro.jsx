@@ -31,9 +31,9 @@ const CourseDetailsIntro = async ({ course }) => {
                             خانه
                         </Link>
                         <span>/</span>
-                        <Link href="/courses" className="hover:text-primary">
+                        <span href="/courses" className="hover:text-primary">
                             دوره‌ها
-                        </Link>
+                        </span>
                         {course?.category?.title && (
                             <>
                                 <span>/</span>
