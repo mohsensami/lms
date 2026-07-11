@@ -100,7 +100,7 @@ export function DataTable({ columns, data }) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  محتوایی موجود نیست
                 </TableCell>
               </TableRow>
             )}

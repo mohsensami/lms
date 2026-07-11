@@ -60,14 +60,14 @@ export const CategoryForm = ({ initialData, courseId, options }) => {
   return (
     <div className="mt-6 border bg-gray-50 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course Category
+        دسته بندی دوره
         <Button variant="ghost" onClick={toggleEdit}>
           {isEditing ? (
-            <>Cancel</>
+            <>انصراف</>
           ) : (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit Category
+              ویرایش
             </>
           )}
         </Button>
@@ -103,7 +103,7 @@ export const CategoryForm = ({ initialData, courseId, options }) => {
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
+                ذخیره
               </Button>
             </div>
           </form>

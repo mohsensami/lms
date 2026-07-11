@@ -80,11 +80,11 @@ export const CourseSidebar = async ({ courseId }) => {
                     <p className="mt-3 text-sm leading-6 text-slate-600">{course.subtitle}</p>
                     <div className="mt-6 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
                         <div className="rounded-3xl bg-slate-50 p-4">
-                            <p className="text-slate-500">Lessons</p>
+                            <p className="text-slate-500">درس</p>
                             <p className="mt-2 font-semibold text-slate-900">{totalLessons}</p>
                         </div>
                         <div className="rounded-3xl bg-slate-50 p-4">
-                            <p className="text-slate-500">Quizzes</p>
+                            <p className="text-slate-500">آزمون</p>
                             <p className="mt-2 font-semibold text-slate-900">{quizCount}</p>
                         </div>
                     </div>

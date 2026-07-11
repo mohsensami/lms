@@ -5,9 +5,9 @@ export async function getAllQuizSets(excludeUnPublished) {
     try {
         let quizSets = [];
         if (excludeUnPublished) {
-            quizSets = await prisma.quizset.findMany({ where: { active: true } });
+            quizSets = await prisma.quizset.findMany({ where: { active: true }, include: { quizIds: true } });
         } else {
-            quizSets = await prisma.quizset.findMany();
+            quizSets = await prisma.quizset.findMany({ include: { quizIds: true } });
         }
         return replaceMongoIdInArray(quizSets);
     } catch (error) {

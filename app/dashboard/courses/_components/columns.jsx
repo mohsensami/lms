@@ -8,6 +8,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { formatPrice } from '@/lib/formatPrice';
 import { cn } from '@/lib/utils';
 import { GraduationCap } from 'lucide-react';
 import { Star } from 'lucide-react';
@@ -20,7 +21,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Title <ArrowUpDown className="ml-2 h-4 w-4" />
+                    نام دوره <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
@@ -30,16 +31,13 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Price <ArrowUpDown className="ml-2 h-4 w-4" />
+                    قیمت <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
         cell: ({ row }) => {
             const price = parseFloat(row.getValue('price') || '0');
-            const formatted = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-            }).format(price);
+            const formatted = formatPrice(price);
             return <div>{formatted}</div>;
         },
     },
@@ -48,7 +46,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Published <ArrowUpDown className="ml-2 h-4 w-4" />
+                    وضعیت <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
         },

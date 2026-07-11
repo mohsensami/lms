@@ -9,7 +9,7 @@ const QuizSets = async () => {
       id: q.id,
       title: q.title,
       isPublished: q.active,
-      totalQuiz: q.quizIds.length,
+      totalQuiz: q.quizIds?.length ?? 0,
     };
   });
 

@@ -66,19 +66,19 @@ export const ImageForm = ({ initialData, courseId }) => {
     return (
         <div className="mt-6 border bg-gray-50 rounded-md p-4">
             <div className="font-medium flex items-center justify-between">
-                Course Image
+                عکس دوره
                 <Button variant="ghost" onClick={toggleEdit}>
-                    {isEditing && <>Cancel</>}
+                    {isEditing && <>انصراف</>}
                     {!isEditing && !initialData.imageUrl && (
                         <>
                             <PlusCircle className="h-4 w-4 mr-2" />
-                            Add an image
+                            افزودن
                         </>
                     )}
                     {!isEditing && initialData.imageUrl && (
                         <>
                             <Pencil className="h-4 w-4 mr-2" />
-                            Edit image
+                            ویرایش
                         </>
                     )}
                 </Button>
@@ -96,7 +96,7 @@ export const ImageForm = ({ initialData, courseId }) => {
             {isEditing && (
                 <div>
                     <UploadDropzone onUpload={(file) => setFile(file)} />
-                    <div className="text-xs text-muted-foreground mt-4">16:9 aspect ratio recommended</div>
+                    <div className="text-xs text-muted-foreground mt-4">16:9 aspect ratio recommended </div>
                 </div>
             )}
         </div>
