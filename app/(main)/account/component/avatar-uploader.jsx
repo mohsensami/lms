@@ -1,12 +1,13 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Camera, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { UploadButton } from '@/lib/uploadthing';
 import { updateProfilePicture } from '@/app/actions/account';
+import { buttonVariants } from '@/components/ui/button';
+import UserAvatar from '@/components/user-avatar';
 import { cn } from '@/lib/utils';
 
 const AvatarUploader = ({ initialImage, firstName }) => {
@@ -15,29 +16,24 @@ const AvatarUploader = ({ initialImage, firstName }) => {
     const [isUploading, setIsUploading] = useState(false);
 
     return (
-        <div className="group relative mx-auto size-28">
-            <Image
-                src={image || 'https://i.pravatar.cc/300'}
-                className="rounded-full object-cover ring-4 ring-primary/10"
-                id="profile-banner"
-                alt={firstName || 'کاربر'}
-                width={112}
-                height={112}
-            />
+        <div className="mx-auto flex flex-col items-center gap-3">
+            <div className="relative size-28">
+                <UserAvatar
+                    src={image}
+                    alt={firstName || 'کاربر'}
+                    className="size-28 ring-4 ring-primary/10"
+                    iconClassName="h-12 w-12"
+                />
 
-            <div
-                className={cn(
-                    'pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-black/50 transition-opacity',
-                    isUploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
-                )}
-            >
-                {isUploading ? (
-                    <Loader2 className="size-6 animate-spin text-white" />
-                ) : (
-                    <Camera className="size-6 text-white" />
+                {isUploading && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
+                        <Loader2 className="size-6 animate-spin text-white" />
+                    </div>
                 )}
             </div>
 
+            {/* Explicit, always-visible button (not just a hover overlay) so
+                it's obvious how to change the picture. */}
             <UploadButton
                 endpoint="avatarUploader"
                 onUploadBegin={() => setIsUploading(true)}
@@ -70,11 +66,14 @@ const AvatarUploader = ({ initialImage, firstName }) => {
                     toast.error(`خطا در آپلود عکس: ${error.message}`);
                 }}
                 appearance={{
-                    button: 'absolute inset-0 size-full cursor-pointer rounded-full opacity-0',
+                    button: cn(
+                        buttonVariants({ variant: 'outline', size: 'sm' }),
+                        'cursor-pointer after:hidden ut-uploading:cursor-not-allowed ut-uploading:opacity-70 ',
+                    ),
                     allowedContent: 'hidden',
                 }}
                 content={{
-                    button: '',
+                    button: ({ isUploading: uploading }) => (uploading ? 'در حال آپلود...' : 'ویرایش عکس پروفایل'),
                 }}
             />
         </div>

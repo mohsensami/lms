@@ -8,7 +8,7 @@ import { X } from 'lucide-react';
 import { Button, buttonVariants } from './ui/button';
 import { Menu } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import UserAvatar from './user-avatar';
 import MobileNav from './mobile-nav';
 import { useSession, signOut } from 'next-auth/react';
 
@@ -55,7 +55,6 @@ const MainNav = ({ items, children }) => {
                         ))}
                     </nav>
                 ) : null}
-
             </div>
 
             {items && <MobileNav items={items} open={showMobileMenu} onOpenChange={setShowMobileMenu} />}
@@ -94,10 +93,7 @@ const MainNav = ({ items, children }) => {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <div className="cursor-pointer rounded-full ring-2 ring-transparent transition hover:ring-primary/40">
-                                <Avatar>
-                                    <AvatarImage src={loggedInUser?.profilePicture} alt="@ariyan" />
-                                    <AvatarFallback>CN</AvatarFallback>
-                                </Avatar>
+                                <UserAvatar src={loggedInUser?.profilePicture} alt={loggedInUser?.firstName} />
                             </div>
                         </DropdownMenuTrigger>
 

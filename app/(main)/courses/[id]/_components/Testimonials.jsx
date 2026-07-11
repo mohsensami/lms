@@ -1,7 +1,7 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import Image from 'next/image';
 import { SectionTitle } from '@/components/section-title';
 import StarRating from '@/components/start-rating';
+import UserAvatar from '@/components/user-avatar';
 
 const Testimonials = ({ testimonials }) => {
     return (
@@ -21,12 +21,10 @@ const Testimonials = ({ testimonials }) => {
                             <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3">
                                 <blockquote className="h-full rounded-2xl border border-border bg-card p-6 shadow-sm">
                                     <div className="flex items-center gap-3">
-                                        <Image
-                                            alt={`Profile ${testimonial?.user?.firstName || 'User'}`}
-                                            src={testimonial?.user?.profilePicture || 'https://i.pravatar.cc/56'}
-                                            width="48"
-                                            height="48"
-                                            className="h-12 w-12 rounded-full object-cover"
+                                        <UserAvatar
+                                            src={testimonial?.user?.profilePicture}
+                                            alt={testimonial?.user?.firstName || 'کاربر'}
+                                            className="h-12 w-12"
                                         />
                                         <div>
                                             <p className="text-sm font-bold text-foreground">

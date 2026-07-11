@@ -28,7 +28,7 @@ model User {
   phone          String?
   bio            String?  @default("")
   socialMedia    Json?
-  profilePicture String?  @default("https://i.pravatar.cc")
+  profilePicture String?
   designation    String?  @default("")
   createdAt      DateTime @default(now())
 
