@@ -21,6 +21,7 @@ function slugify(title) {
 
 async function clearExistingData() {
     // Delete children before parents to satisfy foreign key constraints.
+    await prisma.post.deleteMany();
     await prisma.watch.deleteMany();
     await prisma.report.deleteMany();
     await prisma.assessment.deleteMany();
@@ -501,11 +502,61 @@ async function main() {
         },
     });
 
+    console.log('در حال ساخت مقالات وبلاگ...');
+
+    const postsData = [
+        {
+            title: 'چرا یادگیری متلب برای مهندسین ضروری است؟',
+            content:
+                'متلب یکی از پرکاربردترین نرم‌افزارهای محاسباتی در دنیای مهندسی و علوم پایه است. ' +
+                'در این مقاله بررسی می‌کنیم که چرا دانشجویان و مهندسین رشته‌های برق، مکانیک، عمران و صنایع باید ' +
+                'تسلط کافی روی این ابزار داشته باشند و چطور می‌توان مسیر یادگیری آن را کوتاه‌تر کرد. ' +
+                'از تحلیل داده گرفته تا شبیه‌سازی سیستم‌های دینامیکی، متلب در اغلب پروژه‌های دانشگاهی و صنعتی حضور دارد.',
+            thumbnail: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800',
+        },
+        {
+            title: '۵ اشتباه رایج دانشجویان تازه‌کار در متلب',
+            content:
+                'خیلی از دانشجویانی که تازه شروع به یادگیری متلب می‌کنند، اشتباهات مشابهی مرتکب می‌شوند؛ ' +
+                'از نادیده گرفتن تفاوت بین ضرب معمولی و ضرب عنصر به عنصر گرفته تا استفاده‌ی نادرست از اندیس‌گذاری ماتریس‌ها. ' +
+                'در این مقاله این اشتباهات را مرور می‌کنیم و راه‌حل هر کدام را توضیح می‌دهیم تا مسیر یادگیری شما هموارتر شود.',
+            thumbnail: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800',
+        },
+        {
+            title: 'آشنایی با Simulink و کاربردهای آن در صنعت',
+            content:
+                'Simulink یکی از قدرتمندترین جعبه‌ابزارهای متلب برای مدل‌سازی و شبیه‌سازی سیستم‌های دینامیکی است. ' +
+                'در این مقاله با محیط گرافیکی Simulink آشنا می‌شوید و می‌بینید که چطور در صنایع خودروسازی، هوافضا و کنترل ' +
+                'صنعتی برای طراحی و تست سیستم‌ها پیش از پیاده‌سازی واقعی استفاده می‌شود.',
+            thumbnail: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800',
+        },
+        {
+            title: 'مسیر یادگیری تحلیل داده با متلب برای مبتدیان',
+            content:
+                'اگر می‌خواهید وارد دنیای تحلیل داده شوید، متلب یکی از گزینه‌های خوب برای شروع است. ' +
+                'در این مقاله یک نقشه‌ی راه گام‌به‌گام معرفی می‌کنیم: از وارد کردن داده از فایل‌های اکسل و متنی، ' +
+                'تا رسم نمودارهای تحلیلی و استفاده از توابع آماری پرکاربرد متلب.',
+            thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800',
+        },
+    ];
+
+    for (const postInfo of postsData) {
+        await prisma.post.create({
+            data: {
+                title: postInfo.title,
+                slug: slugify(postInfo.title).slice(0, 80),
+                content: postInfo.content,
+                thumbnail: postInfo.thumbnail,
+            },
+        });
+    }
+
     console.log('✅ Seed با موفقیت انجام شد.');
     console.log(`- ${modulesData.length} ماژول`);
     console.log(`- ${modulesData.reduce((acc, m) => acc + m.lessons.length, 0)} درس`);
     console.log(`- ${quizzesData.length} سوال آزمون`);
     console.log(`- ${enrollments.length} ثبت‌نام`);
+    console.log(`- ${postsData.length} مقاله`);
     console.log('اطلاعات ورود مدرس: amirhossein.sadeghi@example.com / Password123!');
     console.log('اطلاعات ورود دانشجو: sara.ahmadi@example.com / Password123!');
 }
