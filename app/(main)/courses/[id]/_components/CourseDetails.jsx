@@ -4,7 +4,7 @@ import CourseOverview from './CourseOverview';
 import CourseCurriculam from './CourseCurriculam';
 import CourseInstructor from './CourseInstructor';
 
-const CourseDetails = ({ course }) => {
+const CourseDetails = ({ course, isEnrolled }) => {
     return (
         <section className="py-8 md:py-12">
             <div className="container">
@@ -36,7 +36,7 @@ const CourseDetails = ({ course }) => {
                         </TabsContent>
 
                         <TabsContent value="curriculum" className="mt-6">
-                            <CourseCurriculam course={course} />
+                            <CourseCurriculam course={course} isEnrolled={isEnrolled} />
                         </TabsContent>
                         <TabsContent value="instructor" className="mt-6">
                             <CourseInstructor course={course} />

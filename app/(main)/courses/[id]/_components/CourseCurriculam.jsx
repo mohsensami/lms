@@ -4,7 +4,7 @@ import { Accordion } from '@/components/ui/accordion';
 
 import CourseModuleList from './module/CourseModuleList';
 
-const CourseCurriculam = ({ course }) => {
+const CourseCurriculam = ({ course, isEnrolled }) => {
     const totalDuration = course?.modules
         .map((item) => {
             return item.lessonIds.reduce(function (acc, obj) {
@@ -41,7 +41,12 @@ const CourseCurriculam = ({ course }) => {
             <Accordion defaultValue={[]} type="multiple" className="mt-6 w-full space-y-3">
                 {course?.modules &&
                     course.modules.map((module, index) => (
-                        <CourseModuleList key={module.id || index} module={module} index={index} />
+                        <CourseModuleList
+                            key={module.id || index}
+                            module={module}
+                            index={index}
+                            isEnrolled={isEnrolled}
+                        />
                     ))}
             </Accordion>
         </div>

@@ -10,8 +10,8 @@ import CourseLessonPreview from './CourseLessonPreview';
 // already queries — a common cause of Neon's
 // "Can't reach database server" errors under load / after cold start.
 // We already have the data, so we just render it directly, no query.
-const CourseLessonList = ({ lesson }) => {
-    return <CourseLessonPreview lesson={lesson} />;
+const CourseLessonList = ({ lesson, isEnrolled }) => {
+    return <CourseLessonPreview lesson={lesson} isEnrolled={isEnrolled} />;
 };
 
 export default CourseLessonList;

@@ -4,7 +4,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Radio, Video, FileQuestion } from 'lucide-react';
 import CourseLessonList from './CourseLessonList';
 
-const CourseModuleList = ({ module, index }) => {
+const CourseModuleList = ({ module, index, isEnrolled }) => {
     const totalDuration = module?.lessonIds.reduce(function (acc, obj) {
         return acc + obj.duration;
     }, 0);
@@ -38,7 +38,11 @@ const CourseModuleList = ({ module, index }) => {
                     <div className="mt-4 space-y-1">
                         {module.lessonIds &&
                             module.lessonIds.map((lesson) => (
-                                <CourseLessonList key={lesson.id || lesson._id} lesson={lesson} />
+                                <CourseLessonList
+                                    key={lesson.id || lesson._id}
+                                    lesson={lesson}
+                                    isEnrolled={isEnrolled}
+                                />
                             ))}
                     </div>
                 </AccordionContent>

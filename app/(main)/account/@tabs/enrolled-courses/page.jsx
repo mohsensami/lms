@@ -28,7 +28,8 @@ async function EnrolledCourses() {
                         const courseId = course ? (course._id ? course._id.toString() : course.id || null) : null;
 
                         return courseId ? (
-                            <Link key={enrollment?.id} href={`/courses/${courseId}/lesson`}>
+                            // <Link key={enrollment?.id} href={`/courses/${courseId}/lesson`}>
+                            <Link key={enrollment?.id} href={`/courses/${courseId}`}>
                                 <EnrolledCourseCard enrollment={enrollment} />
                             </Link>
                         ) : (

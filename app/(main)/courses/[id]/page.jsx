@@ -7,6 +7,8 @@ import RelatedCourses from './_components/RelatedCourses';
 import { getCourseDetails, getRelatedCourses } from '@/queries/courses';
 import { replaceMongoIdInArray } from '@/lib/convertData';
 import MoneyBack from '@/components/money-back';
+import { getLoggedInUser } from '@/lib/loggedin-user';
+import { hasEnrollmentForCourse } from '@/queries/enrollments';
 
 const SingleCoursePage = async ({ params }) => {
     const { id } = await params;
@@ -23,6 +25,12 @@ const SingleCoursePage = async ({ params }) => {
         notFound();
     }
 
+    // A visitor who has already purchased this course should be able to
+    // watch every lesson from this page too, not just the free-preview
+    // ones. Guests / non-enrolled users keep seeing the usual lock icons.
+    const loggedInUser = await getLoggedInUser();
+    const isEnrolled = loggedInUser ? await hasEnrollmentForCourse(currentCourseId, loggedInUser.id) : false;
+
     // Fetch related courses only when both course and category IDs exist
     const relatedCourses = currentCourseId && categoryId ? await getRelatedCourses(currentCourseId, categoryId) : [];
     // console.log(relatedCourses);
@@ -30,7 +38,7 @@ const SingleCoursePage = async ({ params }) => {
         <>
             <CourseDetailsIntro course={course} />
 
-            <CourseDetails course={course} />
+            <CourseDetails course={course} isEnrolled={isEnrolled} />
             {course?.testimonials && <Testimonials testimonials={replaceMongoIdInArray(course?.testimonials)} />}
 
             {/* <div className="mb-10">
