@@ -71,6 +71,32 @@ export async function getCourseDetails(id) {
     return getCachedCourseDetails(courseId);
 }
 
+// getCourseDetails() is shared (cached, no user context) and used by admin/
+// instructor dashboard pages and the enrolled-student lesson page too, both
+// of which legitimately need every lesson's video_url. The public course
+// landing page is the only place that must NOT leak locked lessons' URLs to
+// visitors who haven't paid for them, so we sanitize a copy of the course
+// there instead of touching the shared query.
+//
+// `isEnrolled` — whether the current visitor purchased this course — is
+// resolved server-side per-request (see app/(main)/courses/[id]/page.jsx),
+// so a lesson's real video_url only ever leaves the server when it's
+// actually public or the visitor is entitled to it.
+export function sanitizeCourseForVisitor(course, isEnrolled) {
+    if (!course) return course;
+
+    return {
+        ...course,
+        modules: (course.modules || []).map((module) => ({
+            ...module,
+            lessonIds: (module.lessonIds || []).map((lesson) => {
+                const isPlayable = lesson?.access === 'public' || isEnrolled;
+                return isPlayable ? lesson : { ...lesson, video_url: null };
+            }),
+        })),
+    };
+}
+
 function groupBy(array, keyFn) {
     return array.reduce((acc, item) => {
         const key = keyFn(item);
