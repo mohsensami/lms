@@ -29,7 +29,7 @@ export const DownloadCertificate = ({ courseId, totalProgress }) => {
     }
 
     return (
-        <Button onClick={handleCertificateDownload} disabled={totalProgress < 100} className="w-full mt-6">
+        <Button onClick={handleCertificateDownload} disabled={totalProgress < 100} size="sm">
             دانلود مدرک
         </Button>
     );

@@ -7,6 +7,8 @@ import React from 'react';
 const menu = [
   { label: "پروفایل", href: "/account" },
   { label: "دوره‌های ثبت‌نامی", href: "/account/enrolled-courses" },
+  { label: "آزمون‌ها و مدارک", href: "/account/certificates" },
+  { label: "فاکتورهای من", href: "/account/Order" },
 ];
 
 function Menu() {

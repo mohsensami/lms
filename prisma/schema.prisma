@@ -37,6 +37,7 @@ model User {
   testimonials  Testimonial[]
   reports       Report[]
   watches       Watch[]
+  orders        Order[]
 }
 
 model Category {
@@ -73,6 +74,7 @@ model Course {
   testimonials Testimonial[]
   enrollments  Enrollment[]
   reports      Report[]
+  orders       Order[]
 }
 
 model Module {
@@ -148,6 +150,27 @@ model Enrollment {
 
   studentId String?
   student   User?   @relation(fields: [studentId], references: [id])
+}
+
+// Records every payment attempt (invoice) so the user's "Order" tab can show
+// paid/unpaid invoices, and so failed/abandoned Zarinpal payments aren't
+// silently lost like before (previously only a successful payment produced
+// any record at all, via Enrollment).
+model Order {
+  id        String    @id @default(cuid())
+  amount    Float
+  status    String    @default("pending") // pending | paid | failed
+  method    String    @default("zarinpal")
+  authority String?   @unique
+  refId     String?
+  createdAt DateTime  @default(now())
+  paidAt    DateTime?
+
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
 }
 
 model Testimonial {

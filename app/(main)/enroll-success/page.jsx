@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { sendEmails } from "@/lib/emails";
 import { zarinpal } from "@/lib/zarinpal";
 import { getCourseDetails } from "@/queries/courses";
-import { enrollForCourse } from "@/queries/enrollments";
+import { enrollForCourse, hasEnrollmentForCourse } from "@/queries/enrollments";
 import { getUserByEmail } from "@/queries/users";
+import { getOrderByAuthority, markOrderPaid, markOrderFailed } from "@/queries/orders";
 import { CircleCheck } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -17,19 +18,30 @@ const Success = async ({ searchParams: { Authority, Status, courseId } }) => {
 
   const course = await getCourseDetails(courseId);
   const loggedInUser = await getUserByEmail(userSession.user.email);
+  const existingOrder = await getOrderByAuthority(Authority);
 
   // Payment verification
   const amount = Math.round(Number(course.price) * 10); // IRR
-  let paymentSuccess = false;
+  let paymentSuccess = existingOrder?.status === "paid";
 
-  if (Status === "OK") {
-    const verify = await zarinpal.PaymentVerification({
-      Amount: amount,
-      Authority,
-    });
+  // Only hit Zarinpal's verification endpoint (and mutate the order) the
+  // first time this callback is reached — refreshing this page shouldn't
+  // re-verify, re-enroll, or resend emails.
+  if (!paymentSuccess && existingOrder?.status !== "failed") {
+    if (Status === "OK") {
+      const verify = await zarinpal.PaymentVerification({
+        Amount: amount,
+        Authority,
+      });
 
-    if (verify.status === 100 || verify.status === 101) {
-      paymentSuccess = true;
+      if (verify.status === 100 || verify.status === 101) {
+        paymentSuccess = true;
+        await markOrderPaid(Authority, verify.RefID);
+      } else {
+        await markOrderFailed(Authority);
+      }
+    } else {
+      await markOrderFailed(Authority);
     }
   }
 
@@ -38,25 +50,29 @@ const Success = async ({ searchParams: { Authority, Status, courseId } }) => {
   const productName = course.title;
 
   if (paymentSuccess) {
-    await enrollForCourse(course.id, loggedInUser.id, "zarinpal");
+    const alreadyEnrolled = await hasEnrollmentForCourse(course.id, loggedInUser.id);
 
-    const instructorName = `${course.instructor.firstName} ${course.instructor.lastName}`;
-    const instructorEmail = course.instructor.email;
+    if (!alreadyEnrolled) {
+      await enrollForCourse(course.id, loggedInUser.id, "zarinpal");
 
-    const emailsToSend = [
-      {
-        to: instructorEmail,
-        subject: `New Enrollment For ${productName}`,
-        message: `Congratulations, ${instructorName}. A new student, ${customerName} has enrolled in your course ${productName}.`,
-      },
-      {
-        to: customerEmail,
-        subject: `Enrollment success for ${productName}`,
-        message: `Hey, ${customerName}. You have successfully enrolled in the course ${productName}.`,
-      },
-    ];
+      const instructorName = `${course.instructor.firstName} ${course.instructor.lastName}`;
+      const instructorEmail = course.instructor.email;
 
-    await sendEmails(emailsToSend);
+      const emailsToSend = [
+        {
+          to: instructorEmail,
+          subject: `New Enrollment For ${productName}`,
+          message: `Congratulations, ${instructorName}. A new student, ${customerName} has enrolled in your course ${productName}.`,
+        },
+        {
+          to: customerEmail,
+          subject: `Enrollment success for ${productName}`,
+          message: `Hey, ${customerName}. You have successfully enrolled in the course ${productName}.`,
+        },
+      ];
+
+      await sendEmails(emailsToSend);
+    }
   }
 
   return (

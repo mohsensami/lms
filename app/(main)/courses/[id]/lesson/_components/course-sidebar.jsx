@@ -1,14 +1,13 @@
 import { CourseProgress } from '@/components/course-progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ReviewModal } from './review-modal';
-import { DownloadCertificate } from './download-certificate';
 import { GiveReview } from './give-review';
 import { SidebarModules } from './sidebar-modules';
 import { getCourseDetails } from '@/queries/courses';
 import { getLoggedInUser } from '@/lib/loggedin-user';
 import { prisma } from '@/lib/prisma';
 import { getReport } from '@/queries/reports';
-import Quiz from './quiz';
+import Link from 'next/link';
 
 export const CourseSidebar = async ({ courseId }) => {
     const course = await getCourseDetails(courseId);
@@ -65,10 +64,6 @@ export const CourseSidebar = async ({ courseId }) => {
         );
     }
 
-    const quizSetall = course?.quizSet;
-    const isQuizComplete = report?.quizAssessment ? true : false;
-    const quizSet = sanitizeData(quizSetall);
-
     return (
         <div className="flex flex-col gap-6">
             <div className="sticky top-[calc(100px)] space-y-6">
@@ -97,18 +92,17 @@ export const CourseSidebar = async ({ courseId }) => {
                     <SidebarModules courseId={courseId} modules={updatedallModules} />
                 </div>
 
-                {quizSet && (
-                    <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm">
-                        <Quiz courseId={courseId} quizSet={quizSet} isTaken={isQuizComplete} />
-                    </div>
-                )}
+                <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm text-sm text-slate-600">
+                    برای شرکت در آزمون پایانی و دریافت مدرک این دوره، به بخش{' '}
+                    <Link href="/account/certificates" className="font-semibold text-primary underline">
+                        آزمون‌ها و مدارک من
+                    </Link>{' '}
+                    در پروفایل خود مراجعه کنید.
+                </div>
 
                 <div className="space-y-4">
                     <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm">
                         <GiveReview courseId={courseId} loginid={loggedinUser.id} />
-                    </div>
-                    <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm">
-                        <DownloadCertificate courseId={courseId} totalProgress={totalProgress} />
                     </div>
                 </div>
             </div>
