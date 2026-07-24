@@ -10,6 +10,13 @@ import { replaceMongoIdInArray } from '@/lib/convertData';
 import MoneyBack from '@/components/money-back';
 import { getLoggedInUser } from '@/lib/loggedin-user';
 import { hasEnrollmentForCourse } from '@/queries/enrollments';
+import { buildCourseMetadata, buildCourseJsonLd } from '@/lib/seo';
+
+export async function generateMetadata({ params }) {
+    const { id } = await params;
+    const course = await getCourseDetails(id);
+    return buildCourseMetadata(course);
+}
 
 const SingleCoursePage = async ({ params }) => {
     const { id } = await params;
@@ -56,8 +63,12 @@ const SingleCoursePage = async ({ params }) => {
         })),
     );
 
+    const jsonLd = buildCourseJsonLd(course);
+
     return (
         <>
+            {/* eslint-disable-next-line react/no-danger */}
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <CourseDetailsIntro course={visibleCourse} />
 
             <CourseDetails course={visibleCourse} isEnrolled={isEnrolled} />

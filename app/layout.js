@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/sonner';
 import { ProgressProvider } from '@/components/providers/progress-provider';
 import localFont from 'next/font/local';
+import { SITE_URL } from '@/lib/seo';
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -18,7 +19,11 @@ import localFont from 'next/font/local';
 // });
 
 export const metadata = {
-    title: 'آکادمی آموزشی - آموزش متلب',
+    metadataBase: new URL(SITE_URL),
+    title: {
+        default: 'آکادمی آموزشی - آموزش متلب',
+        template: '%s | آکادمی آموزشی',
+    },
     description: 'بهترین آموزشگاه',
 };
 

@@ -25,6 +25,9 @@ export async function createPost(data) {
             slug: data.slug || getSlug(data.title),
             content: data.content,
             thumbnail: data.thumbnail,
+            metaTitle: data.metaTitle || null,
+            metaDescription: data.metaDescription || null,
+            focusKeyword: data.focusKeyword || null,
         };
         const post = await create(postData);
         revalidateTag(POSTS_CACHE_TAG);

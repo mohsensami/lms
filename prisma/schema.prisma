@@ -236,4 +236,9 @@ model Post {
   thumbnail  String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  // SEO fields (Yoast-style): editable per post from the admin panel.
+  metaTitle       String?
+  metaDescription String?
+  focusKeyword    String?
 }

@@ -3,6 +3,12 @@ import Link from 'next/link';
 import { CalendarDays, Clock, Newspaper } from 'lucide-react';
 import BlogCard from '@/components/blog-card';
 import { getPostList } from '@/queries/posts';
+import { SITE_NAME } from '@/lib/seo';
+
+export const metadata = {
+    title: 'وبلاگ',
+    description: `آخرین مقالات و آموزش‌های ${SITE_NAME} در زمینه‌ی برنامه‌نویسی و طراحی.`,
+};
 
 function getExcerpt(content, maxLength = 160) {
     if (!content) return '';

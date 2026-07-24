@@ -3,12 +3,19 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CalendarDays, Clock, ArrowRight, Newspaper } from 'lucide-react';
 import { getPostBySlug } from '@/queries/posts';
+import { buildPostMetadata, buildPostJsonLd } from '@/lib/seo';
 
 function getReadTime(content) {
     if (!content) return '۱ دقیقه';
     const words = content.trim().split(/\s+/).length;
     const minutes = Math.max(1, Math.round(words / 200));
     return `${minutes} دقیقه`;
+}
+
+export async function generateMetadata({ params }) {
+    const { slug } = await params;
+    const post = await getPostBySlug(slug);
+    return buildPostMetadata(post);
 }
 
 const BlogPostPage = async ({ params }) => {
@@ -20,9 +27,12 @@ const BlogPostPage = async ({ params }) => {
     }
 
     const dateLabel = post.createdAt ? new Date(post.createdAt).toLocaleDateString('fa-IR') : '';
+    const jsonLd = buildPostJsonLd(post);
 
     return (
         <div className="bg-gradient-to-b from-primary/[0.06] to-transparent">
+            {/* eslint-disable-next-line react/no-danger */}
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <article className="container max-w-3xl py-14 md:py-20">
                 <Link
                     href="/blog"

@@ -5,6 +5,7 @@ import { PostTitleForm } from '../_components/post-title-form';
 import { PostContentForm } from '../_components/post-content-form';
 import { PostThumbnailForm } from '../_components/post-thumbnail-form';
 import { PostActions } from '../_components/post-actions';
+import { PostSeoForm } from '../_components/post-seo-form';
 
 const EditPost = async ({ params: { postId } }) => {
     await requireRole('admin');
@@ -25,6 +26,7 @@ const EditPost = async ({ params: { postId } }) => {
                 <div>
                     <PostTitleForm initialData={post} postId={post.id} />
                     <PostContentForm initialData={post} postId={post.id} />
+                    <PostSeoForm initialData={post} postId={post.id} />
                 </div>
                 <div>
                     <PostThumbnailForm initialData={post} postId={post.id} />
