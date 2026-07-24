@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import CourseDetailsIntro from './_components/CourseDetailsIntro';
 import CourseDetails from './_components/CourseDetails';
 import Testimonials from './_components/Testimonials';
+import CourseCommentForm from './_components/CourseCommentForm';
 import RelatedCourses from './_components/RelatedCourses';
 import { getCourseDetails, getRelatedCourses, sanitizeCourseForVisitor } from '@/queries/courses';
 import { replaceMongoIdInArray } from '@/lib/convertData';
@@ -37,12 +38,32 @@ const SingleCoursePage = async ({ params }) => {
     // Fetch related courses only when both course and category IDs exist
     const relatedCourses = currentCourseId && categoryId ? await getRelatedCourses(currentCourseId, categoryId) : [];
     // console.log(relatedCourses);
+
+    // Only show comments an admin has approved. Every other visitor's
+    // pending/rejected comments stay private to them (visible under their
+    // own /account/my-comments page instead).
+    const allTestimonials = replaceMongoIdInArray(course?.testimonials || []);
+    const approvedTestimonials = allTestimonials.filter((t) => t.status === 'approved');
+
+    // Mark which commenters actually bought this course, so the public
+    // list can show a "خریدار این دوره" badge next to their name.
+    const testimonialsWithPurchaseInfo = await Promise.all(
+        approvedTestimonials.map(async (testimonial) => ({
+            ...testimonial,
+            isVerifiedBuyer: testimonial?.userId
+                ? await hasEnrollmentForCourse(currentCourseId, testimonial.userId)
+                : false,
+        })),
+    );
+
     return (
         <>
             <CourseDetailsIntro course={visibleCourse} />
 
             <CourseDetails course={visibleCourse} isEnrolled={isEnrolled} />
-            {course?.testimonials && <Testimonials testimonials={replaceMongoIdInArray(course?.testimonials)} />}
+
+            <CourseCommentForm courseId={currentCourseId} loggedInUser={loggedInUser} />
+            <Testimonials testimonials={testimonialsWithPurchaseInfo} />
 
             {/* <div className="mb-10">
                 <MoneyBack />

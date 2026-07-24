@@ -177,6 +177,7 @@ model Testimonial {
   id      String @id @default(cuid())
   content String
   rating  Int
+  status  String @default("pending") // pending | approved | rejected
   createdAt DateTime @default(now())
 
   courseId String?

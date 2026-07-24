@@ -41,7 +41,7 @@ export const ourFileRouter = {
                 throw new UploadThingError('فقط مدیران می‌توانند تصویر مقاله آپلود کنند.');
             }
 
-            return { userId: loggedinUser._id };
+            return { userId: loggedinUser.id };
         })
         .onUploadComplete(async ({ file }) => {
             return { thumbnail: file.ufsUrl ?? file.url };

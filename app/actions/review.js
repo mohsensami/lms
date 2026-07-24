@@ -1,16 +1,34 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { getUserByEmail } from "@/queries/users";
+import { setTestimonialStatus, deleteTestimonial } from "@/queries/testimonials";
 import { COURSES_CACHE_TAG } from "@/queries/courses";
 import { revalidateTag } from "next/cache";
 
 export async function createReview(data, loginid, courseId) {
   const { review, rating } = data;
+
+  // Always trust the logged-in session for who the author is, never the
+  // client-supplied loginid, so a comment can't be posted in someone
+  // else's name.
+  const session = await auth();
+  if (!session?.user?.email) {
+    throw new Error("برای ثبت دیدگاه ابتدا وارد حساب کاربری خود شوید");
+  }
+  const loggedInUser = await getUserByEmail(session.user.email);
+  if (!loggedInUser) {
+    throw new Error("کاربر یافت نشد");
+  }
+
   try {
+    // New comments always start as "pending" (see schema default) and only
+    // become publicly visible once an admin approves them.
     const newTestimonial = await prisma.testimonial.create({
       data: {
         content: review,
-        userId: loginid,
+        userId: loggedInUser.id,
         courseId,
         rating,
       },
@@ -25,4 +43,34 @@ export async function createReview(data, loginid, courseId) {
   } catch (error) {
     throw new Error(error);
   }
+}
+
+async function requireAdmin() {
+  const session = await auth();
+  if (!session?.user?.email) {
+    throw new Error("شما اجازه دسترسی ندارید");
+  }
+  const loggedInUser = await getUserByEmail(session.user.email);
+  if (loggedInUser?.role !== "admin") {
+    throw new Error("شما اجازه دسترسی ندارید");
+  }
+  return loggedInUser;
+}
+
+export async function approveComment(testimonialId) {
+  await requireAdmin();
+  await setTestimonialStatus(testimonialId, "approved");
+  revalidateTag(COURSES_CACHE_TAG);
+}
+
+export async function rejectComment(testimonialId) {
+  await requireAdmin();
+  await setTestimonialStatus(testimonialId, "rejected");
+  revalidateTag(COURSES_CACHE_TAG);
+}
+
+export async function deleteComment(testimonialId) {
+  await requireAdmin();
+  await deleteTestimonial(testimonialId);
+  revalidateTag(COURSES_CACHE_TAG);
 }

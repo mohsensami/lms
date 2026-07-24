@@ -186,6 +186,70 @@ export async function getCourseDetailsByInstructor(instructorId, expand) {
     });
 }
 
+export async function getAllCoursesDashboardData(expand) {
+    return withDb(async () => {
+        const publishCourses = await prisma.course.findMany({
+            where: {
+                active: true,
+            },
+            include: {
+                category: true,
+                testimonials: true,
+                instructor: true,
+            },
+        });
+
+        const enrollments = await Promise.all(
+            publishCourses.map(async (course) => {
+                const enrollment = await getEnrollmentsForCourse(course._id);
+                return enrollment;
+            }),
+        );
+
+        const groupByCourses = groupBy(enrollments.flat(), (item) => item.course);
+
+        const totalRevenue = publishCourses.reduce((acc, course) => {
+            const enrollmentsForCourse = groupByCourses[course._id] || [];
+            return acc + enrollmentsForCourse.length * course.price;
+        }, 0);
+
+        const totalEnrollments = enrollments.reduce((acc, obj) => {
+            return acc + obj.length;
+        }, 0);
+
+        const tesimonials = await Promise.all(
+            publishCourses.map(async (course) => {
+                const tesimonial = await getTestimonialsForCourse(course._id);
+                return tesimonial;
+            }),
+        );
+
+        const totalTestimonials = tesimonials.flat();
+        const avgRating =
+            totalTestimonials.reduce(function (acc, obj) {
+                return acc + obj.rating;
+            }, 0) / totalTestimonials.length;
+
+        if (expand) {
+            const allCourses = await prisma.course.findMany({});
+            return {
+                courses: allCourses,
+                enrollments: enrollments?.flat(),
+                reviews: totalTestimonials,
+            };
+        }
+
+        return {
+            courses: publishCourses.length,
+            enrollments: totalEnrollments,
+            reviews: totalTestimonials.length,
+            ratings: avgRating.toPrecision(2),
+            inscourses: publishCourses,
+            revenue: totalRevenue,
+        };
+    });
+}
+
 export async function create(courseData) {
     try {
         return await withDb(async () => {

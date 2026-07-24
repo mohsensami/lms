@@ -39,7 +39,7 @@ const AccountSidebar = async () => {
   </div>
 </div>
           <div className="border-t border-border pt-2">
-            <Menu />
+            <Menu role={loggedInUser?.role} />
           </div>
         </div>
       </div>

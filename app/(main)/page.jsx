@@ -5,13 +5,17 @@ import { getCourseList } from '@/queries/courses';
 // import CourseCard from './courses/_components/CourseCard';
 import { getCategories } from '@/queries/categories';
 import HeroSection from '@/components/HeroSection';
-
+import BlogCard from '@/components/blog-card';
+import { getPostList } from '@/queries/posts';
+import Link from 'next/link';
+import { ArrowLeftIcon } from 'lucide-react';
 
 import FullWidthCourseCard from './courses/_components/FullWidthCourseCard';
 
 const HomePage = async () => {
     const courses = await getCourseList();
     const categories = await getCategories();
+    const latestPosts = (await getPostList()).slice(0, 5);
     // console.log(cat);
 
     return (
@@ -38,6 +42,26 @@ const HomePage = async () => {
                     return <FullWidthCourseCard key={course.id} course={course} />;
                 })}
             </section>
+
+            {/* Latest Articles */}
+            {latestPosts.length > 0 && (
+                <section id="latest-articles" className="container space-y-8 py-12 md:py-16 lg:py-20">
+                    <div className="flex items-center justify-between">
+                        <SectionTitle>آخرین مقالات</SectionTitle>
+                        <Link
+                            href="/blog"
+                            className="flex items-center gap-1 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground/80 transition hover:border-primary hover:text-primary"
+                        >
+                            نمایش همه <ArrowLeftIcon className="h-4 w-4" />
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {latestPosts.map((post) => (
+                            <BlogCard key={post.id} post={post} />
+                        ))}
+                    </div>
+                </section>
+            )}
 
             {/* Categories Section */}
             {/* <section id="categories" className="container space-y-6  py-8  md:py-12 lg:py-24">

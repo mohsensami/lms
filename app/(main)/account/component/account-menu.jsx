@@ -4,15 +4,37 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-const menu = [
+const baseMenu = [
   { label: "پروفایل", href: "/account" },
   { label: "دوره‌های ثبت‌نامی", href: "/account/enrolled-courses" },
   { label: "آزمون‌ها و مدارک", href: "/account/certificates" },
   { label: "فاکتورهای من", href: "/account/Order" },
+  { label: "دیدگاه‌های من", href: "/account/my-comments" },
 ];
 
-function Menu() {
+const instructorMenu = [
+  { label: "داشبورد مدیریت", href: "/account/dashboard" },
+  { label: "دوره‌های من (مدرس)", href: "/account/courses" },
+  { label: "آزمون‌ساز", href: "/account/quiz-sets" },
+  { label: "لایوها", href: "/account/lives" },
+];
+
+const adminMenu = [
+  { label: "پست‌های وبلاگ", href: "/account/posts" },
+  { label: "مدیریت دیدگاه‌ها", href: "/account/all-comments" },
+];
+
+function Menu({ role }) {
   const pathname = usePathname();
+
+  let menu = baseMenu;
+  if (role === 'instructor' || role === 'admin') {
+    menu = [...menu, ...instructorMenu];
+  }
+  if (role === 'admin') {
+    menu = [...menu, ...adminMenu];
+  }
+
   return (
     <ul className="list-none sidebar-nav mb-0 mt-3 space-y-1" id="navmenu-nav">
       {menu.map((item, i) => (

@@ -102,20 +102,11 @@ const MainNav = ({ items, children }) => {
                                 <Link href="/account">پروفایل</Link>
                             </DropdownMenuItem>
 
-                            {loggedInUser?.role === 'instructor' && (
-                                <DropdownMenuItem className="cursor-pointer" asChild>
-                                    <Link href="/dashboard">
-                                        {' '}
-                                        <strong>داشبورد اساتید</strong>{' '}
-                                    </Link>
-                                </DropdownMenuItem>
-                            )}
-
                             <DropdownMenuItem className="cursor-pointer" asChild>
                                 <Link href="/account/enrolled-courses">دوره های من</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem className="cursor-pointer" asChild>
-                                <Link href="">گواهی‌نامه‌ها و نظرات مشتریان</Link>
+                                <Link href="/account/certificates">گواهی‌نامه‌ها و نظرات مشتریان</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem className="cursor-pointer" asChild>
                                 <Link
