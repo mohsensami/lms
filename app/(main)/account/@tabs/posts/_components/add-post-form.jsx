@@ -1,5 +1,6 @@
 'use client';
 import * as z from 'zod';
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -10,11 +11,18 @@ import Link from 'next/link';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { createPost } from '@/app/actions/post';
+import { getSlug } from '@/lib/convertData';
 
 const formSchema = z.object({
     title: z.string().min(1, {
         message: 'عنوان الزامی است',
     }),
+    slug: z
+        .string()
+        .min(1, { message: 'نامک (slug) الزامی است' })
+        .regex(/^[a-z0-9\u0600-\u06FF-]+$/i, {
+            message: 'نامک فقط می‌تواند شامل حروف، عدد و خط تیره باشد (بدون فاصله)',
+        }),
     content: z.string().min(1, {
         message: 'متن پست الزامی است',
     }),
@@ -22,24 +30,45 @@ const formSchema = z.object({
 
 const AddPostForm = () => {
     const router = useRouter();
+    // Once the admin edits the slug field by hand, stop overwriting it from
+    // the title — otherwise their manual English slug would keep getting
+    // clobbered on every keystroke in the title field.
+    const [slugTouched, setSlugTouched] = useState(false);
 
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: '',
+            slug: '',
             content: '',
         },
     });
 
     const { isSubmitting, isValid } = form.formState;
 
+    const handleTitleChange = (field) => (e) => {
+        field.onChange(e);
+        if (!slugTouched) {
+            form.setValue('slug', getSlug(e.target.value) || '', { shouldValidate: true });
+        }
+    };
+
+    const handleSlugChange = (field) => (e) => {
+        setSlugTouched(true);
+        field.onChange(e);
+    };
+
     const onSubmit = async (values) => {
         try {
-            const post = await createPost(values);
+            const post = await createPost({ ...values, slug: getSlug(values.slug) });
             toast.success('پست ایجاد شد');
             router.push(`/account/posts/${post?.id}`);
         } catch (error) {
-            toast.error('مشکلی پیش آمد');
+            toast.error(
+                String(error?.message || '').includes('Unique constraint')
+                    ? 'این نامک (slug) قبلاً برای پست دیگری استفاده شده است. لطفاً نامک دیگری انتخاب کنید.'
+                    : 'مشکلی پیش آمد',
+            );
         }
     };
 
@@ -55,8 +84,40 @@ const AddPostForm = () => {
                                 <FormItem>
                                     <FormLabel>عنوان پست</FormLabel>
                                     <FormControl>
-                                        <Input disabled={isSubmitting} placeholder="مثلا: چطور اولین پروژه ری‌اکت خودتون رو بسازید" {...field} />
+                                        <Input
+                                            disabled={isSubmitting}
+                                            placeholder="مثلا: چطور اولین پروژه ری‌اکت خودتون رو بسازید"
+                                            {...field}
+                                            onChange={handleTitleChange(field)}
+                                        />
                                     </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="slug"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>نامک (Slug) — آدرس صفحه</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            dir="ltr"
+                                            disabled={isSubmitting}
+                                            placeholder="my-first-react-project"
+                                            {...field}
+                                            onChange={handleSlugChange(field)}
+                                        />
+                                    </FormControl>
+                                    <FormDescription>
+                                        پیشنهاد می‌شود از حروف انگلیسی و خط تیره استفاده کنید (مثلاً{' '}
+                                        <span dir="ltr" className="font-mono">
+                                            intro-to-simulink
+                                        </span>
+                                        ) تا آدرس صفحه کوتاه‌تر و در همه‌جا (مثل اشتراک‌گذاری در تلگرام/واتساپ) بدون
+                                        مشکل نمایش داده شود. آدرس نهایی: <span dir="ltr">/blog/{field.value || '...'}</span>
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}

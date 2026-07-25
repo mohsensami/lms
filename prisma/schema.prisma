@@ -38,6 +38,8 @@ model User {
   reports       Report[]
   watches       Watch[]
   orders        Order[]
+  postsAuthored Post[]        @relation("PostAuthor")
+  postComments  PostComment[]
 }
 
 model Category {
@@ -241,4 +243,23 @@ model Post {
   metaTitle       String?
   metaDescription String?
   focusKeyword    String?
+
+  authorId String?
+  author   User?         @relation("PostAuthor", fields: [authorId], references: [id])
+  comments PostComment[]
+}
+
+// Comments on blog posts (separate from course Testimonials). Same
+// moderation workflow: a comment stays "pending" until an admin approves it.
+model PostComment {
+  id        String   @id @default(cuid())
+  content   String
+  status    String   @default("pending") // pending | approved | rejected
+  createdAt DateTime @default(now())
+
+  postId String?
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
 }

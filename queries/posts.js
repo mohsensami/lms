@@ -28,7 +28,7 @@ export async function getPostList() {
 const getCachedPostBySlug = unstable_cache(
     async (slug) => {
         return withDb(async () => {
-            const post = await prisma.post.findUnique({ where: { slug } });
+            const post = await prisma.post.findUnique({ where: { slug }, include: { author: true } });
             return replaceMongoIdInObject(post);
         });
     },
@@ -44,7 +44,7 @@ export async function getPostBySlug(slug) {
 const getCachedPostById = unstable_cache(
     async (id) => {
         return withDb(async () => {
-            const post = await prisma.post.findUnique({ where: { id } });
+            const post = await prisma.post.findUnique({ where: { id }, include: { author: true } });
             return replaceMongoIdInObject(post);
         });
     },

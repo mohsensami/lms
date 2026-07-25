@@ -18,7 +18,7 @@ async function assertIsAdmin() {
 }
 
 export async function createPost(data) {
-    await assertIsAdmin();
+    const admin = await assertIsAdmin();
     try {
         const postData = {
             title: data.title,
@@ -28,6 +28,7 @@ export async function createPost(data) {
             metaTitle: data.metaTitle || null,
             metaDescription: data.metaDescription || null,
             focusKeyword: data.focusKeyword || null,
+            authorId: admin.id,
         };
         const post = await create(postData);
         revalidateTag(POSTS_CACHE_TAG);
