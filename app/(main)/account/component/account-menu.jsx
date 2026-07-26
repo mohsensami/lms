@@ -4,36 +4,43 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-const baseMenu = [
+const studentMenu = [
   { label: "پروفایل", href: "/account" },
-  { label: "دوره‌های ثبت‌نامی", href: "/account/enrolled-courses" },
-  { label: "آزمون‌ها و مدارک", href: "/account/certificates" },
+  { label: "داشبورد", href: "/account/dashboard" },
   { label: "فاکتورهای من", href: "/account/Order" },
   { label: "دیدگاه‌های من", href: "/account/my-comments" },
+  { label: "دوره‌های ثبت‌نامی", href: "/account/enrolled-courses" },
+  { label: "آزمون‌ها و مدارک", href: "/account/certificates" },
 ];
 
 const instructorMenu = [
-  { label: "داشبورد مدیریت", href: "/account/dashboard" },
-  { label: "دوره‌های من (مدرس)", href: "/account/courses" },
+  { label: "داشبورد", href: "/account/dashboard" },
+  { label: "مقالات", href: "/account/posts" },
+  { label: "دوره‌ها", href: "/account/courses" },
+  { label: "پروفایل", href: "/account" },
+  { label: "دیدگاه‌ها", href: "/account/comments" },
   { label: "آزمون‌ساز", href: "/account/quiz-sets" },
-  { label: "لایوها", href: "/account/lives" },
+  { label: "درخواست‌های مدرک", href: "/account/certificate-requests" },
 ];
 
 const adminMenu = [
-  { label: "پست‌های وبلاگ", href: "/account/posts" },
-  { label: "مدیریت دیدگاه‌ها", href: "/account/all-comments" },
+  { label: "داشبورد", href: "/account/dashboard" },
+  { label: "پروفایل", href: "/account" },
+  { label: "کاربران", href: "/account/users" },
+  { label: "دوره‌ها", href: "/account/courses" },
+  { label: "مقالات", href: "/account/posts" },
+  { label: "دیدگاه‌ها", href: "/account/comments" },
+  { label: "آزمون‌ساز", href: "/account/quiz-sets" },
+  { label: "درخواست‌های مدرک", href: "/account/certificate-requests" },
+  { label: "فاکتورها", href: "/account/Order" },
 ];
 
 function Menu({ role }) {
   const pathname = usePathname();
 
-  let menu = baseMenu;
-  if (role === 'instructor' || role === 'admin') {
-    menu = [...menu, ...instructorMenu];
-  }
-  if (role === 'admin') {
-    menu = [...menu, ...adminMenu];
-  }
+  let menu = studentMenu;
+  if (role === 'instructor') menu = instructorMenu;
+  if (role === 'admin') menu = adminMenu;
 
   return (
     <ul className="list-none sidebar-nav mb-0 mt-3 space-y-1" id="navmenu-nav">

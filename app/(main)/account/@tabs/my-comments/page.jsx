@@ -3,9 +3,12 @@ import { redirect } from 'next/navigation';
 import { getUserByEmail } from '@/queries/users';
 import { getTestimonialsForUser } from '@/queries/testimonials';
 import { getPostCommentsForUser } from '@/queries/postComments';
+import { deleteMyComment } from '@/app/actions/review';
+import { deleteMyPostComment } from '@/app/actions/post-comment';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import StarRating from '@/components/start-rating';
+import DeleteOwnCommentButton from '../../component/delete-own-comment-button';
 
 const STATUS_LABEL = {
     pending: 'در حال بررسی',
@@ -55,6 +58,15 @@ async function MyComments() {
                                     <StarRating rating={comment.rating} />
                                 </div>
                                 <p className="mt-3 text-sm leading-7 text-muted-foreground">{comment.content}</p>
+                                {comment.reply && (
+                                    <div className="mt-3 rounded-xl bg-muted/60 p-3 text-sm text-foreground/90">
+                                        <span className="font-semibold text-primary">پاسخ: </span>
+                                        {comment.reply}
+                                    </div>
+                                )}
+                                <div className="mt-3">
+                                    <DeleteOwnCommentButton commentId={comment.id} onDelete={deleteMyComment} />
+                                </div>
                             </div>
                         ))
                     ) : (
@@ -77,6 +89,15 @@ async function MyComments() {
                                     </Badge>
                                 </div>
                                 <p className="mt-3 text-sm leading-7 text-muted-foreground">{comment.content}</p>
+                                {comment.reply && (
+                                    <div className="mt-3 rounded-xl bg-muted/60 p-3 text-sm text-foreground/90">
+                                        <span className="font-semibold text-primary">پاسخ: </span>
+                                        {comment.reply}
+                                    </div>
+                                )}
+                                <div className="mt-3">
+                                    <DeleteOwnCommentButton commentId={comment.id} onDelete={deleteMyPostComment} />
+                                </div>
                             </div>
                         ))
                     ) : (

@@ -38,6 +38,17 @@ export async function setPostCommentStatus(commentId, status) {
     return prisma.postComment.update({ where: { id: commentId }, data: { status } });
 }
 
+export async function setPostCommentReply(commentId, reply, repliedById) {
+    return prisma.postComment.update({
+        where: { id: commentId },
+        data: { reply, repliedAt: new Date(), repliedById },
+    });
+}
+
+export async function getPostCommentById(commentId) {
+    return prisma.postComment.findUnique({ where: { id: commentId } });
+}
+
 export async function deletePostComment(commentId) {
     return prisma.postComment.delete({ where: { id: commentId } });
 }

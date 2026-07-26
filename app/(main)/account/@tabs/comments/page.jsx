@@ -1,13 +1,14 @@
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
-import { getUserByEmail } from '@/queries/users';
+import { requireRole } from '@/lib/require-role';
 import { getAllTestimonials } from '@/queries/testimonials';
 import { getAllPostComments } from '@/queries/postComments';
+import { replyToComment } from '@/app/actions/review';
+import { replyToPostComment } from '@/app/actions/post-comment';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import StarRating from '@/components/start-rating';
 import CommentModerationActions from '../../component/comment-moderation-actions';
 import PostCommentModerationActions from '../../component/post-comment-moderation-actions';
+import CommentReplyBox from '../../component/comment-reply-box';
 
 const STATUS_LABEL = {
     pending: 'در حال بررسی',
@@ -21,16 +22,12 @@ const STATUS_VARIANT = {
     rejected: 'destructive',
 };
 
-async function AllComments() {
-    const session = await auth();
-    if (!session?.user) {
-        redirect('/login');
-    }
-
-    const loggedInUser = await getUserByEmail(session?.user?.email);
-    if (loggedInUser?.role !== 'admin') {
-        redirect('/account');
-    }
+async function CommentsPage() {
+    // Instructors and admins both land here; instructors can reply to any
+    // student comment sitewide, admins additionally get moderation controls
+    // (approve/reject/delete).
+    const user = await requireRole('instructor');
+    const isAdmin = user.role === 'admin';
 
     const [courseComments, postComments] = await Promise.all([getAllTestimonials(), getAllPostComments()]);
 
@@ -64,9 +61,17 @@ async function AllComments() {
                                 </div>
                                 <p className="mt-3 text-sm leading-7 text-muted-foreground">{comment.content}</p>
 
-                                <div className="mt-4">
-                                    <CommentModerationActions testimonialId={comment.id} status={comment.status} />
-                                </div>
+                                {isAdmin && (
+                                    <div className="mt-4">
+                                        <CommentModerationActions testimonialId={comment.id} status={comment.status} />
+                                    </div>
+                                )}
+
+                                <CommentReplyBox
+                                    commentId={comment.id}
+                                    initialReply={comment.reply}
+                                    onReply={replyToComment}
+                                />
                             </div>
                         ))
                     ) : (
@@ -95,9 +100,17 @@ async function AllComments() {
                                 </div>
                                 <p className="mt-3 text-sm leading-7 text-muted-foreground">{comment.content}</p>
 
-                                <div className="mt-4">
-                                    <PostCommentModerationActions commentId={comment.id} status={comment.status} />
-                                </div>
+                                {isAdmin && (
+                                    <div className="mt-4">
+                                        <PostCommentModerationActions commentId={comment.id} status={comment.status} />
+                                    </div>
+                                )}
+
+                                <CommentReplyBox
+                                    commentId={comment.id}
+                                    initialReply={comment.reply}
+                                    onReply={replyToPostComment}
+                                />
                             </div>
                         ))
                     ) : (
@@ -109,4 +122,4 @@ async function AllComments() {
     );
 }
 
-export default AllComments;
+export default CommentsPage;

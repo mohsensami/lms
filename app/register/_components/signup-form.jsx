@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
+import GoogleSignInButton from '@/components/google-signin-button';
 
 export function SignupForm({ role }) {
     const router = useRouter();
@@ -22,11 +23,18 @@ export function SignupForm({ role }) {
             const firstName = formData.get('first-name');
             const lastName = formData.get('last-name');
             const email = formData.get('email');
+            const phone = formData.get('phone');
             const password = formData.get('password');
             const confirmPassword = formData.get('confirmPassword');
 
             if (password !== confirmPassword) {
                 toast.error('رمزهای عبور با هم مطابقت ندارند.');
+                setIsSubmitting(false);
+                return;
+            }
+
+            if (!/^09\d{9}$/.test(phone)) {
+                toast.error('شماره تلفن همراه معتبر نیست. شماره را به‌صورت 09xxxxxxxxx وارد کنید.');
                 setIsSubmitting(false);
                 return;
             }
@@ -42,6 +50,7 @@ export function SignupForm({ role }) {
                     firstName,
                     lastName,
                     email,
+                    phone,
                     password,
                     userRole,
                 }),
@@ -92,6 +101,18 @@ export function SignupForm({ role }) {
                             <Input id="email" name="email" type="email" placeholder="m@example.com" required />
                         </div>
                         <div className="grid gap-2">
+                            <Label htmlFor="phone">شماره تلفن همراه</Label>
+                            <Input
+                                id="phone"
+                                name="phone"
+                                type="tel"
+                                dir="ltr"
+                                placeholder="09xxxxxxxxx"
+                                required
+                                disabled={isSubmitting}
+                            />
+                        </div>
+                        <div className="grid gap-2">
                             <Label htmlFor="password">رمز عبور</Label>
                             <Input id="password" name="password" type="password" required disabled={isSubmitting} />
                         </div>
@@ -109,6 +130,13 @@ export function SignupForm({ role }) {
                             {isSubmitting ? 'در حال ارسال اطلاعات ...' : 'ثبت نام'}
                         </Button>
                     </div>
+
+                    <div className="my-4 flex items-center gap-3">
+                        <span className="h-px flex-1 bg-border" />
+                        <span className="text-xs text-muted-foreground">یا</span>
+                        <span className="h-px flex-1 bg-border" />
+                    </div>
+                    <GoogleSignInButton label="ثبت‌نام با گوگل" />
                     <div className="mt-4 text-center text-sm">
                         قبلاً حساب کاربری دارید؟{' '}
                         <Link href="/login" className="underline">

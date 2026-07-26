@@ -30,6 +30,7 @@ model User {
   socialMedia    Json?
   profilePicture String?
   designation    String?  @default("")
+  isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
 
   coursesTaught Course[]      @relation("CourseInstructor")
@@ -40,6 +41,7 @@ model User {
   orders        Order[]
   postsAuthored Post[]        @relation("PostAuthor")
   postComments  PostComment[]
+  certificateRequests CertificateRequest[] @relation("CertificateRequestStudent")
 }
 
 model Category {
@@ -67,7 +69,7 @@ model Course {
   category   Category? @relation(fields: [categoryId], references: [id])
 
   instructorId String?
-  instructor   User?   @relation("CourseInstructor", fields: [instructorId], references: [id])
+  instructor   User?   @relation("CourseInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
 
   quizSetId String?
   quizSet   Quizset? @relation(fields: [quizSetId], references: [id])
@@ -77,6 +79,7 @@ model Course {
   enrollments  Enrollment[]
   reports      Report[]
   orders       Order[]
+  certificateRequests CertificateRequest[]
 }
 
 model Module {
@@ -151,7 +154,7 @@ model Enrollment {
   course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   studentId String?
-  student   User?   @relation(fields: [studentId], references: [id])
+  student   User?   @relation(fields: [studentId], references: [id], onDelete: SetNull)
 }
 
 // Records every payment attempt (invoice) so the user's "Order" tab can show
@@ -172,7 +175,7 @@ model Order {
   course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   userId String?
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model Testimonial {
@@ -182,11 +185,15 @@ model Testimonial {
   status  String @default("pending") // pending | approved | rejected
   createdAt DateTime @default(now())
 
+  reply       String?
+  repliedAt   DateTime?
+  repliedById String?
+
   courseId String?
   course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   userId String?
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model Assessment {
@@ -207,7 +214,7 @@ model Report {
   course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   studentId String?
-  student   User?   @relation(fields: [studentId], references: [id])
+  student   User?   @relation(fields: [studentId], references: [id], onDelete: SetNull)
 
   quizAssessmentId String?     @unique
   quizAssessment   Assessment? @relation(fields: [quizAssessmentId], references: [id])
@@ -227,7 +234,7 @@ model Watch {
   module   Module? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   userId String?
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model Post {
@@ -245,7 +252,7 @@ model Post {
   focusKeyword    String?
 
   authorId String?
-  author   User?         @relation("PostAuthor", fields: [authorId], references: [id])
+  author   User?         @relation("PostAuthor", fields: [authorId], references: [id], onDelete: SetNull)
   comments PostComment[]
 }
 
@@ -257,9 +264,33 @@ model PostComment {
   status    String   @default("pending") // pending | approved | rejected
   createdAt DateTime @default(now())
 
+  reply       String?
+  repliedAt   DateTime?
+  repliedById String?
+
   postId String?
   post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   userId String?
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+// A student's request to have a completed course's certificate approved
+// before they're allowed to download it. Reviewed by the course's
+// instructor or any admin.
+model CertificateRequest {
+  id         String    @id @default(cuid())
+  status     String    @default("pending") // pending | approved | rejected
+  requestedAt DateTime @default(now())
+  decidedAt  DateTime?
+
+  decidedById String?
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  studentId String
+  student   User   @relation("CertificateRequestStudent", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, studentId])
 }

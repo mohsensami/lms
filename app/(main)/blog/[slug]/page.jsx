@@ -141,6 +141,12 @@ const BlogPostPage = async ({ params }) => {
                                             </div>
                                         </div>
                                         <p className="mt-3 leading-7 text-muted-foreground">{comment.content}</p>
+                                        {comment.reply && (
+                                            <div className="mt-3 rounded-xl bg-muted/60 p-3 text-sm">
+                                                <span className="font-semibold text-primary">پاسخ نویسنده/پشتیبانی: </span>
+                                                <span className="text-foreground/90">{comment.reply}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 );
                             })

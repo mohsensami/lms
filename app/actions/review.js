@@ -3,7 +3,12 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { getUserByEmail } from "@/queries/users";
-import { setTestimonialStatus, deleteTestimonial } from "@/queries/testimonials";
+import {
+  setTestimonialStatus,
+  deleteTestimonial,
+  setTestimonialReply,
+  getTestimonialById,
+} from "@/queries/testimonials";
 import { COURSES_CACHE_TAG } from "@/queries/courses";
 import { revalidateTag } from "next/cache";
 
@@ -45,16 +50,34 @@ export async function createReview(data, loginid, courseId) {
   }
 }
 
-async function requireAdmin() {
+async function requireLoggedInUser() {
   const session = await auth();
   if (!session?.user?.email) {
     throw new Error("شما اجازه دسترسی ندارید");
   }
   const loggedInUser = await getUserByEmail(session.user.email);
-  if (loggedInUser?.role !== "admin") {
+  if (!loggedInUser) {
     throw new Error("شما اجازه دسترسی ندارید");
   }
   return loggedInUser;
+}
+
+async function requireAdmin() {
+  const user = await requireLoggedInUser();
+  if (user.role !== "admin") {
+    throw new Error("شما اجازه دسترسی ندارید");
+  }
+  return user;
+}
+
+// Instructors and admins can reply to any course review anywhere on the
+// site — this is intentionally not scoped to "their own" courses.
+async function requireInstructorOrAdmin() {
+  const user = await requireLoggedInUser();
+  if (user.role !== "admin" && user.role !== "instructor") {
+    throw new Error("شما اجازه دسترسی ندارید");
+  }
+  return user;
 }
 
 export async function approveComment(testimonialId) {
@@ -71,6 +94,28 @@ export async function rejectComment(testimonialId) {
 
 export async function deleteComment(testimonialId) {
   await requireAdmin();
+  await deleteTestimonial(testimonialId);
+  revalidateTag(COURSES_CACHE_TAG);
+}
+
+export async function replyToComment(testimonialId, reply) {
+  const user = await requireInstructorOrAdmin();
+  if (!reply?.trim()) {
+    throw new Error("متن پاسخ نمی‌تواند خالی باشد");
+  }
+  await setTestimonialReply(testimonialId, reply.trim(), user.id);
+  revalidateTag(COURSES_CACHE_TAG);
+}
+
+// A student can delete their own comment (any status) — but nobody else's.
+export async function deleteMyComment(testimonialId) {
+  const user = await requireLoggedInUser();
+  const testimonial = await getTestimonialById(testimonialId);
+
+  if (!testimonial || testimonial.userId !== user.id) {
+    throw new Error("شما اجازه‌ی حذف این دیدگاه را ندارید");
+  }
+
   await deleteTestimonial(testimonialId);
   revalidateTag(COURSES_CACHE_TAG);
 }

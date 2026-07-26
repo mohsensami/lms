@@ -6,6 +6,7 @@ import path from "path";
 import { getCourseDetails } from "@/queries/courses";
 import { getLoggedInUser } from "@/lib/loggedin-user";
 import { getReport } from "@/queries/reports";
+import { getCertificateRequest } from "@/queries/certificateRequests";
 import { formatMyDate } from "@/lib/date";
 
 /* مهم: جلوگیری از build-time execution */
@@ -33,6 +34,14 @@ export async function GET(request) {
 
     if (!loggedInUser) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const certificateRequest = await getCertificateRequest(courseId, loggedInUser.id);
+    if (certificateRequest?.status !== "approved") {
+      return Response.json(
+        { error: "این مدرک هنوز توسط مدرس یا ادمین تایید نشده است." },
+        { status: 403 },
+      );
     }
 
     const report = await getReport({

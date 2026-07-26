@@ -41,6 +41,12 @@ const Testimonials = ({ testimonials }) => {
                                     </Badge>
                                 )}
                                 <p className="mt-4 leading-7 text-muted-foreground">{testimonial?.content}</p>
+                                {testimonial?.reply && (
+                                    <div className="mt-4 rounded-xl bg-muted/60 p-4 text-sm">
+                                        <span className="font-semibold text-primary">پاسخ مدرس/پشتیبانی: </span>
+                                        <span className="text-foreground/90">{testimonial.reply}</span>
+                                    </div>
+                                )}
                             </blockquote>
                         ))}
                     </div>

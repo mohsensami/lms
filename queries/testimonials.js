@@ -33,6 +33,17 @@ export async function setTestimonialStatus(testimonialId, status) {
     return testimonial;
 }
 
+export async function setTestimonialReply(testimonialId, reply, repliedById) {
+    return prisma.testimonial.update({
+        where: { id: testimonialId },
+        data: { reply, repliedAt: new Date(), repliedById },
+    });
+}
+
+export async function getTestimonialById(testimonialId) {
+    return prisma.testimonial.findUnique({ where: { id: testimonialId } });
+}
+
 export async function deleteTestimonial(testimonialId) {
     return prisma.testimonial.delete({ where: { id: testimonialId } });
 }

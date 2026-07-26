@@ -2,7 +2,7 @@ import { requireRole } from '@/lib/require-role';
 import AddPostForm from '../_components/add-post-form';
 
 const AddPost = async () => {
-    await requireRole('admin');
+    await requireRole('instructor');
     return <AddPostForm />;
 };
 

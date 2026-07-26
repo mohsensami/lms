@@ -57,3 +57,13 @@ export async function getOrdersForUser(userId) {
         return replaceMongoIdInArray(orders);
     }, []);
 }
+
+export async function getAllOrders() {
+    return withDb(async () => {
+        const orders = await prisma.order.findMany({
+            include: { course: true, user: true },
+            orderBy: { createdAt: 'desc' },
+        });
+        return replaceMongoIdInArray(orders);
+    }, []);
+}

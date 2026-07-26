@@ -1,7 +1,7 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { getUserByEmail } from '@/queries/users';
-import { getOrdersForUser } from '@/queries/orders';
+import { getOrdersForUser, getAllOrders } from '@/queries/orders';
 import OrderCard from '../../component/order-card';
 
 async function Orders() {
@@ -11,14 +11,17 @@ async function Orders() {
     }
 
     const loggedInUser = await getUserByEmail(session?.user?.email);
-    const orders = await getOrdersForUser(loggedInUser?.id);
+    const isAdmin = loggedInUser?.role === 'admin';
+    const orders = isAdmin ? await getAllOrders() : await getOrdersForUser(loggedInUser?.id);
 
     return (
         <div className="flex flex-col gap-4">
             {orders && orders.length > 0 ? (
-                orders.map((order) => <OrderCard key={order.id} order={order} />)
+                orders.map((order) => <OrderCard key={order.id} order={order} showBuyer={isAdmin} />)
             ) : (
-                <div className="font-bold bg-red-400 text-white p-2 w-100">هنوز هیچ فاکتوری برای شما ثبت نشده است!</div>
+                <div className="font-bold bg-red-400 text-white p-2 w-100">
+                    {isAdmin ? 'هنوز هیچ فاکتوری در کل سایت ثبت نشده است!' : 'هنوز هیچ فاکتوری برای شما ثبت نشده است!'}
+                </div>
             )}
         </div>
     );

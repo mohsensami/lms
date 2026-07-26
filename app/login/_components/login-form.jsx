@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import GoogleSignInButton from '@/components/google-signin-button';
 
 export function LoginForm() {
     const [error, setError] = useState('');
@@ -26,14 +27,16 @@ export function LoginForm() {
             const response = await ceredntialLogin(formData);
 
             if (!!response?.error) {
-                console.log(response.error);
                 setError(response.error);
+                toast.error(response.error);
             } else {
                 toast.success('با موفقیت وارد شدید');
                 router.push('/');
             }
         } catch (e) {
-            setError(e.message || 'ورود ناموفق بود. دوباره امتحان کنید.');
+            const message = e.message || 'ورود ناموفق بود. دوباره امتحان کنید.';
+            setError(message);
+            toast.error(message);
         } finally {
             setIsSubmitting(false);
         }
@@ -80,6 +83,14 @@ export function LoginForm() {
                         </Button>
                     </div>
                     {error ? <p className="mt-3 text-sm text-destructive">{error}</p> : null}
+
+                    <div className="my-4 flex items-center gap-3">
+                        <span className="h-px flex-1 bg-border" />
+                        <span className="text-xs text-muted-foreground">یا</span>
+                        <span className="h-px flex-1 bg-border" />
+                    </div>
+                    <GoogleSignInButton />
+
                     <div className="mt-4 text-center text-sm">
                         حساب کاربری ندارید؟
                         <Link href="/register/instructor" className="underline">

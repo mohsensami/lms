@@ -16,7 +16,7 @@ const STATUS_VARIANT = {
     failed: 'destructive',
 };
 
-function OrderCard({ order }) {
+function OrderCard({ order, showBuyer }) {
     const course = order?.course;
     const status = order?.status || 'pending';
 
@@ -34,6 +34,11 @@ function OrderCard({ order }) {
 
             <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <h6 className="truncate font-semibold text-foreground">{course?.title || 'دوره حذف شده'}</h6>
+                {showBuyer && (
+                    <span className="truncate text-sm text-foreground/80">
+                        {order?.user?.firstName} {order?.user?.lastName} ({order?.user?.email})
+                    </span>
+                )}
                 <span className="text-sm text-muted-foreground">{formatMyDate(order?.createdAt)}</span>
             </div>
 

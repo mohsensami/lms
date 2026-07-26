@@ -2,6 +2,19 @@ import { replaceMongoIdInObject } from "@/lib/convertData";
 import { prisma } from "@/lib/prisma";
 import { getCourseDetails } from "./courses";
 
+export async function getReportsForUser(studentId) {
+  if (!studentId) return [];
+  try {
+    const reports = await prisma.report.findMany({
+      where: { studentId },
+      include: { quizAssessment: true },
+    });
+    return reports;
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function getReport(filter) {
   try {
     const where = {};

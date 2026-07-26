@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { CourseProgress } from '@/components/course-progress';
 import { getCourseDetails } from '@/queries/courses';
 import { getReport } from '@/queries/reports';
+import { getCertificateRequest } from '@/queries/certificateRequests';
 import Quiz from './quiz';
 import { DownloadCertificate } from './download-certificate';
 
@@ -31,6 +32,7 @@ async function CourseCertificateCard({ enrollment, userId }) {
 
     const isQuizComplete = Boolean(report?.quizAssessment);
     const quizSet = course?.quizSet ? sanitizeData(course.quizSet) : null;
+    const certificateRequest = await getCertificateRequest(courseId, userId);
 
     return (
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
@@ -52,7 +54,11 @@ async function CourseCertificateCard({ enrollment, userId }) {
                     </div>
                 </div>
                 <div className="shrink-0">
-                    <DownloadCertificate courseId={courseId} totalProgress={totalProgress} />
+                    <DownloadCertificate
+                        courseId={courseId}
+                        totalProgress={totalProgress}
+                        requestStatus={certificateRequest?.status}
+                    />
                 </div>
             </div>
 
