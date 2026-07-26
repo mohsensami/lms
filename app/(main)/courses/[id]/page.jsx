@@ -74,7 +74,10 @@ const SingleCoursePage = async ({ params }) => {
             <CourseDetails course={visibleCourse} isEnrolled={isEnrolled} />
 
             <CourseCommentForm courseId={currentCourseId} loggedInUser={loggedInUser} />
-            <Testimonials testimonials={testimonialsWithPurchaseInfo} />
+            <Testimonials
+                testimonials={testimonialsWithPurchaseInfo}
+                canReply={loggedInUser?.role === 'admin' || loggedInUser?.role === 'instructor'}
+            />
 
             {/* <div className="mb-10">
                 <MoneyBack />

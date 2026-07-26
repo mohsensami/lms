@@ -8,6 +8,8 @@ import { buildPostMetadata, buildPostJsonLd } from '@/lib/seo';
 import { getLoggedInUser } from '@/lib/loggedin-user';
 import UserAvatar from '@/components/user-avatar';
 import PostCommentForm from '../_components/PostCommentForm';
+import CommentReplyBox from '@/app/(main)/account/component/comment-reply-box';
+import { replyToPostComment } from '@/app/actions/post-comment';
 
 function getReadTime(content) {
     if (!content) return '۱ دقیقه';
@@ -41,6 +43,7 @@ const BlogPostPage = async ({ params }) => {
         : '';
     const authorName = post?.author ? `${post.author.firstName || ''} ${post.author.lastName || ''}`.trim() : null;
     const jsonLd = buildPostJsonLd(post);
+    const canReply = loggedInUser?.role === 'admin' || loggedInUser?.role === 'instructor';
 
     return (
         <div className="bg-gradient-to-b from-primary/[0.06] to-transparent">
@@ -141,11 +144,21 @@ const BlogPostPage = async ({ params }) => {
                                             </div>
                                         </div>
                                         <p className="mt-3 leading-7 text-muted-foreground">{comment.content}</p>
-                                        {comment.reply && (
-                                            <div className="mt-3 rounded-xl bg-muted/60 p-3 text-sm">
-                                                <span className="font-semibold text-primary">پاسخ نویسنده/پشتیبانی: </span>
-                                                <span className="text-foreground/90">{comment.reply}</span>
-                                            </div>
+                                        {canReply ? (
+                                            <CommentReplyBox
+                                                commentId={comment.id}
+                                                initialReply={comment.reply}
+                                                onReply={replyToPostComment}
+                                            />
+                                        ) : (
+                                            comment.reply && (
+                                                <div className="mt-3 rounded-xl bg-muted/60 p-3 text-sm">
+                                                    <span className="font-semibold text-primary">
+                                                        پاسخ نویسنده/پشتیبانی:{' '}
+                                                    </span>
+                                                    <span className="text-foreground/90">{comment.reply}</span>
+                                                </div>
+                                            )
                                         )}
                                     </div>
                                 );

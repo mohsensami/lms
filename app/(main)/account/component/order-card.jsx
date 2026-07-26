@@ -24,7 +24,12 @@ function OrderCard({ order, showBuyer }) {
         <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
             <div className="relative hidden h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted sm:block">
                 {course?.thumbnail ? (
-                    <Image src={course.thumbnail} alt={course?.title || ''} fill className="object-cover" />
+                    <Image
+                        src={`/assets/images/courses/${course.thumbnail}`}
+                        alt={course?.title || ''}
+                        fill
+                        className="object-cover"
+                    />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center text-muted-foreground">
                         <Receipt className="h-6 w-6" />

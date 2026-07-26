@@ -3,8 +3,10 @@ import StarRating from '@/components/start-rating';
 import UserAvatar from '@/components/user-avatar';
 import { Badge } from '@/components/ui/badge';
 import { BadgeCheck } from 'lucide-react';
+import CommentReplyBox from '@/app/(main)/account/component/comment-reply-box';
+import { replyToComment } from '@/app/actions/review';
 
-const Testimonials = ({ testimonials }) => {
+const Testimonials = ({ testimonials, canReply }) => {
     return (
         <section className="py-8 md:py-12">
             <div className="container">
@@ -41,11 +43,20 @@ const Testimonials = ({ testimonials }) => {
                                     </Badge>
                                 )}
                                 <p className="mt-4 leading-7 text-muted-foreground">{testimonial?.content}</p>
-                                {testimonial?.reply && (
-                                    <div className="mt-4 rounded-xl bg-muted/60 p-4 text-sm">
-                                        <span className="font-semibold text-primary">پاسخ مدرس/پشتیبانی: </span>
-                                        <span className="text-foreground/90">{testimonial.reply}</span>
-                                    </div>
+
+                                {canReply ? (
+                                    <CommentReplyBox
+                                        commentId={testimonial.id}
+                                        initialReply={testimonial.reply}
+                                        onReply={replyToComment}
+                                    />
+                                ) : (
+                                    testimonial?.reply && (
+                                        <div className="mt-4 rounded-xl bg-muted/60 p-4 text-sm">
+                                            <span className="font-semibold text-primary">پاسخ مدرس/پشتیبانی: </span>
+                                            <span className="text-foreground/90">{testimonial.reply}</span>
+                                        </div>
+                                    )
                                 )}
                             </blockquote>
                         ))}
