@@ -83,6 +83,8 @@ export async function doCreateQuizSet(data) {
   }
 }
 
+import { getQuizScore } from "@/lib/quiz-score";
+
 export async function addQuizAssessment(courseId, quizSetId, answers) {
   try {
     const quizSet = await getQuizSetById(quizSetId);
@@ -122,6 +124,8 @@ export async function addQuizAssessment(courseId, quizSetId, answers) {
       userId: loggedInUser.id,
       quizAssessment: assessment?._id,
     });
+
+    return getQuizScore(assessment);
   } catch (error) {
     throw new Error(error);
   }

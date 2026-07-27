@@ -3,6 +3,7 @@ import { CourseProgress } from '@/components/course-progress';
 import { getCourseDetails } from '@/queries/courses';
 import { getReport } from '@/queries/reports';
 import { getCertificateRequest } from '@/queries/certificateRequests';
+import { getQuizScore } from '@/lib/quiz-score';
 import Quiz from './quiz';
 import { DownloadCertificate } from './download-certificate';
 
@@ -31,6 +32,7 @@ async function CourseCertificateCard({ enrollment, userId }) {
     const totalProgress = totalModuleCount > 0 ? (totalCompletedModules / totalModuleCount) * 100 : 0;
 
     const isQuizComplete = Boolean(report?.quizAssessment);
+    const quizScore = report?.quizAssessment ? getQuizScore(report.quizAssessment) : null;
     const quizSet = course?.quizSet ? sanitizeData(course.quizSet) : null;
     const certificateRequest = await getCertificateRequest(courseId, userId);
 
@@ -64,7 +66,7 @@ async function CourseCertificateCard({ enrollment, userId }) {
 
             {quizSet && (
                 <div className="mt-4 border-t border-border pt-4">
-                    <Quiz courseId={courseId} quizSet={quizSet} isTaken={isQuizComplete} />
+                    <Quiz courseId={courseId} quizSet={quizSet} isTaken={isQuizComplete} score={quizScore} />
                 </div>
             )}
         </div>

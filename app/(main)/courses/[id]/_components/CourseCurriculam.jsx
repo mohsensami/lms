@@ -1,10 +1,13 @@
 import React from 'react';
-import { BookCheck, Clock10, Radio } from 'lucide-react';
+import { BookCheck, Clock10 } from 'lucide-react';
 import { Accordion } from '@/components/ui/accordion';
 
 import CourseModuleList from './module/CourseModuleList';
+import { CourseProgress } from '@/components/course-progress';
+import { getLoggedInUser } from '@/lib/loggedin-user';
+import { getModulesWithWatchState, getCourseProgressPercent } from '@/lib/course-progress';
 
-const CourseCurriculam = ({ course, isEnrolled }) => {
+const CourseCurriculam = async ({ course, isEnrolled, activeLessonSlug }) => {
     const totalDuration = course?.modules
         .map((item) => {
             return item.lessonIds.reduce(function (acc, obj) {
@@ -14,6 +17,17 @@ const CourseCurriculam = ({ course, isEnrolled }) => {
         .reduce(function (acc, obj) {
             return acc + obj;
         }, 0);
+
+    const loggedInUser = isEnrolled ? await getLoggedInUser() : null;
+    const modules = loggedInUser
+        ? await getModulesWithWatchState(course, loggedInUser.id)
+        : (course?.modules ?? []);
+    const totalProgress = loggedInUser ? await getCourseProgressPercent(course, loggedInUser.id) : 0;
+
+    const expandedModule = activeLessonSlug
+        ? modules.findIndex((module) => module.lessonIds?.some((lesson) => lesson.slug === activeLessonSlug))
+        : -1;
+    const defaultOpen = expandedModule >= 0 ? [`item-${expandedModule + 1}`] : [];
 
     return (
         <div>
@@ -27,27 +41,25 @@ const CourseCurriculam = ({ course, isEnrolled }) => {
                     <Clock10 className="h-3.5 w-3.5 text-primary" />
                     {(totalDuration / 3660).toPrecision(2)}+ ساعت
                 </span>
-                <span className="flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5">
-                    <Radio className="h-3.5 w-3.5 text-primary" />4 کلاس زنده
-                </span>
             </div>
 
-            {/* <Accordion
-                defaultValue={course?.modules?.map((module, index) => `item-${index + 1}`)}
-                type="multiple"
-                collapsible
-                className="mt-6 w-full space-y-3"
-            > */}
-            <Accordion defaultValue={[]} type="multiple" className="mt-6 w-full space-y-3">
-                {course?.modules &&
-                    course.modules.map((module, index) => (
-                        <CourseModuleList
-                            key={module.id || index}
-                            module={module}
-                            index={index}
-                            isEnrolled={isEnrolled}
-                        />
-                    ))}
+            {isEnrolled && (
+                <div className="mt-6 rounded-2xl border border-border bg-card p-4">
+                    <CourseProgress variant="success" value={totalProgress} />
+                </div>
+            )}
+
+            <Accordion defaultValue={defaultOpen} type="multiple" className="mt-6 w-full space-y-3">
+                {modules.map((module, index) => (
+                    <CourseModuleList
+                        key={module.id || module._id || index}
+                        courseId={course?.id}
+                        module={module}
+                        index={index}
+                        isEnrolled={isEnrolled}
+                        activeLessonSlug={activeLessonSlug}
+                    />
+                ))}
             </Accordion>
         </div>
     );

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Lock, PlayCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Lock, PlayCircle, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -10,10 +11,55 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 // react-player uses browser APIs, so it must be loaded on the client only.
 const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 
-const CourseLessonPreview = ({ lesson, isEnrolled }) => {
+const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpen }) => {
     const [open, setOpen] = useState(false);
+    const [hasStarted, setHasStarted] = useState(false);
+    const router = useRouter();
+
     const isFree = lesson?.access === 'public';
     const isPlayable = isFree || isEnrolled;
+    const isCompleted = lesson?.state === 'completed';
+
+    useEffect(() => {
+        if (autoOpen && isPlayable) {
+            setOpen(true);
+        }
+        // Only meant to run once on mount when landing on a specific lesson.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    async function recordWatch(state, lastTime = 0) {
+        if (!courseId || !moduleSlug) return; // free-preview lessons outside a real enrollment context
+        try {
+            await fetch('/api/lesson-watch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    courseId,
+                    lessonId: lesson.id || lesson._id,
+                    moduleSlug,
+                    state,
+                    lastTime,
+                }),
+            });
+        } catch (error) {
+            // Silently ignore — this is just progress tracking, not critical path.
+        }
+    }
+
+    function handleStart() {
+        if (!hasStarted && isEnrolled) {
+            setHasStarted(true);
+            recordWatch('started');
+        }
+    }
+
+    function handleEnded() {
+        if (isEnrolled) {
+            recordWatch('completed');
+            router.refresh();
+        }
+    }
 
     if (!isPlayable) {
         return (
@@ -33,10 +79,17 @@ const CourseLessonPreview = ({ lesson, isEnrolled }) => {
             <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className="flex w-full items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-primary/5 hover:text-primary"
+                className={cn(
+                    'flex w-full items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-primary/5 hover:text-primary',
+                    isCompleted ? 'text-emerald-600' : 'text-foreground',
+                )}
             >
                 <span className="flex items-center gap-2.5 truncate">
-                    <PlayCircle size={16} className="flex-none text-primary" />
+                    {isCompleted ? (
+                        <CheckCircle2 size={16} className="flex-none text-emerald-600" />
+                    ) : (
+                        <PlayCircle size={16} className="flex-none text-primary" />
+                    )}
                     <span className="truncate">{lesson?.title}</span>
                 </span>
                 {isFree ? (
@@ -44,9 +97,11 @@ const CourseLessonPreview = ({ lesson, isEnrolled }) => {
                         پیش‌نمایش رایگان
                     </Badge>
                 ) : (
-                    <Badge variant="outline" className="flex-none border-primary/30 text-[10px] text-primary">
-                        پرداخت شده
-                    </Badge>
+                    !isCompleted && (
+                        <Badge variant="outline" className="flex-none border-primary/30 text-[10px] text-primary">
+                            پرداخت شده
+                        </Badge>
+                    )
                 )}
             </button>
 
@@ -63,6 +118,8 @@ const CourseLessonPreview = ({ lesson, isEnrolled }) => {
                                 height="100%"
                                 controls
                                 playing
+                                onStart={handleStart}
+                                onEnded={handleEnded}
                                 config={{
                                     file: {
                                         attributes: {

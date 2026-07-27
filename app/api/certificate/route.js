@@ -7,6 +7,7 @@ import { getCourseDetails } from "@/queries/courses";
 import { getLoggedInUser } from "@/lib/loggedin-user";
 import { getReport } from "@/queries/reports";
 import { getCertificateRequest } from "@/queries/certificateRequests";
+import { getQuizScore } from "@/lib/quiz-score";
 import { formatMyDate } from "@/lib/date";
 
 /* مهم: جلوگیری از build-time execution */
@@ -52,6 +53,8 @@ export async function GET(request) {
     const completionDate = report?.completion_date
       ? formatMyDate(report.completion_date)
       : formatMyDate(Date.now());
+
+    const quizScore = report?.quizAssessment ? getQuizScore(report.quizAssessment) : null;
 
     const completionInfo = {
       name: `${loggedInUser.firstName} ${loggedInUser.lastName}`,
@@ -149,6 +152,23 @@ export async function GET(request) {
       font: montserrat,
       maxWidth: 700,
     });
+
+    /* -----------------
+     * Quiz score (optional — the quiz itself is optional, but if the
+     * student took it, their score is printed as a bonus achievement)
+     *-------------------*/
+    if (quizScore && quizScore.total > 0) {
+      const quizText = `Quiz Score: ${quizScore.correct}/${quizScore.total} (${quizScore.percentage}%)`;
+      const quizTextWidth = montserratItalic.widthOfTextAtSize(quizText, 14);
+
+      page.drawText(quizText, {
+        x: width / 2 - quizTextWidth / 2,
+        y: height - 365,
+        size: 14,
+        font: montserratItalic,
+        color: rgb(0, 0.53, 0.71),
+      });
+    }
 
     /* -----------------
      * Signature

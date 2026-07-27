@@ -1,10 +1,10 @@
 import React from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-import { Radio, Video, FileQuestion } from 'lucide-react';
+import { Video } from 'lucide-react';
 import CourseLessonList from './CourseLessonList';
 
-const CourseModuleList = ({ module, index, isEnrolled }) => {
+const CourseModuleList = ({ courseId, module, index, isEnrolled, activeLessonSlug }) => {
     const totalDuration = module?.lessonIds.reduce(function (acc, obj) {
         return acc + obj.duration;
     }, 0);
@@ -26,13 +26,6 @@ const CourseModuleList = ({ module, index, isEnrolled }) => {
                             <Video className="h-3.5 w-3.5 text-primary" />
                             {(totalDuration / 3660).toPrecision(2)} ساعت
                         </span>
-                        <span className="flex items-center gap-1.5">
-                            <FileQuestion className="h-3.5 w-3.5 text-primary" />
-                            10 آزمون
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                            <Radio className="h-3.5 w-3.5 text-primary" />1 کلاس زنده
-                        </span>
                     </div>
 
                     <div className="mt-4 space-y-1">
@@ -40,8 +33,11 @@ const CourseModuleList = ({ module, index, isEnrolled }) => {
                             module.lessonIds.map((lesson) => (
                                 <CourseLessonList
                                     key={lesson.id || lesson._id}
+                                    courseId={courseId}
+                                    moduleSlug={module.slug}
                                     lesson={lesson}
                                     isEnrolled={isEnrolled}
+                                    autoOpen={activeLessonSlug && lesson.slug === activeLessonSlug}
                                 />
                             ))}
                     </div>
