@@ -3,9 +3,8 @@ import { BookCheck, Clock10 } from 'lucide-react';
 import { Accordion } from '@/components/ui/accordion';
 
 import CourseModuleList from './module/CourseModuleList';
-import { CourseProgress } from '@/components/course-progress';
 import { getLoggedInUser } from '@/lib/loggedin-user';
-import { getModulesWithWatchState, getCourseProgressPercent } from '@/lib/course-progress';
+import { getModulesWithWatchState } from '@/lib/course-progress';
 
 const CourseCurriculam = async ({ course, isEnrolled, activeLessonSlug }) => {
     const totalDuration = course?.modules
@@ -22,7 +21,6 @@ const CourseCurriculam = async ({ course, isEnrolled, activeLessonSlug }) => {
     const modules = loggedInUser
         ? await getModulesWithWatchState(course, loggedInUser.id)
         : (course?.modules ?? []);
-    const totalProgress = loggedInUser ? await getCourseProgressPercent(course, loggedInUser.id) : 0;
 
     const expandedModule = activeLessonSlug
         ? modules.findIndex((module) => module.lessonIds?.some((lesson) => lesson.slug === activeLessonSlug))
@@ -42,12 +40,6 @@ const CourseCurriculam = async ({ course, isEnrolled, activeLessonSlug }) => {
                     {(totalDuration / 3660).toPrecision(2)}+ ساعت
                 </span>
             </div>
-
-            {isEnrolled && (
-                <div className="mt-6 rounded-2xl border border-border bg-card p-4">
-                    <CourseProgress variant="success" value={totalProgress} />
-                </div>
-            )}
 
             <Accordion defaultValue={defaultOpen} type="multiple" className="mt-6 w-full space-y-3">
                 {modules.map((module, index) => (

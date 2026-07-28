@@ -10,12 +10,15 @@ import { auth } from '@/auth';
 import { getUserByEmail } from '@/queries/users';
 import { hasEnrollmentForCourse } from '@/queries/enrollments';
 import { formatPrice } from '@/lib/formatPrice';
+import { CourseProgress } from '@/components/course-progress';
+import { getCourseProgressPercent } from '@/lib/course-progress';
 
 const CourseDetailsIntro = async ({ course }) => {
     const session = await auth();
     const loggedInUser = session?.user?.email ? await getUserByEmail(session.user.email) : null;
     const hasEnrollment =
         loggedInUser?.id && course?.id ? await hasEnrollmentForCourse(course.id, loggedInUser.id) : false;
+    const totalProgress = hasEnrollment ? await getCourseProgressPercent(course, loggedInUser.id) : 0;
     const instructorName = course?.instructor ? `${course.instructor.firstName} ${course.instructor.lastName}` : 'مدرس';
     const lessonCount = course?.modules?.reduce((sum, module) => sum + (module.lessonIds?.length ?? 0), 0) ?? 0;
     const quizCount = course?.quizSet?.quizIds?.length ?? 0;
@@ -98,28 +101,23 @@ const CourseDetailsIntro = async ({ course }) => {
                                     </div>
 
                                     {hasEnrollment ? (
-                                        <Link
-                                            href={`/courses/${course?.id}/lesson`}
-                                            className={cn(
-                                                buttonVariants({ size: 'lg' }),
-                                                'w-full rounded-xl text-base font-bold shadow-lg shadow-primary/25',
-                                            )}
-                                        >
-                                            ورود به دوره
-                                        </Link>
+                                        <div className="space-y-3">
+                                            <div className="rounded-xl border border-border bg-muted/40 p-3">
+                                                <CourseProgress variant="success" value={totalProgress} />
+                                            </div>
+                                            <Link
+                                                href={`/courses/${course?.id}/lesson`}
+                                                className={cn(
+                                                    buttonVariants({ size: 'lg' }),
+                                                    'w-full rounded-xl text-base font-bold shadow-lg shadow-primary/25',
+                                                )}
+                                            >
+                                                ورود به دوره
+                                            </Link>
+                                        </div>
                                     ) : (
                                         <EnrollCourse courseId={course?.id} />
                                     )}
-
-                                    <Link
-                                        href=""
-                                        className={cn(
-                                            buttonVariants({ variant: 'outline', size: 'lg' }),
-                                            'w-full rounded-xl font-semibold',
-                                        )}
-                                    >
-                                        نمایش پیش‌نمایش
-                                    </Link>
                                     <div className="grid grid-cols-3 gap-3 sm:max-w-md">
                                         <div className="rounded-2xl border border-border bg-card p-4 text-center">
                                             <BookOpen className="mx-auto mb-2 h-5 w-5 text-primary" />

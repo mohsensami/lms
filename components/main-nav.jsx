@@ -12,6 +12,27 @@ import UserAvatar from './user-avatar';
 import MobileNav from './mobile-nav';
 import { useSession, signOut } from 'next-auth/react';
 
+const roleMenus = {
+    student: [
+        { label: 'پروفایل', href: '/account' },
+        { label: 'داشبورد', href: '/account/dashboard' },
+        { label: 'دوره‌های ثبت‌نامی', href: '/account/enrolled-courses' },
+        { label: 'فاکتورهای من', href: '/account/Order' },
+    ],
+    instructor: [
+        { label: 'داشبورد', href: '/account/dashboard' },
+        { label: 'مقالات', href: '/account/posts' },
+        { label: 'دوره‌ها', href: '/account/courses' },
+        { label: 'دیدگاه‌ها', href: '/account/comments' },
+    ],
+    admin: [
+        { label: 'داشبورد', href: '/account/dashboard' },
+        { label: 'کاربران', href: '/account/users' },
+        { label: 'دوره‌ها', href: '/account/courses' },
+        { label: 'دیدگاه‌ها', href: '/account/comments' },
+    ],
+};
+
 const MainNav = ({ items, children }) => {
     const { data: session } = useSession();
     const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -33,6 +54,8 @@ const MainNav = ({ items, children }) => {
         }
         fetchMe();
     }, [session]);
+
+    const quickMenu = roleMenus[loggedInUser?.role] || roleMenus.student;
 
     return (
         <>
@@ -92,22 +115,20 @@ const MainNav = ({ items, children }) => {
                 {loginSession && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <div className="cursor-pointer rounded-full ring-2 ring-transparent transition hover:ring-primary/40">
+                            <div className="flex cursor-pointer items-center gap-2 rounded-full px-1.5 py-1 ring-2 ring-transparent transition hover:ring-primary/40">
                                 <UserAvatar src={loggedInUser?.profilePicture} alt={loggedInUser?.firstName} />
+                                <span className="hidden max-w-[120px] truncate text-sm font-semibold text-foreground/80 lg:inline">
+                                    {loggedInUser?.firstName}
+                                </span>
                             </div>
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent align="end" className="w-56 mt-4">
-                            <DropdownMenuItem className="cursor-pointer" asChild>
-                                <Link href="/account">پروفایل</Link>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem className="cursor-pointer" asChild>
-                                <Link href="/account/enrolled-courses">دوره های من</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="cursor-pointer" asChild>
-                                <Link href="/account/certificates">گواهی‌نامه‌ها و نظرات مشتریان</Link>
-                            </DropdownMenuItem>
+                            {quickMenu.map((item) => (
+                                <DropdownMenuItem key={item.href} className="cursor-pointer" asChild>
+                                    <Link href={item.href}>{item.label}</Link>
+                                </DropdownMenuItem>
+                            ))}
                             <DropdownMenuItem className="cursor-pointer" asChild>
                                 <Link
                                     href=""
