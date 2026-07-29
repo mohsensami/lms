@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 const PHONE_REGEX = /^09\d{9}$/;
 
 export const POST = async (request) => {
-  const { firstName, lastName, email, password, phone, userRole } =
+  const { firstName, lastName, email, password, phone } =
     await request.json();
 
   if (!firstName || !lastName || !email || !password) {
@@ -38,7 +38,12 @@ export const POST = async (request) => {
     email,
     phone,
     password: hashedPassword,
-    role: userRole,
+    // Public sign-up only ever creates student accounts, regardless of
+    // whatever a request sends — instructor accounts are granted manually
+    // by an admin from /account/users. This is enforced here on the
+    // server (not just hidden in the UI) so a crafted request can't
+    // self-register as an instructor.
+    role: "student",
   };
 
   try {

@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
 import GoogleSignInButton from '@/components/google-signin-button';
 
-export function SignupForm({ role }) {
+export function SignupForm() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,8 +39,9 @@ export function SignupForm({ role }) {
                 return;
             }
 
-            const userRole = role === 'student' || role === 'instructor' ? role : 'student';
-
+            // Public registration only ever creates student accounts.
+            // Instructor accounts are granted manually by an admin from
+            // /account/users.
             const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: {
@@ -52,7 +53,7 @@ export function SignupForm({ role }) {
                     email,
                     phone,
                     password,
-                    userRole,
+                    userRole: 'student',
                 }),
             });
 

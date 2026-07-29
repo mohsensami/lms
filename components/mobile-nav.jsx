@@ -51,21 +51,17 @@ const MobileNav = ({ items, open, onOpenChange }) => {
                                 ورود
                             </Link>
                         </SheetClose>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="flex-1 rounded-full font-semibold">
-                                    ثبت نام
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 mt-4">
-                                <DropdownMenuItem className="cursor-pointer" asChild>
-                                    <Link href="/register/student">دانشجو</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="cursor-pointer" asChild>
-                                    <Link href="/register/instructor">مدرس</Link>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <SheetClose asChild>
+                            <Link
+                                href="/register/student"
+                                className={cn(
+                                    buttonVariants({ variant: 'outline', size: 'sm' }),
+                                    'flex-1 rounded-full font-semibold',
+                                )}
+                            >
+                                ثبت نام
+                            </Link>
+                        </SheetClose>
                     </div>
                 )}
             </SheetContent>

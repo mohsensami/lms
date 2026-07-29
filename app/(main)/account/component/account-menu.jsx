@@ -17,6 +17,7 @@ const instructorMenu = [
   { label: "داشبورد", href: "/account/dashboard" },
   { label: "مقالات", href: "/account/posts" },
   { label: "دوره‌ها", href: "/account/courses" },
+  { label: "دانشجوهای من", href: "/account/students" },
   { label: "پروفایل", href: "/account" },
   { label: "دیدگاه‌ها", href: "/account/comments" },
   { label: "آزمون‌ساز", href: "/account/quiz-sets" },

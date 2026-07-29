@@ -94,21 +94,15 @@ const MainNav = ({ items, children }) => {
                         >
                             ورود
                         </Link>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="rounded-full px-5 font-semibold">
-                                    ثبت نام
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 mt-4">
-                                <DropdownMenuItem className="cursor-pointer">
-                                    <Link href="/register/student">دانشجو</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="cursor-pointer">
-                                    <Link href="/register/instructor">مدرس</Link>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Link
+                            href="/register/student"
+                            className={cn(
+                                buttonVariants({ variant: 'outline', size: 'sm' }),
+                                'rounded-full px-5 font-semibold',
+                            )}
+                        >
+                            ثبت نام
+                        </Link>
                     </div>
                 )}
 

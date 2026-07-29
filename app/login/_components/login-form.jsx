@@ -92,13 +92,9 @@ export function LoginForm() {
                     <GoogleSignInButton />
 
                     <div className="mt-4 text-center text-sm">
-                        حساب کاربری ندارید؟
-                        <Link href="/register/instructor" className="underline">
-                            مدرس
-                        </Link>{' '}
-                        یا{' '}
+                        حساب کاربری ندارید؟{' '}
                         <Link href="/register/student" className="underline">
-                            دانشجو
+                            ثبت نام کنید
                         </Link>
                     </div>
                 </form>

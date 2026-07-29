@@ -55,6 +55,13 @@ export async function setUserActiveStatus(userId, isActive) {
     });
 }
 
+export async function setUserRole(userId, role) {
+    return withDb(async () => {
+        const user = await prisma.user.update({ where: { id: userId }, data: { role } });
+        return replaceMongoIdInObject(user);
+    });
+}
+
 export async function deleteUserById(userId) {
     return withDb(async () => {
         return prisma.user.delete({ where: { id: userId } });
