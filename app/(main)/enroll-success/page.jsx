@@ -6,6 +6,7 @@ import { getCourseDetails } from "@/queries/courses";
 import { enrollForCourse, hasEnrollmentForCourse } from "@/queries/enrollments";
 import { getUserByEmail } from "@/queries/users";
 import { getOrderByAuthority, markOrderPaid, markOrderFailed } from "@/queries/orders";
+import { getEffectivePrice } from "@/lib/formatPrice";
 import { CircleCheck } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -20,8 +21,12 @@ const Success = async ({ searchParams: { Authority, Status, courseId } }) => {
   const loggedInUser = await getUserByEmail(userSession.user.email);
   const existingOrder = await getOrderByAuthority(Authority);
 
-  // Payment verification
-  const amount = Math.round(Number(course.price) * 10); // IRR
+  // Payment verification — use the amount actually charged at purchase
+  // time (stored on the order), not the course's current price, since the
+  // price (or discount) could have changed since then and Zarinpal
+  // requires the exact original amount to verify successfully.
+  const chargedPrice = existingOrder?.amount ?? getEffectivePrice(course);
+  const amount = Math.round(Number(chargedPrice) * 10); // IRR
   let paymentSuccess = existingOrder?.status === "paid";
 
   // Only hit Zarinpal's verification endpoint (and mutate the order) the

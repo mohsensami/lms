@@ -3,9 +3,10 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { Lock, PlayCircle, CheckCircle2 } from 'lucide-react';
+import { Lock, PlayCircle, CheckCircle2, Download, Paperclip } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 // react-player uses browser APIs, so it must be loaded on the client only.
@@ -130,6 +131,29 @@ const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpe
                             />
                         )}
                     </div>
+
+                    {/* Downloads are only offered to students who've actually
+                        purchased the course — free-preview viewers don't get these. */}
+                    {isEnrolled && (lesson?.video_url || lesson?.attachmentUrl) && (
+                        <div className="flex flex-wrap items-center gap-2 border-t border-border p-4">
+                            {lesson?.video_url && (
+                                <Button asChild size="sm" variant="outline">
+                                    <a href={lesson.video_url} download target="_blank" rel="noreferrer">
+                                        <Download className="h-4 w-4 ml-1.5" />
+                                        دانلود ویدیو
+                                    </a>
+                                </Button>
+                            )}
+                            {lesson?.attachmentUrl && (
+                                <Button asChild size="sm" variant="outline">
+                                    <a href={lesson.attachmentUrl} download target="_blank" rel="noreferrer">
+                                        <Paperclip className="h-4 w-4 ml-1.5" />
+                                        دانلود {lesson.attachmentName || 'فایل ضمیمه'}
+                                    </a>
+                                </Button>
+                            )}
+                        </div>
+                    )}
                 </DialogContent>
             </Dialog>
         </>

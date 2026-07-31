@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { Button, buttonVariants } from '@/components/ui/button';
-import { formatPrice } from '@/lib/formatPrice';
+import { PriceDisplay } from '@/components/price-display';
 import { cn } from '@/lib/utils';
 import {
     ArrowLeft,
@@ -57,7 +57,7 @@ function FullWidthCourseCard({ course, key }) {
                     </div> */}
                 </div>
                 <div className="flex items-center justify-between gap-2 border-t border-border px-4 py-3">
-                    <span className="text-sm font-bold text-primary">{formatPrice(course?.price)}</span>
+                    <PriceDisplay course={course} priceClassName="text-sm" />
                     {/* <EnrollCourse asLink={true} courseId={course?.id} /> */}
                     <Button
                         type="submit"

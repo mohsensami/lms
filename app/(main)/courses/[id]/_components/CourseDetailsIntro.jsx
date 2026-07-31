@@ -9,7 +9,7 @@ import EnrollCourse from '@/components/enroll-course';
 import { auth } from '@/auth';
 import { getUserByEmail } from '@/queries/users';
 import { hasEnrollmentForCourse } from '@/queries/enrollments';
-import { formatPrice } from '@/lib/formatPrice';
+import { PriceDisplay } from '@/components/price-display';
 import { CourseProgress } from '@/components/course-progress';
 import { getCourseProgressPercent } from '@/lib/course-progress';
 
@@ -95,9 +95,7 @@ const CourseDetailsIntro = async ({ course }) => {
                                 <div className="space-y-5 p-6">
                                     <div className="flex items-baseline justify-between">
                                         <span className="text-xs text-muted-foreground">قیمت دوره</span>
-                                        <span className="text-2xl font-extrabold text-primary">
-                                            {formatPrice(course?.price)}
-                                        </span>
+                                        <PriceDisplay course={course} priceClassName="text-2xl font-extrabold" originalClassName="text-base" />
                                     </div>
 
                                     {hasEnrollment ? (

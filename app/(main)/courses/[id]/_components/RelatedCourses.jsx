@@ -2,7 +2,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Image from 'next/image';
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
-import { formatPrice } from '@/lib/formatPrice';
+import { PriceDisplay } from '@/components/price-display';
 import { SectionTitle } from '@/components/section-title';
 
 const RelatedCourses = ({ relatedCourses }) => {
@@ -40,9 +40,7 @@ const RelatedCourses = ({ relatedCourses }) => {
                                                 توسعه
                                             </p>
                                             <div className="mt-1 flex items-center justify-between">
-                                                <p className="text-sm font-bold text-primary">
-                                                    {formatPrice(course.price)}
-                                                </p>
+                                                <PriceDisplay course={course} priceClassName="text-sm" />
                                             </div>
                                         </div>
                                     </div>

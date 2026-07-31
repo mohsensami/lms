@@ -46,4 +46,26 @@ export const ourFileRouter = {
         .onUploadComplete(async ({ file }) => {
             return { thumbnail: file.ufsUrl ?? file.url };
         }),
+
+    // Instructors/admins attach a downloadable file (practice files, PDFs,
+    // zip archives, etc.) to a lesson. `blob` accepts any file type.
+    lessonAttachmentUploader: f({
+        blob: { maxFileSize: '32MB', maxFileCount: 1 },
+    })
+        .middleware(async () => {
+            const loggedinUser = await getLoggedInUser();
+
+            if (!loggedinUser) {
+                throw new UploadThingError('شما وارد حساب کاربری خود نشده‌اید.');
+            }
+
+            if (loggedinUser.role !== 'admin' && loggedinUser.role !== 'instructor') {
+                throw new UploadThingError('فقط مدرس یا مدیر می‌تواند فایل ضمیمه آپلود کند.');
+            }
+
+            return { userId: loggedinUser.id };
+        })
+        .onUploadComplete(async ({ file }) => {
+            return { url: file.ufsUrl ?? file.url, name: file.name };
+        }),
 };

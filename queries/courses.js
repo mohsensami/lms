@@ -91,7 +91,10 @@ export function sanitizeCourseForVisitor(course, isEnrolled) {
             ...module,
             lessonIds: (module.lessonIds || []).map((lesson) => {
                 const isPlayable = lesson?.access === 'public' || isEnrolled;
-                return isPlayable ? lesson : { ...lesson, video_url: null };
+                const sanitized = isPlayable ? lesson : { ...lesson, video_url: null };
+                // Downloadable attachments are a purchase perk, not part of
+                // the free preview — strip them unless truly enrolled.
+                return isEnrolled ? sanitized : { ...sanitized, attachmentUrl: null, attachmentName: null };
             }),
         })),
     };

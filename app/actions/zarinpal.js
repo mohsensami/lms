@@ -5,6 +5,7 @@ import { zarinpal } from "@/lib/zarinpal";
 import { getCourseDetails } from "@/queries/courses";
 import { getUserByEmail } from "@/queries/users";
 import { createOrder } from "@/queries/orders";
+import { getEffectivePrice } from "@/lib/formatPrice";
 
 export async function createZarinpalPayment(data) {
   const origin = (await headers()).get("origin");
@@ -17,7 +18,8 @@ export async function createZarinpalPayment(data) {
   const course = await getCourseDetails(courseId);
   if (!course) throw new Error("Course not found");
 
-  const amount = Math.round(Number(course.price) * 10); // ✅ FIXED
+  const chargePrice = getEffectivePrice(course); // uses discountPrice if one is active
+  const amount = Math.round(Number(chargePrice) * 10); // ✅ FIXED
 
   const response = await zarinpal.PaymentRequest({
     Amount: amount,
@@ -36,7 +38,7 @@ export async function createZarinpalPayment(data) {
   await createOrder({
     courseId: course.id,
     userId: loggedInUser.id,
-    amount: course.price,
+    amount: chargePrice,
     authority: response.authority,
   });
 

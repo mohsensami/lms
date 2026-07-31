@@ -60,6 +60,7 @@ model Course {
   description String
   thumbnail  String?
   price      Float    @default(0)
+  discountPrice Float?
   active     Boolean  @default(false)
   learning   String[] @default([])
   createdOn  DateTime @default(now())
@@ -109,6 +110,9 @@ model Lesson {
   slug        String
   access      String  @default("private")
   order       Int
+
+  attachmentUrl  String?
+  attachmentName String?
 
   moduleId String?
   module   Module? @relation(fields: [moduleId], references: [id], onDelete: Cascade)

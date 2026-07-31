@@ -16,6 +16,7 @@ import { LessonTitleForm } from './lesson-title-form';
 import { LessonDescriptionForm } from './lesson-description-form';
 import { LessonAccessForm } from './lesson-access-form';
 import { VideoUrlForm } from './video-url-form';
+import { LessonAttachmentForm } from './lesson-attachment-form';
 import { CourseActions } from '../../../_components/course-action';
 import { LessonActions } from './lesson-action';
 
@@ -94,6 +95,13 @@ export const LessonModal = ({ open, setOpen, courseId, lesson, moduleId }) => {
                                     duration: lesson?.duration,
                                 }}
                                 courseId={courseId}
+                                lessonId={lesson?.id}
+                            />
+                            <LessonAttachmentForm
+                                initialData={{
+                                    attachmentUrl: lesson?.attachmentUrl,
+                                    attachmentName: lesson?.attachmentName,
+                                }}
                                 lessonId={lesson?.id}
                             />
                         </div>
