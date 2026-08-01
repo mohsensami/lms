@@ -61,6 +61,7 @@ model Course {
   thumbnail  String?
   price      Float    @default(0)
   discountPrice Float?
+  discountEndsAt DateTime?
   active     Boolean  @default(false)
   learning   String[] @default([])
   createdOn  DateTime @default(now())
