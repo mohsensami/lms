@@ -40,7 +40,7 @@ const RelatedCourses = ({ relatedCourses }) => {
                                                 توسعه
                                             </p>
                                             <div className="mt-1 flex items-center justify-between">
-                                                <PriceDisplay course={course} priceClassName="text-sm" />
+                                                <PriceDisplay course={course} priceClassName="text-sm" showCountdown={false} />
                                             </div>
                                         </div>
                                     </div>

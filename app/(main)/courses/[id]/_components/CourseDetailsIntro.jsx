@@ -16,8 +16,11 @@ import { getCourseProgressPercent } from '@/lib/course-progress';
 const CourseDetailsIntro = async ({ course }) => {
     const session = await auth();
     const loggedInUser = session?.user?.email ? await getUserByEmail(session.user.email) : null;
+    const isLoggedIn = Boolean(loggedInUser);
     const hasEnrollment =
         loggedInUser?.id && course?.id ? await hasEnrollmentForCourse(course.id, loggedInUser.id) : false;
+    const isFullAccessUser =
+        loggedInUser?.role === 'admin' || (loggedInUser?.role === 'instructor' && course?.instructorId === loggedInUser?.id);
     const totalProgress = hasEnrollment ? await getCourseProgressPercent(course, loggedInUser.id) : 0;
     const instructorName = course?.instructor ? `${course.instructor.firstName} ${course.instructor.lastName}` : 'مدرس';
     const lessonCount = course?.modules?.reduce((sum, module) => sum + (module.lessonIds?.length ?? 0), 0) ?? 0;
@@ -45,9 +48,9 @@ const CourseDetailsIntro = async ({ course }) => {
                         )}
                     </div>
 
-                    <div className="grid gap-8 xl:grid-cols-12 items-start">
+                    <div className="grid gap-8 grid-cols-1 xl:grid-cols-12 items-start">
                         {/* main info */}
-                        <div className="border border-border bg-card shadow-sm rounded-2xl md:p-6 p-2 col-span-8 space-y-6">
+                        <div className="border border-border bg-card shadow-sm rounded-2xl md:p-6 p-2 col-span-1 xl:col-span-8 space-y-6">
                             {course?.category?.title && (
                                 <Badge className="rounded-full border-none bg-primary/10 px-4 py-1 text-xs font-semibold text-primary">
                                     {course.category.title}
@@ -90,7 +93,7 @@ const CourseDetailsIntro = async ({ course }) => {
                         </div>
 
                         {/* sticky purchase box */}
-                        <div className="col-span-4 lg:sticky lg:top-24">
+                        <div className="col-span-1 xl:col-span-4 lg:sticky lg:top-24">
                             <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
                                 <div className="space-y-5 p-6">
                                     <div className="flex items-baseline justify-between">
@@ -98,8 +101,26 @@ const CourseDetailsIntro = async ({ course }) => {
                                         <PriceDisplay course={course} priceClassName="text-2xl font-extrabold" originalClassName="text-base" />
                                     </div>
 
-                                    {hasEnrollment ? (
+                                    {isFullAccessUser ? (
                                         <div className="space-y-3">
+                                            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 text-center text-sm font-semibold text-primary">
+                                                شما دسترسی کامل به این دوره دارید
+                                            </div>
+                                            <Link
+                                                href={`/courses/${course?.id}/lesson`}
+                                                className={cn(
+                                                    buttonVariants({ size: 'lg' }),
+                                                    'w-full rounded-xl text-base font-bold shadow-lg shadow-primary/25',
+                                                )}
+                                            >
+                                                ورود به دوره
+                                            </Link>
+                                        </div>
+                                    ) : hasEnrollment ? (
+                                        <div className="space-y-3">
+                                            <div className="rounded-xl border border-success/30 bg-success/10 p-3 text-center text-sm font-semibold text-success">
+                                                این دوره قبلاً خریداری شده است
+                                            </div>
                                             <div className="rounded-xl border border-border bg-muted/40 p-3">
                                                 <CourseProgress variant="success" value={totalProgress} />
                                             </div>
@@ -114,7 +135,7 @@ const CourseDetailsIntro = async ({ course }) => {
                                             </Link>
                                         </div>
                                     ) : (
-                                        <EnrollCourse courseId={course?.id} />
+                                        <EnrollCourse courseId={course?.id} isLoggedIn={isLoggedIn} />
                                     )}
                                     <div className="grid grid-cols-3 gap-3 sm:max-w-md">
                                         <div className="rounded-2xl border border-border bg-card p-4 text-center">

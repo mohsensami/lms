@@ -1,51 +1,61 @@
-import SearchCourse from "./_components/SearchCourse";
-import SortCourse from "./_components/SortCourse";
-import FilterCourseMobile from "./_components/FilterCourseMobile";
-import ActiveFilters from "./_components/ActiveFilters";
-import FilterCourse from "./_components/FilterCourse";
-import { getCourseList } from "@/queries/courses";
-import CourseCard from "./_components/CourseCard";
+import { getCourseList } from '@/queries/courses';
+import CourseCard from './_components/CourseCard';
+import { getLoggedInUser } from '@/lib/loggedin-user';
+import { hasEnrollmentForCourse } from '@/queries/enrollments';
+
+export const metadata = {
+    title: 'دوره‌ها',
+    description: 'لیست کامل دوره‌های آموزشی موجود.',
+};
 
 const CoursesPage = async () => {
-  const courses = await getCourseList();
+    const courses = await getCourseList();
+    const loggedInUser = await getLoggedInUser();
+    const isLoggedIn = Boolean(loggedInUser);
 
-  return (
-    <section id="courses" className="container space-y-6 py-8">
-      <div>
-        <h1 className="text-2xl font-extrabold text-foreground md:text-3xl">دوره‌ها</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{courses.length} دوره در دسترس</p>
-      </div>
+    const accessByCourseId = {};
+    if (loggedInUser) {
+        await Promise.all(
+            courses.map(async (course) => {
+                const isFullAccess =
+                    loggedInUser.role === 'admin' ||
+                    (loggedInUser.role === 'instructor' && course.instructorId === loggedInUser.id);
+                const isEnrolled = isFullAccess ? false : await hasEnrollmentForCourse(course.id, loggedInUser.id);
+                accessByCourseId[course.id] = { isFullAccess, isEnrolled };
+            }),
+        );
+    }
 
-      {/* header */}
-      <div className="flex flex-col gap-4 border-b border-border pb-6 lg:flex-row lg:items-center lg:justify-between">
-        <SearchCourse />
+    return (
+        <section id="courses" className="container space-y-8 py-10 md:py-14">
+            <div className="mx-auto max-w-2xl text-center">
+                <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
+                    دوره‌ها
+                </span>
+                <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">
+                    دوره‌های آموزشی
+                </h1>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                    {courses.length} دوره برای یادگیری در دسترس شماست.
+                </p>
+            </div>
 
-        <div className="flex items-center justify-end gap-2 max-lg:w-full">
-          <SortCourse />
-          <FilterCourseMobile />
-        </div>
-      </div>
-      {/* header ends */}
-
-      <ActiveFilters
-        filter={{
-          categories: ["development"],
-          price: ["free"],
-          sort: "",
-        }}
-      />
-
-      <section className="pb-24 pt-2">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
-          <FilterCourse />
-          <div className="grid gap-5 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
-            {courses.map((course) => {
-              return <CourseCard key={course.id} course={course} />;
-            })}
-          </div>
-        </div>
-      </section>
-    </section>
-  );
+            {courses.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {courses.map((course) => (
+                        <CourseCard
+                            key={course.id}
+                            course={course}
+                            isLoggedIn={isLoggedIn}
+                            isEnrolled={accessByCourseId[course.id]?.isEnrolled}
+                            isFullAccess={accessByCourseId[course.id]?.isFullAccess}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <p className="text-center text-muted-foreground">هنوز هیچ دوره‌ای منتشر نشده است.</p>
+            )}
+        </section>
+    );
 };
 export default CoursesPage;

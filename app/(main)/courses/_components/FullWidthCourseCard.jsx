@@ -1,23 +1,11 @@
 import Link from 'next/link';
 
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { PriceDisplay } from '@/components/price-display';
 import { cn } from '@/lib/utils';
-import {
-    ArrowLeft,
-    ArrowLeftIcon,
-    BookOpen,
-    CalendarDays,
-    Clock,
-    ListChecks,
-    PlayCircle,
-    UserCheck,
-} from 'lucide-react';
-import { ArrowRightIcon } from 'lucide-react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowLeft, BookOpen, UserCheck } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
-import EnrollCourse from '@/components/enroll-course';
 
 function FullWidthCourseCard({ course, key }) {
     return (
@@ -51,22 +39,18 @@ function FullWidthCourseCard({ course, key }) {
                             {course?.instructor?.firstName ?? ''} {course?.instructor?.lastName ?? ''}
                         </span>
                     </div>
-                    {/* <div className="mt-auto flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <PlayCircle className="h-3.5 w-3.5" />
-                        <span>{course?.modules.length ?? 0} جلسه</span>
-                    </div> */}
                 </div>
                 <div className="flex items-center justify-between gap-2 border-t border-border px-4 py-3">
-                    <PriceDisplay course={course} priceClassName="text-sm" />
-                    {/* <EnrollCourse asLink={true} courseId={course?.id} /> */}
-                    <Button
-                        type="submit"
-                        variant="secondary"
-                        className="h-8 gap-1 rounded-full text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+                    <PriceDisplay course={course} priceClassName="text-sm" showCountdown={false} />
+                    <span
+                        className={cn(
+                            buttonVariants({ size: 'sm', variant: 'secondary' }),
+                            'h-8 gap-1 rounded-full text-xs font-semibold text-primary group-hover:bg-primary group-hover:text-primary-foreground',
+                        )}
                     >
-                        مشاهده
+                        مشاهده دوره
                         <ArrowLeft className="w-3" />
-                    </Button>
+                    </span>
                 </div>
             </div>
         </Link>

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ceredntialLogin } from '@/app/actions';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import GoogleSignInButton from '@/components/google-signin-button';
@@ -16,6 +16,8 @@ export function LoginForm() {
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/';
 
     async function onSubmit(event) {
         event.preventDefault();
@@ -31,7 +33,7 @@ export function LoginForm() {
                 toast.error(response.error);
             } else {
                 toast.success('با موفقیت وارد شدید');
-                router.push('/');
+                router.push(callbackUrl);
             }
         } catch (e) {
             const message = e.message || 'ورود ناموفق بود. دوباره امتحان کنید.';

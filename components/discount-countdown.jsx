@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Timer } from 'lucide-react';
 
+import { toPersianDigits } from '@/lib/utils';
+
 function getRemaining(endsAt) {
     const diff = new Date(endsAt).getTime() - Date.now();
     if (diff <= 0) return null;
@@ -19,8 +21,8 @@ function getRemaining(endsAt) {
 function Unit({ value, label }) {
     return (
         <div className="flex flex-col items-center">
-            <span className="min-w-[1.75rem] rounded-md bg-destructive/10 px-1.5 py-0.5 text-center font-mono text-sm font-bold tabular-nums text-destructive">
-                {String(value).padStart(2, '0')}
+            <span className="min-w-[1.75rem] rounded-md bg-destructive/10 px-1.5 py-0.5 text-center text-sm font-bold text-destructive">
+                {toPersianDigits(String(value).padStart(2, '0'))}
             </span>
             <span className="mt-0.5 text-[10px] text-muted-foreground">{label}</span>
         </div>
