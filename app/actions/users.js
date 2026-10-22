@@ -65,7 +65,7 @@ export async function deleteUser(userId) {
     revalidatePath('/account/users');
 }
 
-const VALID_ROLES = ['student', 'instructor', 'admin'];
+const VALID_ROLES = ['student', 'admin'];
 
 export async function changeUserRole(userId, newRole) {
     const admin = await requireAdmin();
@@ -104,5 +104,4 @@ export async function grantCourseAccess(courseId, studentId) {
     }
 
     revalidatePath('/account/users');
-    revalidatePath('/account/students');
 }

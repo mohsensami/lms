@@ -20,11 +20,9 @@ export async function createCertificateRequest(courseId, studentId) {
     return replaceMongoIdInObject(request);
 }
 
-export async function getCertificateRequestsForReview(user) {
-    const isAdmin = user?.role === 'admin';
-
+export async function getCertificateRequestsForReview() {
+    // Only admins review certificate requests, and they see all of them.
     const requests = await prisma.certificateRequest.findMany({
-        where: isAdmin ? {} : { course: { instructorId: user?.id } },
         include: { course: true, student: true },
         orderBy: { requestedAt: 'desc' },
     });

@@ -16,14 +16,9 @@ const roleMenus = {
     student: [
         { label: 'پروفایل', href: '/account' },
         { label: 'داشبورد', href: '/account/dashboard' },
+        { label: 'پیشرفت من', href: '/account/progress' },
         { label: 'دوره‌های ثبت‌نامی', href: '/account/enrolled-courses' },
         { label: 'فاکتورهای من', href: '/account/Order' },
-    ],
-    instructor: [
-        { label: 'داشبورد', href: '/account/dashboard' },
-        { label: 'مقالات', href: '/account/posts' },
-        { label: 'دوره‌ها', href: '/account/courses' },
-        { label: 'دیدگاه‌ها', href: '/account/comments' },
     ],
     admin: [
         { label: 'داشبورد', href: '/account/dashboard' },

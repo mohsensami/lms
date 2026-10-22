@@ -7,21 +7,11 @@ import React from 'react';
 const studentMenu = [
   { label: "پروفایل", href: "/account" },
   { label: "داشبورد", href: "/account/dashboard" },
+  { label: "پیشرفت من", href: "/account/progress" },
   { label: "فاکتورهای من", href: "/account/Order" },
   { label: "دیدگاه‌های من", href: "/account/my-comments" },
   { label: "دوره‌های ثبت‌نامی", href: "/account/enrolled-courses" },
   { label: "آزمون‌ها و مدارک", href: "/account/certificates" },
-];
-
-const instructorMenu = [
-  { label: "داشبورد", href: "/account/dashboard" },
-  { label: "مقالات", href: "/account/posts" },
-  { label: "دوره‌ها", href: "/account/courses" },
-  { label: "دانشجوهای من", href: "/account/students" },
-  { label: "پروفایل", href: "/account" },
-  { label: "دیدگاه‌ها", href: "/account/comments" },
-  { label: "آزمون‌ساز", href: "/account/quiz-sets" },
-  { label: "درخواست‌های مدرک", href: "/account/certificate-requests" },
 ];
 
 const adminMenu = [
@@ -40,7 +30,6 @@ function Menu({ role }) {
   const pathname = usePathname();
 
   let menu = studentMenu;
-  if (role === 'instructor') menu = instructorMenu;
   if (role === 'admin') menu = adminMenu;
 
   return (

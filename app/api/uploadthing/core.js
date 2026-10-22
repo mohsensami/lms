@@ -47,8 +47,7 @@ export const ourFileRouter = {
             return { thumbnail: file.ufsUrl ?? file.url };
         }),
 
-    // Images placed inside a post's body. Unlike the cover image, instructors
-    // (who can write posts) may upload these too. Several images at once.
+    // Images placed inside a post's body (admin only). Several images at once.
     postContentImageUploader: f({
         image: { maxFileSize: '4MB', maxFileCount: 5 },
     })
@@ -59,8 +58,8 @@ export const ourFileRouter = {
                 throw new UploadThingError('شما وارد حساب کاربری خود نشده‌اید.');
             }
 
-            if (loggedinUser.role !== 'admin' && loggedinUser.role !== 'instructor') {
-                throw new UploadThingError('فقط مدرس یا مدیر می‌تواند تصویر مقاله آپلود کند.');
+            if (loggedinUser.role !== 'admin') {
+                throw new UploadThingError('فقط مدیران می‌توانند تصویر مقاله آپلود کنند.');
             }
 
             return { userId: loggedinUser.id };
@@ -69,7 +68,7 @@ export const ourFileRouter = {
             return { url: file.ufsUrl ?? file.url, name: file.name };
         }),
 
-    // Instructors/admins attach a downloadable file (practice files, PDFs,
+    // Admins attach a downloadable file (practice files, PDFs,
     // zip archives, etc.) to a lesson. `blob` accepts any file type.
     lessonAttachmentUploader: f({
         blob: { maxFileSize: '32MB', maxFileCount: 1 },
@@ -81,8 +80,8 @@ export const ourFileRouter = {
                 throw new UploadThingError('شما وارد حساب کاربری خود نشده‌اید.');
             }
 
-            if (loggedinUser.role !== 'admin' && loggedinUser.role !== 'instructor') {
-                throw new UploadThingError('فقط مدرس یا مدیر می‌تواند فایل ضمیمه آپلود کند.');
+            if (loggedinUser.role !== 'admin') {
+                throw new UploadThingError('فقط مدیران می‌توانند فایل ضمیمه آپلود کنند.');
             }
 
             return { userId: loggedinUser.id };

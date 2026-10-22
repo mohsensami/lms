@@ -54,7 +54,7 @@ const BlogPostPage = async ({ params }) => {
         : '';
     const authorName = post?.author ? `${post.author.firstName || ''} ${post.author.lastName || ''}`.trim() : null;
     const jsonLd = buildPostJsonLd(post);
-    const canReply = loggedInUser?.role === 'admin' || loggedInUser?.role === 'instructor';
+    const canReply = loggedInUser?.role === 'admin';
 
     return (
         <div className="bg-gradient-to-b from-primary/[0.06] to-transparent">

@@ -33,7 +33,7 @@ const formSchema = z.object({
     }),
 });
 
-const AddPostForm = ({ isAdmin = false }) => {
+const AddPostForm = () => {
     const router = useRouter();
     // Once the admin edits the slug field by hand, stop overwriting it from
     // the title — otherwise their manual English slug would keep getting
@@ -156,7 +156,6 @@ const AddPostForm = ({ isAdmin = false }) => {
                                 </FormItem>
                             )}
                         />
-                        {isAdmin && (
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <FormLabel>تصویر شاخص (اختیاری)</FormLabel>
@@ -199,7 +198,6 @@ const AddPostForm = ({ isAdmin = false }) => {
                                     )}
                                 </div>
                             </div>
-                        )}
                         <div className="space-y-2">
                             <FormLabel>انتشار</FormLabel>
                             <PostPublishPicker value={publish} onChange={setPublish} disabled={isSubmitting} />

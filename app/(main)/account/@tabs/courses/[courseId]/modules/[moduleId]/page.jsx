@@ -11,7 +11,7 @@ import { ModuleActions } from './_components/module-action';
 import { requireRole } from '@/lib/require-role';
 
 const Module = async ({ params: { courseId, moduleId } }) => {
-    await requireRole('instructor');
+    await requireRole('admin');
     const module = await getModule(moduleId);
     const sanitizedModule = sanitizeData(module);
     // console.log(module);

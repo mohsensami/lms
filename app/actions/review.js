@@ -70,16 +70,6 @@ async function requireAdmin() {
   return user;
 }
 
-// Instructors and admins can reply to any course review anywhere on the
-// site — this is intentionally not scoped to "their own" courses.
-async function requireInstructorOrAdmin() {
-  const user = await requireLoggedInUser();
-  if (user.role !== "admin" && user.role !== "instructor") {
-    throw new Error("شما اجازه دسترسی ندارید");
-  }
-  return user;
-}
-
 export async function approveComment(testimonialId) {
   await requireAdmin();
   await setTestimonialStatus(testimonialId, "approved");
@@ -99,7 +89,7 @@ export async function deleteComment(testimonialId) {
 }
 
 export async function replyToComment(testimonialId, reply) {
-  const user = await requireInstructorOrAdmin();
+  const user = await requireAdmin();
   if (!reply?.trim()) {
     throw new Error("متن پاسخ نمی‌تواند خالی باشد");
   }

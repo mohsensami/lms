@@ -17,7 +17,7 @@ import { QuizCardActions } from './_components/quiz-card-action';
 import { requireRole } from '@/lib/require-role';
 
 const EditQuizSet = async ({ params: { quizSetId } }) => {
-    await requireRole('instructor');
+    await requireRole('admin');
     const quizSet = await getQuizSetById(quizSetId);
 
     const quizzes = quizSet.quizIds.map((quiz) => {

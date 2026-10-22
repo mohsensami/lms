@@ -8,23 +8,13 @@ import { revalidateTag } from 'next/cache';
 import { POST_STATUS } from '@/lib/post-status';
 import { renderPostContent } from '@/lib/sanitize-post-html';
 
-// Instructors and admins can write posts. Instructors may only manage posts
-// they personally authored; admins can manage every post on the site.
-async function requireInstructorOrAdmin() {
+// Only admins manage posts (and they can manage every post on the site).
+async function requireAdmin() {
     const loggedinUser = await getLoggedInUser();
-    if (loggedinUser?.role !== 'admin' && loggedinUser?.role !== 'instructor') {
+    if (loggedinUser?.role !== 'admin') {
         throw new Error('شما اجازه‌ی دسترسی به این بخش را ندارید.');
     }
     return loggedinUser;
-}
-
-async function requireOwnershipOrAdmin(postId, user) {
-    if (user.role === 'admin') return;
-
-    const post = await prisma.post.findUnique({ where: { id: postId } });
-    if (!post || post.authorId !== user.id) {
-        throw new Error('شما فقط به مقالات خودتان دسترسی دارید.');
-    }
 }
 
 // Validates the publishing fields coming from the client. A draft keeps a
@@ -39,7 +29,7 @@ function normalizePublishing({ status, publishedAt }) {
 }
 
 export async function createPost(data) {
-    const author = await requireInstructorOrAdmin();
+    const author = await requireAdmin();
     try {
         const postData = {
             title: data.title,
@@ -61,8 +51,7 @@ export async function createPost(data) {
 }
 
 export async function updatePost(postId, dataToUpdate) {
-    const user = await requireInstructorOrAdmin();
-    await requireOwnershipOrAdmin(postId, user);
+    await requireAdmin();
     try {
         const data = { ...dataToUpdate };
         if ('status' in data || 'publishedAt' in data) {
@@ -80,8 +69,7 @@ export async function updatePost(postId, dataToUpdate) {
 }
 
 export async function deletePost(postId) {
-    const user = await requireInstructorOrAdmin();
-    await requireOwnershipOrAdmin(postId, user);
+    await requireAdmin();
     try {
         await prisma.post.delete({ where: { id: postId } });
         revalidateTag(POSTS_CACHE_TAG);
@@ -93,6 +81,6 @@ export async function deletePost(postId) {
 // Server-side render of a body for the editor's live preview, so the preview
 // goes through exactly the same sanitizer + Prism highlighting as the blog.
 export async function previewPostContent(content) {
-    await requireInstructorOrAdmin();
+    await requireAdmin();
     return renderPostContent(content || '');
 }

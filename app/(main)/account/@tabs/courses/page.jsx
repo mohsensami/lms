@@ -1,5 +1,5 @@
 import {
-  getInstructorDashboardData,
+  getAdminDashboardData,
   COURSE_DATA,
 } from "@/lib/dashboard-helper";
 import { requireRole } from "@/lib/require-role";
@@ -9,8 +9,8 @@ import { DataTable } from "./_components/data-table";
 export const dynamic = "force-dynamic";
 
 const CoursesPage = async () => {
-  await requireRole("instructor");
-  const courses = sanitizeData(await getInstructorDashboardData(COURSE_DATA));
+  await requireRole("admin");
+  const courses = sanitizeData(await getAdminDashboardData(COURSE_DATA));
   // console.log(courses);
 
   return (

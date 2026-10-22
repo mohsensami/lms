@@ -26,7 +26,7 @@ async function CommentsPage() {
     // Instructors and admins both land here; instructors can reply to any
     // student comment sitewide, admins additionally get moderation controls
     // (approve/reject/delete).
-    const user = await requireRole('instructor');
+    const user = await requireRole('admin');
     const isAdmin = user.role === 'admin';
 
     const [courseComments, postComments] = await Promise.all([getAllTestimonials(), getAllPostComments()]);

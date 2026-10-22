@@ -19,8 +19,7 @@ const CourseDetailsIntro = async ({ course }) => {
     const isLoggedIn = Boolean(loggedInUser);
     const hasEnrollment =
         loggedInUser?.id && course?.id ? await hasEnrollmentForCourse(course.id, loggedInUser.id) : false;
-    const isFullAccessUser =
-        loggedInUser?.role === 'admin' || (loggedInUser?.role === 'instructor' && course?.instructorId === loggedInUser?.id);
+    const isFullAccessUser = loggedInUser?.role === 'admin';
     const totalProgress = hasEnrollment ? await getCourseProgressPercent(course, loggedInUser.id) : 0;
     const instructorName = course?.instructor ? `${course.instructor.firstName} ${course.instructor.lastName}` : 'مدرس';
     const lessonCount = course?.modules?.reduce((sum, module) => sum + (module.lessonIds?.length ?? 0), 0) ?? 0;

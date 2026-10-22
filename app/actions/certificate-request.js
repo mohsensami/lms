@@ -31,11 +31,6 @@ async function requireCanReviewCertificateRequest(courseId) {
     const user = await requireLoggedInUser();
     if (user.role === 'admin') return user;
 
-    if (user.role === 'instructor') {
-        const course = await prisma.course.findUnique({ where: { id: courseId } });
-        if (course?.instructorId === user.id) return user;
-    }
-
     throw new Error('شما اجازه‌ی بررسی این درخواست را ندارید.');
 }
 

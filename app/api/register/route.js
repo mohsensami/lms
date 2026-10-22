@@ -39,10 +39,10 @@ export const POST = async (request) => {
     phone,
     password: hashedPassword,
     // Public sign-up only ever creates student accounts, regardless of
-    // whatever a request sends — instructor accounts are granted manually
-    // by an admin from /account/users. This is enforced here on the
+    // whatever a request sends — admin accounts are granted manually by an
+    // existing admin from /account/users. This is enforced here on the
     // server (not just hidden in the UI) so a crafted request can't
-    // self-register as an instructor.
+    // self-register as an admin.
     role: "student",
   };
 

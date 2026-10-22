@@ -3,7 +3,7 @@
 // Seed data in Persian, suitable for a Farsi-language LMS demo.
 // One course only ("آموزش متلب"), but fleshed out completely: many
 // modules, lessons in each module, a quiz set with several questions, an
-// instructor, a few students, enrollments, testimonials/reviews, and
+// admin (the course teacher), a few students, enrollments, testimonials/reviews, and
 // progress reports.
 //
 // Run with:
@@ -59,7 +59,7 @@ async function main() {
             lastName: 'صادقی',
             email: 'amirhossein.sadeghi@example.com',
             password: hashedPassword,
-            role: 'instructor',
+            role: 'admin',
             phone: '09121234567',
             bio: 'دکتری مهندسی برق و مدرس دانشگاه با بیش از ۸ سال سابقه‌ی تدریس متلب و شبیه‌سازی سیستم‌های مهندسی. علاقه‌مند به آموزش کاربردی و پروژه‌محور نرم‌افزارهای محاسباتی.',
             designation: 'مدرس متلب و شبیه‌سازی مهندسی',

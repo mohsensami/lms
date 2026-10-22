@@ -40,7 +40,7 @@ export function SignupForm() {
             }
 
             // Public registration only ever creates student accounts.
-            // Instructor accounts are granted manually by an admin from
+            // Admin accounts are granted manually by an admin from
             // /account/users.
             const response = await fetch('/api/register', {
                 method: 'POST',

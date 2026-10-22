@@ -71,16 +71,6 @@ async function requireAdmin() {
   return user;
 }
 
-// Instructors and admins can reply to any blog comment anywhere on the
-// site — intentionally not scoped to posts they authored.
-async function requireInstructorOrAdmin() {
-  const user = await requireLoggedInUser();
-  if (user.role !== "admin" && user.role !== "instructor") {
-    throw new Error("شما اجازه دسترسی ندارید");
-  }
-  return user;
-}
-
 export async function approvePostComment(commentId) {
   await requireAdmin();
   await setPostCommentStatus(commentId, "approved");
@@ -100,7 +90,7 @@ export async function deletePostCommentAction(commentId) {
 }
 
 export async function replyToPostComment(commentId, reply) {
-  const user = await requireInstructorOrAdmin();
+  const user = await requireAdmin();
   if (!reply?.trim()) {
     throw new Error("متن پاسخ نمی‌تواند خالی باشد");
   }

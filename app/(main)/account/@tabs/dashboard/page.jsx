@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatPrice } from '@/lib/formatPrice';
-import { getCourseDetailsByInstructor, getAllCoursesDashboardData } from '@/queries/courses';
+import { getAllCoursesDashboardData } from '@/queries/courses';
 import { getEnrollmentsForUser } from '@/queries/enrollments';
 import { getTestimonialsForUser } from '@/queries/testimonials';
 import { getPostCommentsForUser } from '@/queries/postComments';
@@ -42,13 +42,12 @@ async function StudentDashboard({ user }) {
     );
 }
 
-async function InstructorOrAdminDashboard({ user }) {
-    const courseStatus =
-        user?.role === 'admin' ? await getAllCoursesDashboardData() : await getCourseDetailsByInstructor(user?.id);
+async function AdminDashboard() {
+    const courseStatus = await getAllCoursesDashboardData();
 
     return (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <StatCard title={user.role === 'admin' ? 'کل دوره‌های سایت' : 'دوره‌های من'} value={courseStatus?.courses} />
+            <StatCard title="کل دوره‌های سایت" value={courseStatus?.courses} />
             <StatCard title="کل ثبت‌نام‌ها" value={courseStatus?.enrollments} />
             <StatCard title="کل درآمد" value={formatPrice(courseStatus?.revenue)} />
         </div>
@@ -56,17 +55,14 @@ async function InstructorOrAdminDashboard({ user }) {
 }
 
 const DashboardPage = async () => {
-    // Every role (student included) has a dashboard now — the guard just
-    // ensures the person is logged in; content below branches by role.
+    // Both roles have a dashboard — the guard just ensures the person is
+    // logged in. Only an explicit admin gets the admin view; anything else
+    // is treated as a student.
     const user = await requireRole('student');
 
     return (
         <div className="p-6">
-            {user.role === 'student' ? (
-                <StudentDashboard user={user} />
-            ) : (
-                <InstructorOrAdminDashboard user={user} />
-            )}
+            {user.role === 'admin' ? <AdminDashboard /> : <StudentDashboard user={user} />}
         </div>
     );
 };

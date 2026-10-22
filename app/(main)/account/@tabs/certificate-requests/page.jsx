@@ -16,8 +16,8 @@ const STATUS_VARIANT = {
 };
 
 const CertificateRequestsPage = async () => {
-    const user = await requireRole('instructor');
-    const requests = await getCertificateRequestsForReview(user);
+    await requireRole('admin');
+    const requests = await getCertificateRequestsForReview();
 
     return (
         <div className="p-6">

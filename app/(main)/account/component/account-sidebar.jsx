@@ -34,7 +34,7 @@ const AccountSidebar = async () => {
     </h5>
     <p className="text-muted-foreground">{loggedInUser?.email}</p>
     <p className="mt-1 text-sm font-bold text-primary">
-      نقش: {loggedInUser?.role === 'instructor' ? 'مدرس' : loggedInUser?.role === 'admin' ? 'مدیر' : 'دانشجو'}
+      نقش: {loggedInUser?.role === 'admin' ? 'مدیر' : 'دانشجو'}
     </p>
   </div>
 </div>

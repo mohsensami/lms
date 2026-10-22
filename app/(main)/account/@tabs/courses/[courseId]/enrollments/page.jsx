@@ -3,14 +3,14 @@ import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 import {
   ENROLLMENT_DATA,
-  getInstructorDashboardData,
+  getAdminDashboardData,
 } from "@/lib/dashboard-helper";
 import { requireRole } from "@/lib/require-role";
 
 const EnrollmentsPage = async ({ params: { courseId } }) => {
-  await requireRole("instructor");
+  await requireRole("admin");
   const course = await getCourseDetails(courseId);
-  const allEnrollments = await getInstructorDashboardData(ENROLLMENT_DATA);
+  const allEnrollments = await getAdminDashboardData(ENROLLMENT_DATA);
 
   const enrollmentData = sanitizeData(allEnrollments);
 

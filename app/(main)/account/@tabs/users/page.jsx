@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { requireRole } from '@/lib/require-role';
 import { getAllUsers } from '@/queries/users';
 import { getStudentsOverview } from '@/queries/studentOverview';
@@ -10,13 +11,12 @@ export const dynamic = 'force-dynamic';
 
 const ROLE_LABEL = {
     admin: 'مدیر',
-    instructor: 'مدرس',
     student: 'دانشجو',
 };
 
 const UsersPage = async () => {
     const admin = await requireRole('admin');
-    const [users, studentsOverview] = await Promise.all([getAllUsers(), getStudentsOverview(admin)]);
+    const [users, studentsOverview] = await Promise.all([getAllUsers(), getStudentsOverview()]);
 
     // Every user gets rich course-activity info for admins — build a quick
     // lookup by studentId so each row can show it without re-fetching.
@@ -44,6 +44,12 @@ const UsersPage = async () => {
                             </div>
 
                             <div className="flex items-center gap-2">
+                                <Link
+                                    href={`/account/users/${user.id}`}
+                                    className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/10"
+                                >
+                                    جزئیات و پیشرفت
+                                </Link>
                                 <Badge variant="secondary">{ROLE_LABEL[user.role] || user.role}</Badge>
                                 <Badge variant={user.isActive === false ? 'destructive' : 'success'}>
                                     {user.isActive === false ? 'غیرفعال' : 'فعال'}

@@ -4,7 +4,7 @@ import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 
 const QuizSets = async () => {
-  await requireRole("instructor");
+  await requireRole("admin");
   const quzSetsall = await getAllQuizSets();
   const mappedQuizSets = quzSetsall.map((q) => {
     return {

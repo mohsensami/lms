@@ -3,17 +3,14 @@ import { getQuizScore } from '@/lib/quiz-score';
 
 /**
  * Returns one entry per distinct student who has any activity on one of the
- * given user's courses (all courses, for an admin) — enrolled OR simply has
+ * course (admins see everything) — enrolled OR simply has
  * an order/invoice for it. We union both sources (not just Enrollment)
  * because a paid order can exist without a matching Enrollment row if that
  * step ever failed silently, and admins/instructors should still see that
  * customer rather than have them silently disappear.
  */
-export async function getStudentsOverview(user) {
-    const isAdmin = user?.role === 'admin';
-
+export async function getStudentsOverview() {
     const courses = await prisma.course.findMany({
-        where: isAdmin ? {} : { instructorId: user?.id },
         include: { _count: { select: { modules: true } } },
     });
 

@@ -9,7 +9,6 @@ import { setUserActive, deleteUser, changeUserRole } from '@/app/actions/users';
 
 const ROLE_LABEL = {
     student: 'دانشجو',
-    instructor: 'مدرس',
     admin: 'مدیر',
 };
 
@@ -76,7 +75,6 @@ function UserRowActions({ userId, isActive, role }) {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="student">دانشجو</SelectItem>
-                    <SelectItem value="instructor">مدرس</SelectItem>
                     <SelectItem value="admin">مدیر</SelectItem>
                 </SelectContent>
             </Select>

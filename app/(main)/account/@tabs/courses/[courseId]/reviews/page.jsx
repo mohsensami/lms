@@ -2,15 +2,15 @@ import { getCourseDetails } from "@/queries/courses";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 import {
-  getInstructorDashboardData,
+  getAdminDashboardData,
   REVIEW_DATA,
 } from "@/lib/dashboard-helper";
 import { requireRole } from "@/lib/require-role";
 
 const ReviewsPage = async ({ params: { courseId } }) => {
-  await requireRole("instructor");
+  await requireRole("admin");
   const course = await getCourseDetails(courseId);
-  const rawReviewData = await getInstructorDashboardData(REVIEW_DATA);
+  const rawReviewData = await getAdminDashboardData(REVIEW_DATA);
   //console.log(rawReviewData);
 
   const reviewData = sanitizeData(rawReviewData);

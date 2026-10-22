@@ -24,7 +24,7 @@ model User {
   lastName       String
   password       String
   email          String   @unique
-  role           String
+  role           String   // "student" | "admin" (only these two roles exist)
   phone          String?
   bio            String?  @default("")
   socialMedia    Json?
@@ -287,8 +287,7 @@ model PostComment {
 }
 
 // A student's request to have a completed course's certificate approved
-// before they're allowed to download it. Reviewed by the course's
-// instructor or any admin.
+// before they're allowed to download it. Reviewed by an admin.
 model CertificateRequest {
   id         String    @id @default(cuid())
   status     String    @default("pending") // pending | approved | rejected

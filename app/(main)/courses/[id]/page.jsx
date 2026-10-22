@@ -76,7 +76,7 @@ const SingleCoursePage = async ({ params }) => {
             <CourseCommentForm courseId={currentCourseId} loggedInUser={loggedInUser} />
             <Testimonials
                 testimonials={testimonialsWithPurchaseInfo}
-                canReply={loggedInUser?.role === 'admin' || loggedInUser?.role === 'instructor'}
+                canReply={loggedInUser?.role === 'admin'}
             />
 
             {/* <div className="mb-10">

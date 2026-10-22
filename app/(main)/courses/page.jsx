@@ -17,9 +17,7 @@ const CoursesPage = async () => {
     if (loggedInUser) {
         await Promise.all(
             courses.map(async (course) => {
-                const isFullAccess =
-                    loggedInUser.role === 'admin' ||
-                    (loggedInUser.role === 'instructor' && course.instructorId === loggedInUser.id);
+                const isFullAccess = loggedInUser.role === 'admin';
                 const isEnrolled = isFullAccess ? false : await hasEnrollmentForCourse(course.id, loggedInUser.id);
                 accessByCourseId[course.id] = { isFullAccess, isEnrolled };
             }),

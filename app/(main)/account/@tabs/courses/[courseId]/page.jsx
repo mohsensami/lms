@@ -17,7 +17,7 @@ import { getAllQuizSets } from '@/queries/quizzes';
 import { requireRole } from '@/lib/require-role';
 
 const EditCourse = async ({ params: { courseId } }) => {
-    await requireRole('instructor');
+    await requireRole('admin');
 
     const course = await getCourseDetails(courseId);
     const categories = await getCategories();

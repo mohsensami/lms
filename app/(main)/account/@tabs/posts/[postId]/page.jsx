@@ -1,6 +1,6 @@
 import { getPostById } from '@/queries/posts';
 import { requireRole } from '@/lib/require-role';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { PostTitleForm } from '../_components/post-title-form';
 import { PostSlugForm } from '../_components/post-slug-form';
 import { PostContentForm } from '../_components/post-content-form';
@@ -10,15 +10,11 @@ import { PostSeoForm } from '../_components/post-seo-form';
 import { PostPublishForm } from '../_components/post-publish-form';
 
 const EditPost = async ({ params: { postId } }) => {
-    const user = await requireRole('instructor');
+    await requireRole('admin');
     const post = await getPostById(postId);
 
     if (!post) {
         notFound();
-    }
-
-    if (user.role !== 'admin' && post.authorId !== user.id) {
-        redirect('/account/posts');
     }
 
     return (

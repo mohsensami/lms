@@ -37,17 +37,6 @@ export async function getPublishedPostList() {
     return (posts || []).filter((post) => isPostLive(post, now));
 }
 
-export async function getPostListForAuthor(authorId) {
-    if (!authorId) return [];
-    return withDb(async () => {
-        const posts = await prisma.post.findMany({
-            where: { authorId },
-            orderBy: { publishedAt: 'desc' },
-        });
-        return replaceMongoIdInArray(posts);
-    }, []);
-}
-
 const getCachedPostBySlug = unstable_cache(
     async (slug) => {
         return withDb(async () => {
