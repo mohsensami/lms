@@ -24,6 +24,7 @@ const adminMenu = [
   { label: "آزمون‌ساز", href: "/account/quiz-sets" },
   { label: "درخواست‌های مدرک", href: "/account/certificate-requests" },
   { label: "فاکتورها", href: "/account/Order" },
+  { label: "تنظیمات", href: "/account/settings" },
 ];
 
 function Menu({ role }) {

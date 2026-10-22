@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { create } from "@/queries/modules";
 import { COURSES_CACHE_TAG } from "@/queries/courses";
 import { revalidateTag } from "next/cache";
+import { deleteStoredVideos, getLessonsOfModule } from "@/lib/video-cleanup";
 
 export async function createModule(data) {
   try {
@@ -67,7 +68,9 @@ export async function changeModulePublishState(moduleId) {
 
 export async function deleteModule(moduleId, courseId) {
   try {
+    const lessons = await getLessonsOfModule(moduleId);
     await prisma.module.delete({ where: { id: moduleId } });
+    await deleteStoredVideos(lessons);
     revalidateTag(COURSES_CACHE_TAG);
   } catch (err) {
     throw new Error(err);

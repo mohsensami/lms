@@ -71,17 +71,19 @@ export async function getCourseDetails(id) {
     return getCachedCourseDetails(courseId);
 }
 
-// getCourseDetails() is shared (cached, no user context) and used by admin/
-// instructor dashboard pages and the enrolled-student lesson page too, both
-// of which legitimately need every lesson's video_url. The public course
-// landing page is the only place that must NOT leak locked lessons' URLs to
-// visitors who haven't paid for them, so we sanitize a copy of the course
-// there instead of touching the shared query.
+// getCourseDetails() is shared (cached, no user context) and used by admin
+// dashboard pages and the enrolled-student lesson page too. The public course
+// landing page must NEVER leak where a lesson's video lives, so we sanitize a
+// copy of the course there instead of touching the shared query.
+//
+// Video storage details (bucket key, provider, external URL) are removed for
+// everyone — including enrolled students. Playback always goes through
+// /api/video/:lessonId, which authorizes the viewer and returns a short-lived
+// signed link. Only a `hasVideo` flag is kept so the UI knows whether to show
+// a player.
 //
 // `isEnrolled` — whether the current visitor purchased this course — is
-// resolved server-side per-request (see app/(main)/courses/[id]/page.jsx),
-// so a lesson's real video_url only ever leaves the server when it's
-// actually public or the visitor is entitled to it.
+// resolved server-side per-request (see app/(main)/courses/[id]/page.jsx).
 export function sanitizeCourseForVisitor(course, isEnrolled) {
     if (!course) return course;
 
@@ -90,11 +92,11 @@ export function sanitizeCourseForVisitor(course, isEnrolled) {
         modules: (course.modules || []).map((module) => ({
             ...module,
             lessonIds: (module.lessonIds || []).map((lesson) => {
-                const isPlayable = lesson?.access === 'public' || isEnrolled;
-                const sanitized = isPlayable ? lesson : { ...lesson, video_url: null };
+                const { video_url, videoKey, videoProvider, videoName, videoSize, videoContentType, ...rest } = lesson;
+                const publicLesson = { ...rest, hasVideo: Boolean(videoKey || video_url) };
                 // Downloadable attachments are a purchase perk, not part of
                 // the free preview — strip them unless truly enrolled.
-                return isEnrolled ? sanitized : { ...sanitized, attachmentUrl: null, attachmentName: null };
+                return isEnrolled ? publicLesson : { ...publicLesson, attachmentUrl: null, attachmentName: null };
             }),
         })),
     };

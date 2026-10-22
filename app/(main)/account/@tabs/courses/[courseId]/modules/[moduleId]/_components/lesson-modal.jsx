@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { LessonTitleForm } from './lesson-title-form';
 import { LessonDescriptionForm } from './lesson-description-form';
 import { LessonAccessForm } from './lesson-access-form';
-import { VideoUrlForm } from './video-url-form';
+import { LessonVideoForm } from './lesson-video-form';
 import { LessonAttachmentForm } from './lesson-attachment-form';
 import { CourseActions } from '../../../_components/course-action';
 import { LessonActions } from './lesson-action';
@@ -89,12 +89,14 @@ export const LessonModal = ({ open, setOpen, courseId, lesson, moduleId }) => {
                                 <IconBadge icon={Video} />
                                 <h2 className="text-xl">افزودن ویدیو</h2>
                             </div>
-                            <VideoUrlForm
+                            <LessonVideoForm
                                 initialData={{
-                                    url: lesson?.video_url,
+                                    videoKey: lesson?.videoKey,
+                                    videoName: lesson?.videoName,
+                                    videoSize: lesson?.videoSize,
+                                    video_url: lesson?.video_url,
                                     duration: lesson?.duration,
                                 }}
-                                courseId={courseId}
                                 lessonId={lesson?.id}
                             />
                             <LessonAttachmentForm

@@ -1,16 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { Lock, PlayCircle, CheckCircle2, Download, Paperclip } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import SecureVideo from '@/components/secure-video';
 
-// react-player uses browser APIs, so it must be loaded on the client only.
-const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 
 const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpen }) => {
     const [open, setOpen] = useState(false);
@@ -20,6 +19,7 @@ const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpe
     const isFree = lesson?.access === 'public';
     const isPlayable = isFree || isEnrolled;
     const isCompleted = lesson?.state === 'completed';
+    const lessonId = lesson?.id || lesson?._id;
 
     useEffect(() => {
         if (autoOpen && isPlayable) {
@@ -59,6 +59,21 @@ const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpe
         if (isEnrolled) {
             recordWatch('completed');
             router.refresh();
+        }
+    }
+
+    // The real video location is never present in the page. A fresh, short-lived
+    // download link is requested (and re-checked on the server) on every click.
+    async function handleVideoDownload() {
+        try {
+            const res = await fetch(`/api/video/${lessonId}?download=1`, { cache: 'no-store' });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data?.url) {
+                throw new Error(data?.error || 'دریافت لینک دانلود ممکن نشد.');
+            }
+            window.location.assign(data.url);
+        } catch (error) {
+            toast.error(error.message || 'دریافت لینک دانلود ممکن نشد.');
         }
     }
 
@@ -112,36 +127,25 @@ const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpe
                         <DialogTitle className="text-right">{lesson?.title}</DialogTitle>
                     </DialogHeader>
                     <div className="aspect-video w-full bg-slate-950">
-                        {open && (
-                            <ReactPlayer
-                                url={lesson?.video_url}
-                                width="100%"
-                                height="100%"
-                                controls
-                                playing
-                                onStart={handleStart}
-                                onEnded={handleEnded}
-                                config={{
-                                    file: {
-                                        attributes: {
-                                            controlsList: 'nodownload',
-                                        },
-                                    },
-                                }}
-                            />
+                        {open && lesson?.hasVideo ? (
+                            <SecureVideo lessonId={lessonId} autoPlay onStart={handleStart} onEnded={handleEnded} />
+                        ) : (
+                            open && (
+                                <div className="flex h-full items-center justify-center text-sm text-white">
+                                    ویدیویی برای این درس ثبت نشده است.
+                                </div>
+                            )
                         )}
                     </div>
 
                     {/* Downloads are only offered to students who've actually
                         purchased the course — free-preview viewers don't get these. */}
-                    {isEnrolled && (lesson?.video_url || lesson?.attachmentUrl) && (
+                    {isEnrolled && (lesson?.hasVideo || lesson?.attachmentUrl) && (
                         <div className="flex flex-wrap items-center gap-2 border-t border-border p-4">
-                            {lesson?.video_url && (
-                                <Button asChild size="sm" variant="outline">
-                                    <a href={lesson.video_url} download target="_blank" rel="noreferrer">
-                                        <Download className="h-4 w-4 ml-1.5" />
-                                        دانلود ویدیو
-                                    </a>
+                            {lesson?.hasVideo && (
+                                <Button type="button" size="sm" variant="outline" onClick={handleVideoDownload}>
+                                    <Download className="h-4 w-4 ml-1.5" />
+                                    دانلود ویدیو
                                 </Button>
                             )}
                             {lesson?.attachmentUrl && (

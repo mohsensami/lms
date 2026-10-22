@@ -115,6 +115,18 @@ model Lesson {
   attachmentUrl  String?
   attachmentName String?
 
+  // --- Private video storage -------------------------------------------
+  // Videos uploaded through the admin panel live in a private bucket and
+  // are NEVER exposed by URL. We only store which provider holds the file
+  // (so changing the active provider later doesn't break old lessons) and
+  // the object key. Playback goes through /api/video/[lessonId], which
+  // checks access and returns a short-lived signed URL.
+  videoProvider    String? // "tigris" | "s3" | "r2" | ...
+  videoKey         String?
+  videoName        String?
+  videoSize        Float?
+  videoContentType String?
+
   moduleId String?
   module   Module? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
@@ -303,4 +315,12 @@ model CertificateRequest {
   student   User   @relation("CertificateRequestStudent", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([courseId, studentId])
+}
+
+// Generic key/value store for admin-editable site settings
+// (e.g. key = "storage", value = { activeProvider: "tigris" }).
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
 }

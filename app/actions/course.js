@@ -4,6 +4,7 @@ import { getLoggedInUser } from "@/lib/loggedin-user";
 import { prisma } from "@/lib/prisma";
 import { create, COURSES_CACHE_TAG } from "@/queries/courses";
 import { revalidateTag } from "next/cache";
+import { deleteStoredVideos, getLessonsOfCourse } from "@/lib/video-cleanup";
 
 // The UI still passes Mongoose-style ref field names (category, instructor,
 // quizSet) — map them to the Prisma scalar FK column names before hitting
@@ -65,7 +66,9 @@ export async function changeCoursePublishState(courseId) {
 
 export async function deleteCourse(courseId) {
   try {
+    const lessons = await getLessonsOfCourse(courseId);
     await prisma.course.delete({ where: { id: courseId } });
+    await deleteStoredVideos(lessons);
     revalidateTag(COURSES_CACHE_TAG);
   } catch (err) {
     throw new Error(err);
