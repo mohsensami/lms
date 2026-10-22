@@ -7,6 +7,7 @@ import { PostContentForm } from '../_components/post-content-form';
 import { PostThumbnailForm } from '../_components/post-thumbnail-form';
 import { PostActions } from '../_components/post-actions';
 import { PostSeoForm } from '../_components/post-seo-form';
+import { PostPublishForm } from '../_components/post-publish-form';
 
 const EditPost = async ({ params: { postId } }) => {
     const user = await requireRole('instructor');
@@ -35,6 +36,7 @@ const EditPost = async ({ params: { postId } }) => {
                     <PostSeoForm initialData={post} postId={post.id} />
                 </div>
                 <div>
+                    <PostPublishForm initialData={post} postId={post.id} />
                     <PostThumbnailForm initialData={post} postId={post.id} />
                 </div>
             </div>

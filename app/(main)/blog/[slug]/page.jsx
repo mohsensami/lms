@@ -5,22 +5,24 @@ import { CalendarDays, Clock, ArrowRight, Newspaper, MessageCircle } from 'lucid
 import { getPostBySlug } from '@/queries/posts';
 import { getApprovedCommentsForPost, getApprovedCommentCountForPost } from '@/queries/postComments';
 import { buildPostMetadata, buildPostJsonLd } from '@/lib/seo';
+import { getPostReadTime } from '@/lib/post-content';
+import { isPostLive, getPostState, POST_STATE_LABEL } from '@/lib/post-status';
+import { renderPostContent } from '@/lib/sanitize-post-html';
+import { PostBody } from '@/components/post-html';
 import { getLoggedInUser } from '@/lib/loggedin-user';
 import UserAvatar from '@/components/user-avatar';
 import PostCommentForm from '../_components/PostCommentForm';
 import CommentReplyBox from '@/app/(main)/account/component/comment-reply-box';
 import { replyToPostComment } from '@/app/actions/post-comment';
 
-function getReadTime(content) {
-    if (!content) return '۱ دقیقه';
-    const words = content.trim().split(/\s+/).length;
-    const minutes = Math.max(1, Math.round(words / 200));
-    return `${minutes} دقیقه`;
-}
-
 export async function generateMetadata({ params }) {
     const { slug } = await params;
     const post = await getPostBySlug(slug);
+    // Drafts / scheduled posts aren't public: don't leak their title or
+    // content through <head> metadata, and keep them out of search engines.
+    if (post && !isPostLive(post)) {
+        return { title: 'پیش‌نمایش مقاله', robots: { index: false, follow: false } };
+    }
     return buildPostMetadata(post);
 }
 
@@ -38,8 +40,17 @@ const BlogPostPage = async ({ params }) => {
         getLoggedInUser(),
     ]);
 
-    const dateLabel = post.createdAt
-        ? new Date(post.createdAt).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })
+    // Not live yet (draft or scheduled): only admins and the post's own
+    // author may open it, as a preview. Everyone else gets a 404.
+    const isLive = isPostLive(post);
+    const canPreview = loggedInUser?.role === 'admin' || (!!loggedInUser && post.authorId === loggedInUser.id);
+    if (!isLive && !canPreview) {
+        notFound();
+    }
+
+    const rendered = renderPostContent(post.content);
+    const dateLabel = (post.publishedAt || post.createdAt)
+        ? new Date(post.publishedAt || post.createdAt).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })
         : '';
     const authorName = post?.author ? `${post.author.firstName || ''} ${post.author.lastName || ''}`.trim() : null;
     const jsonLd = buildPostJsonLd(post);
@@ -51,6 +62,15 @@ const BlogPostPage = async ({ params }) => {
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
             <article className="container max-w-3xl py-10 md:py-16">
+                {!isLive && (
+                    <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                        این مقاله هنوز عمومی نیست ({POST_STATE_LABEL[getPostState(post)]}
+                        {getPostState(post) === 'scheduled' && post.publishedAt
+                            ? ` — انتشار: ${new Date(post.publishedAt).toLocaleString('fa-IR', { dateStyle: 'medium', timeStyle: 'short' })}`
+                            : ''}
+                        ) و فقط شما به‌عنوان پیش‌نمایش آن را می‌بینید.
+                    </div>
+                )}
                 <Link
                     href="/blog"
                     className="mb-8 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition hover:text-primary"
@@ -75,7 +95,7 @@ const BlogPostPage = async ({ params }) => {
                     </span>
                     <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                         <Clock className="h-3.5 w-3.5" />
-                        {getReadTime(post.content)}
+                        {getPostReadTime(post.content)}
                     </span>
                     <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                         <MessageCircle className="h-3.5 w-3.5" />
@@ -95,9 +115,7 @@ const BlogPostPage = async ({ params }) => {
                 </div>
 
                 {/* Content */}
-                <div className="mt-10 whitespace-pre-line text-[17px] leading-9 text-foreground/90">
-                    {post.content}
-                </div>
+                <PostBody rendered={rendered} className="mt-10 text-[17px] leading-9 text-foreground/90" />
 
                 {/* Author box */}
                 {authorName && (

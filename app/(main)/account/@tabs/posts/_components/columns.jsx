@@ -9,6 +9,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ArrowUpDown, MoreHorizontal, Pencil } from 'lucide-react';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { getPostState, POST_STATE_LABEL } from '@/lib/post-status';
 
 export const columns = [
     {
@@ -22,17 +24,35 @@ export const columns = [
         },
     },
     {
-        accessorKey: 'createdAt',
+        id: 'status',
+        header: 'وضعیت',
+        cell: ({ row }) => {
+            const state = getPostState(row.original);
+            return (
+                <Badge variant={state === 'published' ? 'success' : state === 'scheduled' ? 'secondary' : 'outline'}>
+                    {POST_STATE_LABEL[state]}
+                </Badge>
+            );
+        },
+    },
+    {
+        accessorKey: 'publishedAt',
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    تاریخ ایجاد <ArrowUpDown className="ml-2 h-4 w-4" />
+                    تاریخ انتشار <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
         cell: ({ row }) => {
-            const value = row.getValue('createdAt');
-            return <div>{value ? new Date(value).toLocaleDateString('fa-IR') : '-'}</div>;
+            const value = row.original.status === 'draft' ? null : row.getValue('publishedAt');
+            return (
+                <div>
+                    {value
+                        ? new Date(value).toLocaleString('fa-IR', { dateStyle: 'medium', timeStyle: 'short' })
+                        : '-'}
+                </div>
+            );
         },
     },
     {

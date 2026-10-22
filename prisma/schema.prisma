@@ -251,6 +251,12 @@ model Post {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  // Publishing workflow (WordPress-style). A post is publicly visible only
+  // when status = "published" AND publishedAt <= now. A future publishedAt
+  // therefore means "scheduled"; status = "draft" is never public.
+  status      String   @default("published") // draft | published
+  publishedAt DateTime @default(now())
+
   // SEO fields (Yoast-style): editable per post from the admin panel.
   metaTitle       String?
   metaDescription String?

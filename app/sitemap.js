@@ -1,9 +1,9 @@
 import { getCourseList } from '@/queries/courses';
-import { getPostList } from '@/queries/posts';
+import { getPublishedPostList } from '@/queries/posts';
 import { SITE_URL } from '@/lib/seo';
 
 export default async function sitemap() {
-    const [courses, posts] = await Promise.all([getCourseList(), getPostList()]);
+    const [courses, posts] = await Promise.all([getCourseList(), getPublishedPostList()]);
 
     const staticRoutes = [
         { url: `${SITE_URL}/`, changeFrequency: 'daily', priority: 1 },

@@ -11,6 +11,7 @@ import {
 } from "@/queries/postComments";
 import { POSTS_CACHE_TAG } from "@/queries/posts";
 import { revalidateTag } from "next/cache";
+import { isPostLive } from "@/lib/post-status";
 
 export async function createPostComment(content, postId) {
   // Always trust the logged-in session for who the author is, never a
@@ -25,6 +26,15 @@ export async function createPostComment(content, postId) {
   }
   if (!content?.trim()) {
     throw new Error("متن دیدگاه الزامی است");
+  }
+
+  // Drafts and still-scheduled posts aren't public, so they can't be commented on.
+  const targetPost = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { status: true, publishedAt: true },
+  });
+  if (!isPostLive(targetPost)) {
+    throw new Error("این مقاله هنوز منتشر نشده است");
   }
 
   // New comments always start as "pending" (see schema default) and only

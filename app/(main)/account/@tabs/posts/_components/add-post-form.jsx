@@ -8,7 +8,12 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { Textarea } from '@/components/ui/textarea';
+import Image from 'next/image';
+import { ImageIcon, Loader2 } from 'lucide-react';
+import { UploadButton } from '@/lib/uploadthing';
+import { PostContentField } from './post-content-field';
+import { PostPublishPicker } from './post-publish-picker';
+import { buildPublishPayload } from '@/lib/post-status';
 import { toast } from 'sonner';
 import { createPost } from '@/app/actions/post';
 import { getSlug } from '@/lib/convertData';
@@ -28,12 +33,15 @@ const formSchema = z.object({
     }),
 });
 
-const AddPostForm = () => {
+const AddPostForm = ({ isAdmin = false }) => {
     const router = useRouter();
     // Once the admin edits the slug field by hand, stop overwriting it from
     // the title — otherwise their manual English slug would keep getting
     // clobbered on every keystroke in the title field.
     const [slugTouched, setSlugTouched] = useState(false);
+    const [publish, setPublish] = useState({ mode: 'now', date: null });
+    const [thumbnail, setThumbnail] = useState(null);
+    const [isThumbUploading, setIsThumbUploading] = useState(false);
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -60,10 +68,19 @@ const AddPostForm = () => {
 
     const onSubmit = async (values) => {
         try {
-            const post = await createPost({ ...values, slug: getSlug(values.slug) });
+            const post = await createPost({
+                ...values,
+                slug: getSlug(values.slug),
+                thumbnail,
+                ...buildPublishPayload(publish),
+            });
             toast.success('پست ایجاد شد');
             router.push(`/account/posts/${post?.id}`);
         } catch (error) {
+            if (error?.message === 'تاریخ و ساعت انتشار معتبر نیست') {
+                toast.error(error.message);
+                return;
+            }
             toast.error(
                 String(error?.message || '').includes('Unique constraint')
                     ? 'این نامک (slug) قبلاً برای پست دیگری استفاده شده است. لطفاً نامک دیگری انتخاب کنید.'
@@ -74,7 +91,7 @@ const AddPostForm = () => {
 
     return (
         <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">
-            <div className="max-w-full w-[536px]">
+            <div className="max-w-full w-[680px]">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-8">
                         <FormField
@@ -129,13 +146,64 @@ const AddPostForm = () => {
                                 <FormItem>
                                     <FormLabel>متن پست</FormLabel>
                                     <FormControl>
-                                        <Textarea rows={10} placeholder="متن کامل مقاله" className="resize-none" {...field} />
+                                        <PostContentField field={field} disabled={isSubmitting} />
                                     </FormControl>
-                                    <FormDescription>می‌توانید بعداً تصویر شاخص پست را هم اضافه کنید</FormDescription>
+                                    <FormDescription>
+                                        می‌توانید متن ساده یا HTML بنویسید. با «افزودن تصویر» عکس آپلود و در جای مکان‌نما
+                                        درج می‌شود و با «افزودن کد متلب» کد با رنگ‌بندی (Prism) نمایش داده می‌شود.
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+                        {isAdmin && (
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <FormLabel>تصویر شاخص (اختیاری)</FormLabel>
+                                    <UploadButton
+                                        endpoint="postImageUploader"
+                                        disabled={isSubmitting}
+                                        onUploadBegin={() => setIsThumbUploading(true)}
+                                        onClientUploadComplete={(res) => {
+                                            setIsThumbUploading(false);
+                                            const uploaded = res?.[0]?.ufsUrl ?? res?.[0]?.url;
+                                            if (!uploaded) {
+                                                toast.error('آپلود تصویر با مشکل مواجه شد');
+                                                return;
+                                            }
+                                            setThumbnail(uploaded);
+                                        }}
+                                        onUploadError={(error) => {
+                                            setIsThumbUploading(false);
+                                            toast.error(`خطا در آپلود تصویر: ${error.message}`);
+                                        }}
+                                        appearance={{
+                                            button: 'ut-uploading:cursor-not-allowed ut-uploading:opacity-70 bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-sm font-medium after:hidden',
+                                            allowedContent: 'hidden',
+                                        }}
+                                        content={{
+                                            button: ({ isUploading }) => (isUploading ? 'در حال آپلود...' : 'آپلود تصویر'),
+                                        }}
+                                    />
+                                </div>
+                                <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-md bg-slate-200">
+                                    {thumbnail ? (
+                                        <Image alt="تصویر شاخص" fill className="object-cover" src={thumbnail} />
+                                    ) : (
+                                        <ImageIcon className="h-10 w-10 text-slate-500" />
+                                    )}
+                                    {isThumbUploading && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                                            <Loader2 className="h-6 w-6 animate-spin text-white" />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        <div className="space-y-2">
+                            <FormLabel>انتشار</FormLabel>
+                            <PostPublishPicker value={publish} onChange={setPublish} disabled={isSubmitting} />
+                        </div>
                         <div className="flex items-center gap-x-2">
                             <Link href="/account/posts">
                                 <Button variant="outline" type="button">

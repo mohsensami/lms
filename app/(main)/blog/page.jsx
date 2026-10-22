@@ -2,7 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CalendarDays, Clock, Newspaper } from 'lucide-react';
 import BlogCard from '@/components/blog-card';
-import { getPostList } from '@/queries/posts';
+import { getPublishedPostList } from '@/queries/posts';
+import { getPostExcerpt, getPostReadTime } from '@/lib/post-content';
 import { SITE_NAME } from '@/lib/seo';
 
 export const metadata = {
@@ -10,22 +11,11 @@ export const metadata = {
     description: `آخرین مقالات و آموزش‌های ${SITE_NAME} در زمینه‌ی برنامه‌نویسی و طراحی.`,
 };
 
-function getExcerpt(content, maxLength = 160) {
-    if (!content) return '';
-    const plain = content.replace(/\s+/g, ' ').trim();
-    if (plain.length <= maxLength) return plain;
-    return `${plain.slice(0, maxLength).trim()}…`;
-}
-
-function getReadTime(content) {
-    if (!content) return '۱ دقیقه';
-    const words = content.trim().split(/\s+/).length;
-    const minutes = Math.max(1, Math.round(words / 200));
-    return `${minutes} دقیقه`;
-}
+// Re-check every minute so scheduled posts show up once their time arrives.
+export const revalidate = 60;
 
 const BlogPage = async () => {
-    const posts = await getPostList();
+    const posts = await getPublishedPostList();
     const [featuredPost, ...restPosts] = posts;
 
     return (
@@ -71,17 +61,17 @@ const BlogPage = async () => {
                                 <h2 className="text-xl font-extrabold text-foreground transition-colors group-hover:text-primary sm:text-2xl">
                                     {featuredPost.title}
                                 </h2>
-                                <p className="leading-7 text-muted-foreground">{getExcerpt(featuredPost.content)}</p>
+                                <p className="leading-7 text-muted-foreground">{getPostExcerpt(featuredPost.content)}</p>
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                     <span className="flex items-center gap-1.5">
                                         <CalendarDays className="h-3.5 w-3.5" />
-                                        {featuredPost.createdAt
-                                            ? new Date(featuredPost.createdAt).toLocaleDateString('fa-IR')
+                                        {featuredPost.publishedAt || featuredPost.createdAt
+                                            ? new Date(featuredPost.publishedAt || featuredPost.createdAt).toLocaleDateString('fa-IR')
                                             : ''}
                                     </span>
                                     <span className="flex items-center gap-1.5">
                                         <Clock className="h-3.5 w-3.5" />
-                                        {getReadTime(featuredPost.content)}
+                                        {getPostReadTime(featuredPost.content)}
                                     </span>
                                 </div>
                             </div>

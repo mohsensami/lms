@@ -6,16 +6,19 @@ import { getCourseList } from '@/queries/courses';
 import { getCategories } from '@/queries/categories';
 import HeroSection from '@/components/HeroSection';
 import BlogCard from '@/components/blog-card';
-import { getPostList } from '@/queries/posts';
+import { getPublishedPostList } from '@/queries/posts';
 import Link from 'next/link';
 import { ArrowLeftIcon } from 'lucide-react';
 
 import FullWidthCourseCard from './courses/_components/FullWidthCourseCard';
 
+// Re-check every minute so scheduled posts show up once their time arrives.
+export const revalidate = 60;
+
 const HomePage = async () => {
     const courses = await getCourseList();
     const categories = await getCategories();
-    const latestPosts = (await getPostList()).slice(0, 5);
+    const latestPosts = (await getPublishedPostList()).slice(0, 5);
     // console.log(cat);
 
     return (
