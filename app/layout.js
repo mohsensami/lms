@@ -7,6 +7,8 @@ import { ProgressProvider } from '@/components/providers/progress-provider';
 import { DirectionProvider } from '@/components/providers/direction-provider';
 import localFont from 'next/font/local';
 import { SITE_URL } from '@/lib/seo';
+import { getPrimaryColor } from '@/lib/site-theme';
+import { buildThemeCss, DEFAULT_PRIMARY } from '@/lib/theme';
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -54,8 +56,17 @@ const IranSans = localFont({
 });
 
 export default async function RootLayout({ children }) {
+    // Brand colour chosen by the admin (Settings -> Appearance). Injected as
+    // CSS variables so every component that uses the `primary` token follows it.
+    const primaryColor = await getPrimaryColor();
+
     return (
         <html lang="fa" dir="rtl" className={cn('antialiased', IranSans.variable)}>
+            <head>
+                {primaryColor !== DEFAULT_PRIMARY && (
+                    <style id="site-theme" dangerouslySetInnerHTML={{ __html: buildThemeCss(primaryColor) }} />
+                )}
+            </head>
             <body className="antialiased">
                 <DirectionProvider dir="rtl">
                     <ProgressProvider>{children}</ProgressProvider>

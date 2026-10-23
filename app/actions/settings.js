@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { DEFAULT_PRIMARY, normalizeHex } from "@/lib/theme";
 import { assertAdmin } from "@/lib/admin-guard";
 import { setSetting } from "@/lib/settings";
 import {
@@ -97,6 +98,9 @@ export async function applyStorageCors(providerId) {
     }
 
     const driver = getStorageDriver(providerId);
+    if (typeof driver.applyCors !== "function") {
+      return { ok: false, message: "این سرویس نیازی به تنظیم CORS ندارد." };
+    }
     await driver.applyCors(origins);
     return { ok: true, message: `تنظیمات CORS برای ${origins.join("، ")} اعمال شد.` };
   } catch (error) {
@@ -105,5 +109,35 @@ export async function applyStorageCors(providerId) {
       ok: false,
       message: `اعمال CORS ناموفق بود: ${error?.message || "خطای ناشناخته"}`,
     };
+  }
+}
+
+export async function saveThemeColor(color) {
+  try {
+    await assertAdmin();
+
+    const hex = normalizeHex(color);
+    if (!hex) {
+      return { ok: false, message: "رنگ واردشده معتبر نیست. مثال: #4f46e5" };
+    }
+
+    await setSetting("theme", { primaryColor: hex });
+    revalidatePath("/", "layout");
+    return { ok: true, message: "رنگ اصلی سایت تغییر کرد.", color: hex };
+  } catch (error) {
+    console.error("saveThemeColor error:", error);
+    return { ok: false, message: "ذخیره‌ی رنگ با مشکل مواجه شد." };
+  }
+}
+
+export async function resetThemeColor() {
+  try {
+    await assertAdmin();
+    await setSetting("theme", { primaryColor: DEFAULT_PRIMARY });
+    revalidatePath("/", "layout");
+    return { ok: true, message: "رنگ پیش‌فرض بازگردانده شد.", color: DEFAULT_PRIMARY };
+  } catch (error) {
+    console.error("resetThemeColor error:", error);
+    return { ok: false, message: "بازگردانی رنگ با مشکل مواجه شد." };
   }
 }

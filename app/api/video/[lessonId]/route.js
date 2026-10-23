@@ -1,5 +1,5 @@
 import { resolveLessonVideoAccess } from '@/lib/video-access';
-import { getStorageDriver, PLAYBACK_URL_TTL, DOWNLOAD_URL_TTL } from '@/lib/storage';
+import { getStorageDriver, PROVIDERS, PLAYBACK_URL_TTL, DOWNLOAD_URL_TTL } from '@/lib/storage';
 
 // Never cache: every response is a per-user, expiring signed link.
 export const dynamic = 'force-dynamic';
@@ -39,6 +39,19 @@ export async function GET(request, { params }) {
                 { url: lesson.video_url, external: true },
                 { headers: NO_STORE },
             );
+        }
+
+        // Providers with public links (Cloudinary, UploadThing): hand out the
+        // stored link — only after the access check above, never in the page.
+        if (PROVIDERS[lesson.videoProvider]?.secure === false) {
+            if (!lesson.videoUrl) {
+                return Response.json({ error: 'لینک ویدیو پیدا نشد.' }, { status: 404, headers: NO_STORE });
+            }
+            const url =
+                wantsDownload && lesson.videoProvider === 'cloudinary'
+                    ? lesson.videoUrl.replace('/upload/', '/upload/fl_attachment/')
+                    : lesson.videoUrl;
+            return Response.json({ url }, { headers: NO_STORE });
         }
 
         const driver = getStorageDriver(lesson.videoProvider);

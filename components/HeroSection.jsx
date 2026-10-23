@@ -2,8 +2,8 @@ export default function HeroSection() {
     return (
         <section className="relative overflow-hidden bg-gray-950 text-white">
             {/* Background glow */}
-            <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-purple-600/30 blur-3xl"></div>
-            <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-blue-600/20 blur-3xl"></div>
+            <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-primary/30 blur-3xl"></div>
+            <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-primary/20 blur-3xl"></div>
 
             <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 py-20 md:grid-cols-2">
                 {/* Left content */}
@@ -23,7 +23,7 @@ export default function HeroSection() {
                     </p>
 
                     <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                        <button className="rounded-xl bg-purple-500 px-6 py-3 font-medium hover:bg-purple-600 transition">
+                        <button className="rounded-xl bg-primary px-6 py-3 font-medium hover:bg-primary transition">
                             شروع یادگیری
                         </button>
                         {/* <button className="rounded-xl border border-white/20 px-6 py-3 text-gray-200 hover:bg-white/10 transition">

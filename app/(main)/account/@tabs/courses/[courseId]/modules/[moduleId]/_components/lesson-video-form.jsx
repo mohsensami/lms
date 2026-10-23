@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import SecureVideo from '@/components/secure-video';
 import { removeLessonVideo } from '@/app/actions/lesson';
+import { useUploadThing } from '@/lib/uploadthing';
 
 const PART_CONCURRENCY = 3;
 const PART_RETRIES = 3;
@@ -80,6 +81,37 @@ function putPart(url, blob, onProgress, registerXhr) {
     });
 }
 
+
+/** POST one Cloudinary chunk (multipart form). Resolves with the parsed JSON reply. */
+function postChunk({ url, fields, blob, filename, headers, onProgress, registerXhr }) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        registerXhr(xhr);
+        xhr.open('POST', url);
+        Object.entries(headers).forEach(([name, value]) => xhr.setRequestHeader(name, value));
+        xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) onProgress(event.loaded);
+        };
+        xhr.onload = () => {
+            let json = null;
+            try {
+                json = JSON.parse(xhr.responseText);
+            } catch {
+                // fall through to the status check
+            }
+            if (xhr.status >= 200 && xhr.status < 300) resolve(json);
+            else reject(new Error(json?.error?.message || `خطای Cloudinary (${xhr.status})`));
+        };
+        xhr.onerror = () => reject(new Error('ارتباط با Cloudinary برقرار نشد. اتصال اینترنت را بررسی کنید.'));
+        xhr.onabort = () => reject(new Error('CANCELLED'));
+
+        const form = new FormData();
+        Object.entries(fields).forEach(([name, value]) => form.append(name, value));
+        form.append('file', blob, filename);
+        xhr.send(form);
+    });
+}
+
 async function postJson(url, body) {
     const res = await fetch(url, {
         method: 'POST',
@@ -108,6 +140,12 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
     const [phase, setPhase] = useState('idle'); // idle | preparing | uploading | finishing
     const [progress, setProgress] = useState(0);
     const [removing, setRemoving] = useState(false);
+    const [canCancel, setCanCancel] = useState(true);
+
+    // UploadThing uploads go through its own SDK; progress is reported here.
+    const { startUpload: startUploadThing } = useUploadThing('lessonVideoUploader', {
+        onUploadProgress: (value) => setProgress(Math.min(99, Math.round(value))),
+    });
 
     const isBusy = phase !== 'idle';
     const hasVideo = video.hasStored || video.hasExternal;
@@ -117,8 +155,130 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
         xhrsRef.current.forEach((xhr) => xhr.abort());
     }
 
+    // ---- one upload strategy per storage provider type ---------------------
+
+    async function uploadS3(file, session) {
+        setPhase('uploading');
+
+        const { parts, partSize, key, uploadId } = session;
+        const loadedPerPart = new Array(parts.length).fill(0);
+        const etags = new Array(parts.length);
+        let nextIndex = 0;
+
+        const refreshProgress = () => {
+            const loaded = loadedPerPart.reduce((sum, value) => sum + value, 0);
+            setProgress(Math.min(99, Math.round((loaded / file.size) * 100)));
+        };
+
+        async function worker() {
+            while (!cancelledRef.current) {
+                const index = nextIndex++;
+                if (index >= parts.length) return;
+
+                const start = index * partSize;
+                const blob = file.slice(start, Math.min(start + partSize, file.size));
+
+                let attempt = 0;
+                // Retry flaky chunks without restarting the whole upload.
+                // eslint-disable-next-line no-constant-condition
+                while (true) {
+                    try {
+                        etags[index] = await putPart(
+                            parts[index].url,
+                            blob,
+                            (loaded) => {
+                                loadedPerPart[index] = loaded;
+                                refreshProgress();
+                            },
+                            (xhr) => xhrsRef.current.add(xhr),
+                        );
+                        loadedPerPart[index] = blob.size;
+                        refreshProgress();
+                        break;
+                    } catch (error) {
+                        loadedPerPart[index] = 0;
+                        if (cancelledRef.current || error.message === 'CANCELLED') throw new Error('CANCELLED');
+                        attempt += 1;
+                        if (attempt >= PART_RETRIES) throw error;
+                        await new Promise((resolve) => setTimeout(resolve, 800 * attempt));
+                    }
+                }
+            }
+        }
+
+        await Promise.all(Array.from({ length: Math.min(PART_CONCURRENCY, parts.length) }, worker));
+        if (cancelledRef.current) throw new Error('CANCELLED');
+
+        return {
+            key,
+            uploadId,
+            parts: etags.map((ETag, index) => ({ PartNumber: index + 1, ETag })),
+        };
+    }
+
+    async function uploadCloudinary(file, session) {
+        setPhase('uploading');
+
+        const { uploadUrl, fields, chunkSize, publicId } = session;
+        const uniqueId = crypto.randomUUID();
+        const chunked = file.size > chunkSize;
+        let sent = 0;
+        let last = null;
+
+        for (let start = 0; start < file.size; start += chunkSize) {
+            if (cancelledRef.current) throw new Error('CANCELLED');
+
+            const end = Math.min(start + chunkSize, file.size);
+            const blob = file.slice(start, end);
+            const headers = chunked
+                ? { 'X-Unique-Upload-Id': uniqueId, 'Content-Range': `bytes ${start}-${end - 1}/${file.size}` }
+                : {};
+
+            let attempt = 0;
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+                try {
+                    last = await postChunk({
+                        url: uploadUrl,
+                        fields,
+                        blob,
+                        filename: file.name,
+                        headers,
+                        onProgress: (loaded) =>
+                            setProgress(Math.min(99, Math.round(((sent + loaded) / file.size) * 100))),
+                        registerXhr: (xhr) => xhrsRef.current.add(xhr),
+                    });
+                    break;
+                } catch (error) {
+                    if (cancelledRef.current || error.message === 'CANCELLED') throw new Error('CANCELLED');
+                    attempt += 1;
+                    if (attempt >= PART_RETRIES) throw error;
+                    await new Promise((resolve) => setTimeout(resolve, 800 * attempt));
+                }
+            }
+            sent += blob.size;
+        }
+
+        if (!last?.secure_url) throw new Error('پاسخ Cloudinary کامل نیست. دوباره تلاش کنید.');
+
+        return { publicId: last.public_id || publicId, url: last.secure_url, cloudDuration: last.duration };
+    }
+
+    async function uploadUploadThing(file) {
+        setPhase('uploading');
+        setCanCancel(false);
+
+        const result = await startUploadThing([file]);
+        const uploaded = result?.[0];
+        const url = uploaded?.ufsUrl ?? uploaded?.url;
+        if (!uploaded?.key || !url) throw new Error('آپلود در UploadThing ناموفق بود.');
+
+        return { key: uploaded.key, url };
+    }
+
     async function uploadFile(file) {
         cancelledRef.current = false;
+        setCanCancel(true);
         setPhase('preparing');
         setProgress(0);
 
@@ -134,71 +294,24 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
                 size: file.size,
             });
 
-            setPhase('uploading');
-
-            const { parts, partSize, key, uploadId, provider, contentType } = session;
-            const loadedPerPart = new Array(parts.length).fill(0);
-            const etags = new Array(parts.length);
-            let nextIndex = 0;
-
-            const refreshProgress = () => {
-                const loaded = loadedPerPart.reduce((sum, value) => sum + value, 0);
-                setProgress(Math.min(99, Math.round((loaded / file.size) * 100)));
-            };
-
-            async function worker() {
-                while (!cancelledRef.current) {
-                    const index = nextIndex++;
-                    if (index >= parts.length) return;
-
-                    const start = index * partSize;
-                    const blob = file.slice(start, Math.min(start + partSize, file.size));
-
-                    let attempt = 0;
-                    // Retry flaky chunks without restarting the whole upload.
-                    // eslint-disable-next-line no-constant-condition
-                    while (true) {
-                        try {
-                            etags[index] = await putPart(
-                                parts[index].url,
-                                blob,
-                                (loaded) => {
-                                    loadedPerPart[index] = loaded;
-                                    refreshProgress();
-                                },
-                                (xhr) => xhrsRef.current.add(xhr),
-                            );
-                            loadedPerPart[index] = blob.size;
-                            refreshProgress();
-                            break;
-                        } catch (error) {
-                            loadedPerPart[index] = 0;
-                            if (cancelledRef.current || error.message === 'CANCELLED') throw new Error('CANCELLED');
-                            attempt += 1;
-                            if (attempt >= PART_RETRIES) throw error;
-                            await new Promise((resolve) => setTimeout(resolve, 800 * attempt));
-                        }
-                    }
-                }
-            }
-
-            await Promise.all(Array.from({ length: Math.min(PART_CONCURRENCY, parts.length) }, worker));
-
-            if (cancelledRef.current) throw new Error('CANCELLED');
+            const uploaded =
+                session.kind === 'cloudinary'
+                    ? await uploadCloudinary(file, session)
+                    : session.kind === 'uploadthing'
+                      ? await uploadUploadThing(file)
+                      : await uploadS3(file, session);
 
             setPhase('finishing');
             setProgress(100);
 
             const result = await postJson('/api/admin/video-upload/complete', {
                 lessonId,
-                provider,
-                key,
-                uploadId,
+                provider: session.provider,
                 filename: file.name,
                 size: file.size,
-                contentType,
+                contentType: session.contentType,
                 duration,
-                parts: etags.map((ETag, index) => ({ PartNumber: index + 1, ETag })),
+                ...uploaded,
             });
 
             setVideo({
@@ -212,8 +325,8 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
             toast.success('ویدیو با موفقیت آپلود شد');
             router.refresh();
         } catch (error) {
-            // Free the half-uploaded parts in the bucket.
-            if (session) {
+            // Free the half-uploaded parts in the bucket (S3-style only).
+            if (session?.kind === 's3-multipart') {
                 postJson('/api/admin/video-upload/abort', {
                     lessonId,
                     provider: session.provider,
@@ -231,6 +344,7 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
             xhrsRef.current.clear();
             setPhase('idle');
             setProgress(0);
+            setCanCancel(true);
             if (fileInputRef.current) fileInputRef.current.value = '';
         }
     }
@@ -312,7 +426,7 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
                             <Loader2 className="h-4 w-4 animate-spin" />
                             {phaseLabel}
                         </span>
-                        {phase !== 'finishing' && (
+                        {phase !== 'finishing' && canCancel && (
                             <Button type="button" size="sm" variant="ghost" onClick={cancelUpload}>
                                 <X className="ml-1 h-4 w-4" />
                                 لغو

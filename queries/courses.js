@@ -92,7 +92,7 @@ export function sanitizeCourseForVisitor(course, isEnrolled) {
         modules: (course.modules || []).map((module) => ({
             ...module,
             lessonIds: (module.lessonIds || []).map((lesson) => {
-                const { video_url, videoKey, videoProvider, videoName, videoSize, videoContentType, ...rest } = lesson;
+                const { video_url, videoKey, videoUrl, videoProvider, videoName, videoSize, videoContentType, ...rest } = lesson;
                 const publicLesson = { ...rest, hasVideo: Boolean(videoKey || video_url) };
                 // Downloadable attachments are a purchase perk, not part of
                 // the free preview — strip them unless truly enrolled.

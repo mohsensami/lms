@@ -25,7 +25,12 @@ export async function POST(request) {
             return Response.json({ error: 'کلید فایل نامعتبر است.' }, { status: 400 });
         }
 
-        await getStorageDriver(provider).abortMultipartUpload({ key, uploadId });
+        const driver = getStorageDriver(provider);
+        // Only S3-style multipart uploads leave parts behind; Cloudinary and
+        // UploadThing discard unfinished uploads on their own.
+        if (driver.type === 's3') {
+            await driver.abortMultipartUpload({ key, uploadId });
+        }
         return Response.json({ ok: true });
     } catch (error) {
         console.error('video-upload/abort error:', error);

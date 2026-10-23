@@ -13,6 +13,7 @@ import { deleteStoredVideos } from "@/lib/video-cleanup";
 const PROTECTED_VIDEO_FIELDS = [
   "videoProvider",
   "videoKey",
+  "videoUrl",
   "videoName",
   "videoSize",
   "videoContentType",
@@ -104,6 +105,7 @@ export async function removeLessonVideo(lessonId) {
     data: {
       videoProvider: null,
       videoKey: null,
+      videoUrl: null,
       videoName: null,
       videoSize: null,
       videoContentType: null,

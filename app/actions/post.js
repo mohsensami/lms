@@ -39,6 +39,7 @@ export async function createPost(data) {
             metaTitle: data.metaTitle || null,
             metaDescription: data.metaDescription || null,
             focusKeyword: data.focusKeyword || null,
+            categoryId: data.categoryId || null,
             authorId: author.id,
             ...normalizePublishing(data),
         };

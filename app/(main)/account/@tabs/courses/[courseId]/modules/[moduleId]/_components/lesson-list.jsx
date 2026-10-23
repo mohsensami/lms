@@ -57,7 +57,7 @@ export const LessonList = ({ items, onReorder, onEdit }) => {
                                     <div
                                         className={cn(
                                             'flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm',
-                                            module.active && 'bg-sky-100 border-sky-200 text-sky-700',
+                                            module.active && 'bg-primary/10 border-primary/20 text-primary',
                                         )}
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
@@ -65,7 +65,7 @@ export const LessonList = ({ items, onReorder, onEdit }) => {
                                         <div
                                             className={cn(
                                                 'px-2 py-3 border-l border-l-slate-200 hover:bg-slate-300 rounded-r-md transition',
-                                                module.active && 'border-l-sky-200 hover:bg-sky-200',
+                                                module.active && 'border-l-sky-200 hover:bg-primary/20',
                                             )}
                                             {...provided.dragHandleProps}
                                         >

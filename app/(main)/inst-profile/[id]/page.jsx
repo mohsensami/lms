@@ -96,7 +96,7 @@ const InstructorProfile = async ({ params: { id } }) => {
                                                     />
                                                 </div>
                                                 <div className="flex flex-col pt-2">
-                                                    <div className="text-lg md:text-base font-medium group-hover:text-sky-700 line-clamp-2">
+                                                    <div className="text-lg md:text-base font-medium group-hover:text-primary line-clamp-2">
                                                         {course?.title}
                                                     </div>
                                                     <p className="text-xs text-muted-foreground">
@@ -118,7 +118,7 @@ const InstructorProfile = async ({ params: { id } }) => {
 
                                                         <Button
                                                             variant="ghost"
-                                                            className="text-xs text-sky-700 h-7 gap-1"
+                                                            className="text-xs text-primary h-7 gap-1"
                                                         >
                                                             ثبت نام
                                                             <ArrowLeft className="w-3" />

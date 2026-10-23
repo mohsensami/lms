@@ -79,6 +79,15 @@ const BlogPostPage = async ({ params }) => {
                     بازگشت به وبلاگ
                 </Link>
 
+                {post.category?.name && (
+                    <Link
+                        href={`/blog?category=${encodeURIComponent(post.category.slug)}`}
+                        className="mb-4 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20"
+                    >
+                        {post.category.name}
+                    </Link>
+                )}
+
                 <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-foreground sm:text-3xl md:text-4xl">
                     {post.title}
                 </h1>

@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { CalendarDays, Clock, Newspaper } from 'lucide-react';
 import BlogCard from '@/components/blog-card';
 import { getPublishedPostList } from '@/queries/posts';
+import { getPublicPostCategories } from '@/queries/post-categories';
+import { cn } from '@/lib/utils';
 import { getPostExcerpt, getPostReadTime } from '@/lib/post-content';
 import { SITE_NAME } from '@/lib/seo';
 
@@ -14,8 +16,12 @@ export const metadata = {
 // Re-check every minute so scheduled posts show up once their time arrives.
 export const revalidate = 60;
 
-const BlogPage = async () => {
-    const posts = await getPublishedPostList();
+const BlogPage = async ({ searchParams }) => {
+    const { category: categorySlug } = (await searchParams) || {};
+    const [allPosts, categories] = await Promise.all([getPublishedPostList(), getPublicPostCategories()]);
+
+    const activeCategory = categories.find((category) => category.slug === categorySlug) || null;
+    const posts = activeCategory ? allPosts.filter((post) => post.categoryId === activeCategory.id) : allPosts;
     const [featuredPost, ...restPosts] = posts;
 
     return (
@@ -34,8 +40,38 @@ const BlogPage = async () => {
                     </p>
                 </div>
 
+                {/* Category filter */}
+                {categories.length > 0 && (
+                    <nav aria-label="دسته‌بندی مقالات" className="mb-10 flex flex-wrap items-center justify-center gap-2">
+                        {[{ id: 'all', name: 'همه', slug: null, publicCount: allPosts.length }, ...categories].map((category) => {
+                            const active = (category.slug || null) === (activeCategory?.slug || null);
+                            return (
+                                <Link
+                                    key={category.id}
+                                    href={category.slug ? `/blog?category=${encodeURIComponent(category.slug)}` : '/blog'}
+                                    className={cn(
+                                        'rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors',
+                                        active
+                                            ? 'border-primary bg-primary text-primary-foreground'
+                                            : 'border-border bg-card text-foreground/70 hover:border-primary/40 hover:text-primary',
+                                    )}
+                                >
+                                    {category.name}
+                                    <span className="mr-1.5 text-xs opacity-70">{category.publicCount}</span>
+                                </Link>
+                            );
+                        })}
+                    </nav>
+                )}
+
+                {activeCategory?.description && (
+                    <p className="-mt-4 mb-10 text-center text-sm text-muted-foreground">{activeCategory.description}</p>
+                )}
+
                 {!featuredPost ? (
-                    <p className="text-center text-muted-foreground">هنوز مقاله‌ای منتشر نشده است.</p>
+                    <p className="text-center text-muted-foreground">
+                        {activeCategory ? 'هنوز مقاله‌ای در این دسته‌بندی منتشر نشده است.' : 'هنوز مقاله‌ای منتشر نشده است.'}
+                    </p>
                 ) : (
                     <>
                         {/* Featured post */}
@@ -58,6 +94,11 @@ const BlogPage = async () => {
                                 )}
                             </div>
                             <div className="flex flex-col justify-center gap-4 p-6 sm:p-8">
+                                {featuredPost.category?.name && (
+                                    <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                                        {featuredPost.category.name}
+                                    </span>
+                                )}
                                 <h2 className="text-xl font-extrabold text-foreground transition-colors group-hover:text-primary sm:text-2xl">
                                     {featuredPost.title}
                                 </h2>

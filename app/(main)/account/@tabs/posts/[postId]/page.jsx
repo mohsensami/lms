@@ -8,10 +8,12 @@ import { PostThumbnailForm } from '../_components/post-thumbnail-form';
 import { PostActions } from '../_components/post-actions';
 import { PostSeoForm } from '../_components/post-seo-form';
 import { PostPublishForm } from '../_components/post-publish-form';
+import { PostCategoryForm } from '../_components/post-category-form';
+import { getPostCategories } from '@/queries/post-categories';
 
 const EditPost = async ({ params: { postId } }) => {
     await requireRole('admin');
-    const post = await getPostById(postId);
+    const [post, categories] = await Promise.all([getPostById(postId), getPostCategories()]);
 
     if (!post) {
         notFound();
@@ -33,6 +35,7 @@ const EditPost = async ({ params: { postId } }) => {
                 </div>
                 <div>
                     <PostPublishForm initialData={post} postId={post.id} />
+                    <PostCategoryForm initialData={post} postId={post.id} categories={categories} />
                     <PostThumbnailForm initialData={post} postId={post.id} />
                 </div>
             </div>

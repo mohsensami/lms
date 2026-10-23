@@ -30,7 +30,7 @@ const Quiz = ({ courseId, quizSet, isTaken, score }) => {
   return (
     <>
       <div className="max-w-[270px] bg-white border border-border rounded-md dark:bg-gray-800 dark:border-gray-700 overflow-hidden">
-        <div className="flex h-32 items-center justify-center bg-gradient-to-r from-sky-500 to-indigo-500 px-6 text-center">
+        <div className="flex h-32 items-center justify-center bg-gradient-to-r from-primary to-primary/70 px-6 text-center">
           <span className="text-lg font-semibold text-white">
             {quizSet.title}
           </span>
@@ -54,7 +54,7 @@ const Quiz = ({ courseId, quizSet, isTaken, score }) => {
             </div>
           ) : (
           <Button
-            className="flex gap-2 capitalize border-sky-500 text-sky-500 hover:text-sky-500 hover:bg-sky-500/5 w-full"
+            className="flex gap-2 capitalize border-primary text-primary hover:text-primary hover:bg-primary/5 w-full"
             variant="outline"
             onClick={() => setOpen(true)}
           >

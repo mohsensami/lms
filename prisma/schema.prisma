@@ -123,6 +123,10 @@ model Lesson {
   // checks access and returns a short-lived signed URL.
   videoProvider    String? // "tigris" | "s3" | "r2" | ...
   videoKey         String?
+  // Only for providers that serve a public link (Cloudinary, UploadThing).
+  // Never sent to the browser: /api/video/[lessonId] hands it out after the
+  // access check. S3-style providers leave this empty and use signed URLs.
+  videoUrl         String?
   videoName        String?
   videoSize        Float?
   videoContentType String?
@@ -277,6 +281,21 @@ model Post {
   authorId String?
   author   User?         @relation("PostAuthor", fields: [authorId], references: [id], onDelete: SetNull)
   comments PostComment[]
+
+  // One category per post. Deleting a category keeps its posts (uncategorised).
+  categoryId String?
+  category   PostCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+}
+
+// Blog categories, managed by admins under Posts -> Categories.
+model PostCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  posts Post[]
 }
 
 // Comments on blog posts (separate from course Testimonials). Same

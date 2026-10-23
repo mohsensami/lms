@@ -14,6 +14,7 @@ const getCachedPostList = unstable_cache(
         return withDb(async () => {
             const posts = await prisma.post.findMany({
                 orderBy: { publishedAt: 'desc' },
+                include: { category: true },
             });
             return replaceMongoIdInArray(posts);
         });
@@ -40,7 +41,7 @@ export async function getPublishedPostList() {
 const getCachedPostBySlug = unstable_cache(
     async (slug) => {
         return withDb(async () => {
-            const post = await prisma.post.findUnique({ where: { slug }, include: { author: true } });
+            const post = await prisma.post.findUnique({ where: { slug }, include: { author: true, category: true } });
             return replaceMongoIdInObject(post);
         });
     },
@@ -56,7 +57,7 @@ export async function getPostBySlug(slug) {
 const getCachedPostById = unstable_cache(
     async (id) => {
         return withDb(async () => {
-            const post = await prisma.post.findUnique({ where: { id }, include: { author: true } });
+            const post = await prisma.post.findUnique({ where: { id }, include: { author: true, category: true } });
             return replaceMongoIdInObject(post);
         });
     },

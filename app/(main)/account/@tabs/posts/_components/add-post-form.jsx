@@ -13,6 +13,7 @@ import { ImageIcon, Loader2 } from 'lucide-react';
 import { UploadButton } from '@/lib/uploadthing';
 import { PostContentField } from './post-content-field';
 import { PostPublishPicker } from './post-publish-picker';
+import { PostCategorySelect } from './post-category-select';
 import { buildPublishPayload } from '@/lib/post-status';
 import { toast } from 'sonner';
 import { createPost } from '@/app/actions/post';
@@ -33,7 +34,7 @@ const formSchema = z.object({
     }),
 });
 
-const AddPostForm = () => {
+const AddPostForm = ({ categories = [] }) => {
     const router = useRouter();
     // Once the admin edits the slug field by hand, stop overwriting it from
     // the title — otherwise their manual English slug would keep getting
@@ -41,6 +42,7 @@ const AddPostForm = () => {
     const [slugTouched, setSlugTouched] = useState(false);
     const [publish, setPublish] = useState({ mode: 'now', date: null });
     const [thumbnail, setThumbnail] = useState(null);
+    const [categoryId, setCategoryId] = useState('');
     const [isThumbUploading, setIsThumbUploading] = useState(false);
 
     const form = useForm({
@@ -72,6 +74,7 @@ const AddPostForm = () => {
                 ...values,
                 slug: getSlug(values.slug),
                 thumbnail,
+                categoryId: categoryId || null,
                 ...buildPublishPayload(publish),
             });
             toast.success('پست ایجاد شد');
@@ -198,6 +201,15 @@ const AddPostForm = () => {
                                     )}
                                 </div>
                             </div>
+                        <div className="space-y-2">
+                            <FormLabel>دسته‌بندی (اختیاری)</FormLabel>
+                            <PostCategorySelect
+                                categories={categories}
+                                value={categoryId}
+                                onChange={setCategoryId}
+                                disabled={isSubmitting}
+                            />
+                        </div>
                         <div className="space-y-2">
                             <FormLabel>انتشار</FormLabel>
                             <PostPublishPicker value={publish} onChange={setPublish} disabled={isSubmitting} />

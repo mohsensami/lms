@@ -16,6 +16,11 @@ function BlogCard({ post }) {
             className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10"
         >
             <div className="relative aspect-video w-full overflow-hidden bg-muted">
+                {post.category?.name && (
+                    <span className="absolute start-3 top-3 z-10 rounded-full bg-background/90 px-3 py-1 text-[11px] font-semibold text-primary shadow backdrop-blur">
+                        {post.category.name}
+                    </span>
+                )}
                 {post.thumbnail ? (
                     <Image
                         src={post.thumbnail}

@@ -68,6 +68,29 @@ export const ourFileRouter = {
             return { url: file.ufsUrl ?? file.url, name: file.name };
         }),
 
+    // Lesson videos when the admin picked UploadThing as the video storage.
+    // Admin only. The finished file is attached to the lesson through
+    // /api/admin/video-upload/complete.
+    lessonVideoUploader: f({
+        video: { maxFileSize: '2GB', maxFileCount: 1 },
+    })
+        .middleware(async () => {
+            const loggedinUser = await getLoggedInUser();
+
+            if (!loggedinUser) {
+                throw new UploadThingError('شما وارد حساب کاربری خود نشده‌اید.');
+            }
+
+            if (loggedinUser.role !== 'admin') {
+                throw new UploadThingError('فقط مدیران می‌توانند ویدیو آپلود کنند.');
+            }
+
+            return { userId: loggedinUser.id };
+        })
+        .onUploadComplete(async ({ file }) => {
+            return { key: file.key, url: file.ufsUrl ?? file.url };
+        }),
+
     // Admins attach a downloadable file (practice files, PDFs,
     // zip archives, etc.) to a lesson. `blob` accepts any file type.
     lessonAttachmentUploader: f({

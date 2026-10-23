@@ -13,12 +13,17 @@ import { getExtension, lessonKeyPrefix, resolveVideoContentType } from '@/lib/vi
 export const dynamic = 'force-dynamic';
 
 const MAX_PARTS = 10000; // S3 limit
+const CLOUDINARY_CHUNK_SIZE = 20 * 1024 * 1024; // Cloudinary needs >= 5 MB per chunk
 
 /**
- * Step 1 of an upload. Admin only. Creates a multipart upload on the ACTIVE
- * storage provider and returns presigned URLs so the browser can send the
- * file straight to the bucket (the video never passes through this server —
- * important on Vercel, which caps request bodies at a few MB).
+ * Step 1 of an upload. Admin only. Prepares an upload on the ACTIVE storage
+ * provider; the browser then sends the file straight to the provider (the
+ * video never passes through this server — important on Vercel, which caps
+ * request bodies at a few MB). The response `kind` tells the browser how:
+ *
+ *   s3-multipart  presigned part URLs (Tigris, S3, R2, ...)
+ *   cloudinary    signed chunked upload to Cloudinary
+ *   uploadthing   the UploadThing SDK (no server session needed)
  */
 export async function POST(request) {
     const guard = await requireAdminForRoute();
@@ -60,16 +65,37 @@ export async function POST(request) {
             return Response.json({ error: error.message }, { status: 400 });
         }
 
-        const partCount = Math.ceil(size / VIDEO_PART_SIZE);
-        if (partCount > MAX_PARTS) {
-            return Response.json({ error: 'حجم فایل بیش از حد مجاز است.' }, { status: 400 });
+        // ---- UploadThing: the SDK handles everything client-side ----
+        if (driver.type === 'uploadthing') {
+            return Response.json({ kind: 'uploadthing', provider: providerId, contentType: resolvedType });
         }
 
         // Random, unguessable key. The original filename is only kept as
         // metadata on the lesson, never in the key.
         const ext = getExtension(filename) || 'mp4';
-        const key = `${lessonKeyPrefix(lesson.module.courseId, lesson._id)}${randomUUID()}.${ext}`;
+        const prefix = lessonKeyPrefix(lesson.module.courseId, lesson._id);
 
+        // ---- Cloudinary: signed, chunked upload ----
+        if (driver.type === 'cloudinary') {
+            const publicId = `${driver.publicIdPrefix(prefix)}${randomUUID()}`;
+            const session = driver.createUploadSession(publicId);
+            return Response.json({
+                kind: 'cloudinary',
+                provider: providerId,
+                publicId,
+                contentType: resolvedType,
+                chunkSize: CLOUDINARY_CHUNK_SIZE,
+                ...session,
+            });
+        }
+
+        // ---- S3-compatible: multipart with presigned part URLs ----
+        const partCount = Math.ceil(size / VIDEO_PART_SIZE);
+        if (partCount > MAX_PARTS) {
+            return Response.json({ error: 'حجم فایل بیش از حد مجاز است.' }, { status: 400 });
+        }
+
+        const key = `${prefix}${randomUUID()}.${ext}`;
         const uploadId = await driver.createMultipartUpload({ key, contentType: resolvedType });
 
         const parts = await Promise.all(
@@ -85,6 +111,7 @@ export async function POST(request) {
         );
 
         return Response.json({
+            kind: 's3-multipart',
             provider: providerId,
             key,
             uploadId,

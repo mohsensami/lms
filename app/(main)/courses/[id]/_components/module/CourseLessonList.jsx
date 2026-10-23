@@ -8,7 +8,7 @@ import CourseLessonPreview from './CourseLessonPreview';
 // boundary — the client only learns *whether* a video exists and then asks
 // /api/video/:lessonId, which checks access and returns a signed link.
 const CourseLessonList = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpen }) => {
-    const { video_url, videoKey, videoProvider, videoName, videoSize, videoContentType, ...publicLesson } = lesson;
+    const { video_url, videoKey, videoUrl, videoProvider, videoName, videoSize, videoContentType, ...publicLesson } = lesson;
 
     const clientLesson = {
         ...publicLesson,

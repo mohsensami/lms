@@ -24,6 +24,16 @@ export const columns = [
         },
     },
     {
+        id: 'category',
+        header: 'دسته‌بندی',
+        cell: ({ row }) =>
+            row.original.category?.name ? (
+                <Badge variant="outline">{row.original.category.name}</Badge>
+            ) : (
+                <span className="text-muted-foreground">—</span>
+            ),
+    },
+    {
         id: 'status',
         header: 'وضعیت',
         cell: ({ row }) => {

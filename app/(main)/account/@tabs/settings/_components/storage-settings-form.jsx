@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
-import { CheckCircle2, AlertTriangle, Loader2, PlugZap, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Link2, Loader2, PlugZap, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -64,6 +64,17 @@ export default function StorageSettingsForm({ providers, activeProvider }) {
                                 <div className="flex flex-wrap items-center gap-2">
                                     <span className="font-semibold text-foreground">{provider.label}</span>
                                     {isActive && <Badge variant="success">فعال</Badge>}
+                                    {provider.secure ? (
+                                        <Badge variant="outline" className="gap-1 text-emerald-700">
+                                            <ShieldCheck className="h-3 w-3" />
+                                            لینک امن و موقت
+                                        </Badge>
+                                    ) : (
+                                        <Badge variant="outline" className="gap-1 text-amber-700">
+                                            <Link2 className="h-3 w-3" />
+                                            لینک عمومی
+                                        </Badge>
+                                    )}
                                     {provider.configured ? (
                                         <span className="flex items-center gap-1 text-xs text-emerald-600">
                                             <CheckCircle2 className="h-3.5 w-3.5" />
@@ -109,20 +120,22 @@ export default function StorageSettingsForm({ providers, activeProvider }) {
                                     )}
                                     تست اتصال
                                 </Button>
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={busy !== null}
-                                    onClick={() => run('cors', provider.id, applyStorageCors)}
-                                >
-                                    {busy === `cors:${provider.id}` ? (
-                                        <Loader2 className="ml-1.5 h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <ShieldCheck className="ml-1.5 h-4 w-4" />
-                                    )}
-                                    اعمال تنظیمات CORS
-                                </Button>
+                                {provider.supportsCors && (
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="outline"
+                                        disabled={busy !== null}
+                                        onClick={() => run('cors', provider.id, applyStorageCors)}
+                                    >
+                                        {busy === `cors:${provider.id}` ? (
+                                            <Loader2 className="ml-1.5 h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <ShieldCheck className="ml-1.5 h-4 w-4" />
+                                        )}
+                                        اعمال تنظیمات CORS
+                                    </Button>
+                                )}
                             </div>
                         )}
                     </div>
@@ -135,7 +148,7 @@ export default function StorageSettingsForm({ providers, activeProvider }) {
                     ذخیره‌ی تنظیمات
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                    قبل از اولین آپلود، یک‌بار «اعمال تنظیمات CORS» را بزنید تا مرورگر اجازه‌ی آپلود مستقیم داشته باشد.
+                    برای سرویس‌های S3 (مثل Tigris) قبل از اولین آپلود یک‌بار «اعمال تنظیمات CORS» را بزنید. ویدیوهای سرویس‌های «لینک عمومی» (Cloudinary و UploadThing) محافظت‌شده نیستند و هر کسی لینک را داشته باشد می‌تواند ببیند.
                 </p>
             </div>
         </div>
