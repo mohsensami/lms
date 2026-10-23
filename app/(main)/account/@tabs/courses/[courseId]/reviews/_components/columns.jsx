@@ -24,7 +24,7 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Student Name <ArrowUpDown className="ml-2 h-4 w-4" />
+          نام دانشجو <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },
@@ -37,7 +37,7 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Rating <ArrowUpDown className="ml-2 h-4 w-4" />
+          امتیاز <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },
@@ -58,7 +58,7 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Review <ArrowUpDown className="ml-2 h-4 w-4" />
+          دیدگاه <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },

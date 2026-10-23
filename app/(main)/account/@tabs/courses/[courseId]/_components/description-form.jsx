@@ -37,11 +37,11 @@ export const DescriptionForm = ({ initialData, courseId }) => {
     const onSubmit = async (values) => {
         try {
             await updateCourse(courseId, values);
-            toast.success('Course updated');
+            toast.success('دوره به‌روزرسانی شد');
             toggleEdit();
             router.refresh();
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         }
     };
 
@@ -54,7 +54,7 @@ export const DescriptionForm = ({ initialData, courseId }) => {
                         <>انصراف</>
                     ) : (
                         <>
-                            <Pencil className="h-4 w-4 mr-2" />
+                            <Pencil className="h-4 w-4 ml-2" />
                             ویرایش توضیحات
                         </>
                     )}
@@ -62,7 +62,7 @@ export const DescriptionForm = ({ initialData, courseId }) => {
             </div>
             {!isEditing && (
                 <p className={cn('text-sm mt-2', !initialData.description && 'text-slate-500 italic')}>
-                    {initialData.description || 'No description'}
+                    {initialData.description || 'بدون توضیحات'}
                 </p>
             )}
             {isEditing && (
@@ -76,7 +76,7 @@ export const DescriptionForm = ({ initialData, courseId }) => {
                                     <FormControl>
                                         <Textarea
                                             disabled={isSubmitting}
-                                            placeholder="e.g. 'This course is about...'"
+                                            placeholder="مثلاً: «در این دوره با ... آشنا می‌شوید»"
                                             {...field}
                                         />
                                     </FormControl>

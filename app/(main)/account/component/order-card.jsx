@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { formatPrice } from '@/lib/formatPrice';
-import { formatMyDate } from '@/lib/date';
+import { formatFaDate } from '@/lib/date';
 import { Receipt } from 'lucide-react';
 import Image from 'next/image';
 
@@ -44,7 +44,7 @@ function OrderCard({ order, showBuyer }) {
                         {order?.user?.firstName} {order?.user?.lastName} ({order?.user?.email})
                     </span>
                 )}
-                <span className="text-sm text-muted-foreground">{formatMyDate(order?.createdAt)}</span>
+                <span className="text-sm text-muted-foreground">{formatFaDate(order?.createdAt)}</span>
             </div>
 
             <div className="flex shrink-0 flex-col items-end gap-2">

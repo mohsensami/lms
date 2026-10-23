@@ -61,9 +61,9 @@ export const UploadDropzone = (props) => {
 
   useEffect(() => {
     if (fileRejections.length > 1) {
-      toast.error("error");
+      toast.error("فایل انتخاب‌شده معتبر نیست");
     } else if (fileRejections.length > 0) {
-      toast.error("error");
+      toast.error("فایل انتخاب‌شده معتبر نیست");
     }
   }, [fileRejections]);
 
@@ -80,10 +80,10 @@ export const UploadDropzone = (props) => {
         <CloudUpload size={48} className="text-gray-600" />
         <h4 className="!font-normal  !text-[#858585]">
           <span className="font-semibold text-black underline">
-            Click to upload
+            برای آپلود کلیک کنید
           </span>{" "}
-          or drag and drop <br />
-          Maximum file size 50 MB.
+          یا فایل را بکشید و اینجا رها کنید <br />
+          حداکثر حجم فایل ۵۰ مگابایت.
         </h4>
         {/* <p>Only *.jpeg and *.png images will be accepted</p> */}
         {isUploading ? (

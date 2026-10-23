@@ -24,10 +24,10 @@ import { updateLesson } from "@/app/actions/lesson";
 
 const formSchema = z.object({
   url: z.string().min(1, {
-    message: "Required",
+    message: "الزامی است",
   }),
   duration: z.string().min(1, {
-    message: "Required",
+    message: "الزامی است",
   }),
 });
 
@@ -59,28 +59,28 @@ export const VideoUrlForm = ({ initialData, courseId, lessonId }) => {
         payload["duration"] =
           splitted[0] * 3600 + splitted[1] * 60 + splitted[2] * 1;
         await updateLesson(lessonId, payload);
-        toast.success("Lesson updated");
+        toast.success("درس به‌روزرسانی شد");
         toggleEdit();
         router.refresh();
       } else {
-        toast.error("The duration format must be as hh:mm:ss");
+        toast.error("قالب مدت زمان باید به‌صورت hh:mm:ss باشد");
       }
     } catch {
-      toast.error("Something went wrong");
+      toast.error("مشکلی پیش آمد");
     }
   };
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Video URL
+        لینک ویدیو
         <Button variant="ghost" onClick={toggleEdit}>
           {isEditing ? (
-            <>Cancel</>
+            <>انصراف</>
           ) : (
             <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit URL
+              <Pencil className="h-4 w-4 ml-2" />
+              ویرایش لینک
             </>
           )}
         </Button>
@@ -105,11 +105,11 @@ export const VideoUrlForm = ({ initialData, courseId, lessonId }) => {
               name="url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Video URL</FormLabel>
+                  <FormLabel>لینک ویدیو</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g. 'Introduction to the course'"
+                      placeholder="مثلاً: «معرفی دوره»"
                       {...field}
                     />
                   </FormControl>
@@ -123,7 +123,7 @@ export const VideoUrlForm = ({ initialData, courseId, lessonId }) => {
               name="duration"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Video Duration</FormLabel>
+                  <FormLabel>مدت ویدیو</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
@@ -137,7 +137,7 @@ export const VideoUrlForm = ({ initialData, courseId, lessonId }) => {
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
+                ذخیره
               </Button>
             </div>
           </form>

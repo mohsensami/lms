@@ -55,7 +55,7 @@ export default function HeroSection() {
                         <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
                             <img
                                 src="https://oompg81ca6.ufs.sh/f/a9eZat1sZEl6sGdvMwCnWRf4OPYloe6JZST3m81z2ihtVrwk"
-                                alt="video preview"
+                                alt="پیش‌نمایش ویدیو"
                                 className="h-full w-full object-cover opacity-80"
                             />
 

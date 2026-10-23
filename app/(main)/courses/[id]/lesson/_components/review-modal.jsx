@@ -39,10 +39,10 @@ export const ReviewModal = ({ courseId, loginid, open, setOpen }) => {
     const onSubmit = async (values) => {
         try {
             await createReview(values, loginid, courseId);
-            toast.success('Review added');
+            toast.success('دیدگاه شما ثبت شد');
             setOpen(false);
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         }
         console.log(values);
     };
@@ -87,7 +87,7 @@ export const ReviewModal = ({ courseId, loginid, open, setOpen }) => {
                                 <FormItem>
                                     <FormLabel>دیدگاه شما</FormLabel>
                                     <FormControl>
-                                        <Textarea placeholder="Course review" className="resize-none" {...field} />
+                                        <Textarea placeholder="دیدگاه شما درباره‌ی این دوره" className="resize-none" {...field} />
                                     </FormControl>
                                     <FormDescription>توضیح مختصری در مورد دوره بنویسید</FormDescription>
                                     <FormMessage />

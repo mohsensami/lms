@@ -58,11 +58,11 @@ export const LessonForm = ({ initialData, moduleId, courseId }) => {
                     title: values.title,
                 },
             ]);
-            toast.success('Lesson created');
+            toast.success('درس ایجاد شد');
             toggleCreating();
             router.refresh();
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         }
     };
 
@@ -71,10 +71,10 @@ export const LessonForm = ({ initialData, moduleId, courseId }) => {
         try {
             setIsUpdating(true);
             await reOrderLesson(updateData);
-            toast.success('Lesson reordered');
+            toast.success('ترتیب درس‌ها ذخیره شد');
             router.refresh();
         } catch {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         } finally {
             setIsUpdating(false);
         }
@@ -100,7 +100,7 @@ export const LessonForm = ({ initialData, moduleId, courseId }) => {
                         <>انصراف</>
                     ) : (
                         <>
-                            <PlusCircle className="h-4 w-4 mr-2" />
+                            <PlusCircle className="h-4 w-4 ml-2" />
                             اضافه کردن یک درس
                         </>
                     )}

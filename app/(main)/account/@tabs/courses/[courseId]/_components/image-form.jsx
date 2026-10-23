@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
     imageUrl: z.string().min(1, {
-        message: 'Image is required',
+        message: 'تصویر الزامی است',
     }),
 });
 
@@ -55,11 +55,11 @@ export const ImageForm = ({ initialData, courseId }) => {
 
     const onSubmit = async (values) => {
         try {
-            toast.success('Course updated');
+            toast.success('دوره به‌روزرسانی شد');
             toggleEdit();
             router.refresh();
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         }
     };
 
@@ -71,13 +71,13 @@ export const ImageForm = ({ initialData, courseId }) => {
                     {isEditing && <>انصراف</>}
                     {!isEditing && !initialData.imageUrl && (
                         <>
-                            <PlusCircle className="h-4 w-4 mr-2" />
+                            <PlusCircle className="h-4 w-4 ml-2" />
                             افزودن
                         </>
                     )}
                     {!isEditing && initialData.imageUrl && (
                         <>
-                            <Pencil className="h-4 w-4 mr-2" />
+                            <Pencil className="h-4 w-4 ml-2" />
                             ویرایش
                         </>
                     )}

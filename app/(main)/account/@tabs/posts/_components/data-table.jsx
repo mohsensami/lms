@@ -45,7 +45,7 @@ export function DataTable({ columns, data }) {
                 />
                 <Link href="/account/posts/add">
                     <Button>
-                        <PlusCircle className="h-4 w-4 mr-2" />
+                        <PlusCircle className="h-4 w-4 ml-2" />
                         پست جدید
                     </Button>
                 </Link>
@@ -88,7 +88,7 @@ export function DataTable({ columns, data }) {
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex items-center justify-end space-x-2 rtl:space-x-reverse py-4">
                 <Button
                     variant="outline"
                     size="sm"

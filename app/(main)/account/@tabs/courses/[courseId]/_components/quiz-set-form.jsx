@@ -24,11 +24,11 @@ export const QuizSetForm = ({
     options = [
         {
             value: 'quiz_set_1',
-            label: 'Quiz Set 1',
+            label: 'آزمون ۱',
         },
         {
             value: '2',
-            label: 'Quiz Set 2',
+            label: 'آزمون ۲',
         },
     ],
 }) => {
@@ -51,11 +51,11 @@ export const QuizSetForm = ({
     const onSubmit = async (values) => {
         try {
             await updateQuizSetForCourse(courseId, values);
-            toast.success('Course updated');
+            toast.success('دوره به‌روزرسانی شد');
             toggleEdit();
             router.refresh();
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         }
     };
 
@@ -68,7 +68,7 @@ export const QuizSetForm = ({
                         <>انصراف</>
                     ) : (
                         <>
-                            <Pencil className="h-4 w-4 mr-2" />
+                            <Pencil className="h-4 w-4 ml-2" />
                             ویرایش
                         </>
                     )}

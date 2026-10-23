@@ -61,7 +61,7 @@ export const PostSlugForm = ({ initialData, postId }) => {
                         <>انصراف</>
                     ) : (
                         <>
-                            <Pencil className="h-4 w-4 mr-2" />
+                            <Pencil className="h-4 w-4 ml-2" />
                             ویرایش نامک
                         </>
                     )}

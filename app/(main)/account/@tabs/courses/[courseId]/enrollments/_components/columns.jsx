@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { GraduationCap } from "lucide-react";
 import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react";
 import Link from "next/link";
-import { formatMyDate } from "@/lib/date";
+import { formatFaDate } from "@/lib/date";
 
 export const columns = [
   {
@@ -24,7 +24,7 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Student Name <ArrowUpDown className="ml-2 h-4 w-4" />
+          نام دانشجو <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },
@@ -37,7 +37,7 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Student Email <ArrowUpDown className="ml-2 h-4 w-4" />
+          ایمیل دانشجو <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },
@@ -50,7 +50,7 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Quiz Mark <ArrowUpDown className="ml-2 h-4 w-4" />
+          نمره آزمون <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },
@@ -63,7 +63,7 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Progress <ArrowUpDown className="ml-2 h-4 w-4" />
+          پیشرفت <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },
@@ -80,13 +80,13 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Enroll Date <ArrowUpDown className="ml-2 h-4 w-4" />
+          تاریخ ثبت‌نام <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
       const enrollmentDate = row.getValue("enrollment_date");
-      return formatMyDate(enrollmentDate);
+      return formatFaDate(enrollmentDate);
     },
   },
 ];

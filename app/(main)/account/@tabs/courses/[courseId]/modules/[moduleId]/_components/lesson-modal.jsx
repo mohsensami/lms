@@ -10,7 +10,7 @@ import {
 import { LayoutDashboard } from 'lucide-react';
 import { Eye } from 'lucide-react';
 import { Video } from 'lucide-react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { LessonTitleForm } from './lesson-title-form';
 import { LessonDescriptionForm } from './lesson-description-form';
@@ -28,7 +28,7 @@ export const LessonModal = ({ open, setOpen, courseId, lesson, moduleId }) => {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            {/* <DialogTrigger>Open</DialogTrigger> */}
+            {/* <DialogTrigger>باز کردن</DialogTrigger> */}
             <DialogContent
                 className="sm:max-w-[1200px] w-[96%] overflow-y-auto max-h-[90vh]"
                 onInteractOutside={(e) => {
@@ -46,7 +46,7 @@ export const LessonModal = ({ open, setOpen, courseId, lesson, moduleId }) => {
                                 href={`/account/courses/${courseId}`}
                                 className="flex items-center text-sm hover:opacity-75 transition mb-6"
                             >
-                                <ArrowLeft className="h-4 w-4 mr-2" />
+                                <ArrowRight className="h-4 w-4 ml-2" />
                                 بازگشت به تنظیمات دوره
                             </Link>
                             <div className="flex items-center justify-end">

@@ -68,22 +68,22 @@ export const ModuleList = ({ items, onReorder, onEdit }) => {
                   >
                     <div
                       className={cn(
-                        "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition",
-                        module.active && "border-r-sky-200 hover:bg-sky-200",
+                        "px-2 py-3 border-l border-l-slate-200 hover:bg-slate-300 rounded-r-md transition",
+                        module.active && "border-l-sky-200 hover:bg-sky-200",
                       )}
                       {...provided.dragHandleProps}
                     >
                       <Grip className="h-5 w-5" />
                     </div>
                     {module.title}
-                    <div className="ml-auto pr-2 flex items-center gap-x-2">
+                    <div className="mr-auto pl-2 flex items-center gap-x-2">
                       <Badge
                         className={cn(
                           "bg-gray-500",
                           module.active && "bg-emerald-600",
                         )}
                       >
-                        {module.active ? "Published" : "Draft"}
+                        {module.active ? "منتشر شده" : "پیش‌نویس"}
                       </Badge>
                       <Pencil
                         onClick={() => onEdit(module.id)}

@@ -4,6 +4,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/sonner';
 import { ProgressProvider } from '@/components/providers/progress-provider';
+import { DirectionProvider } from '@/components/providers/direction-provider';
 import localFont from 'next/font/local';
 import { SITE_URL } from '@/lib/seo';
 
@@ -54,10 +55,12 @@ const IranSans = localFont({
 
 export default async function RootLayout({ children }) {
     return (
-        <html lang="fa" dir="rtl" className={cn(`antialiased, ${IranSans.variable}`)}>
-            <body className={cn(`antialiased, poppins.className`)}>
-                <ProgressProvider>{children}</ProgressProvider>
-                <Toaster richColors position="top-center" />
+        <html lang="fa" dir="rtl" className={cn('antialiased', IranSans.variable)}>
+            <body className="antialiased">
+                <DirectionProvider dir="rtl">
+                    <ProgressProvider>{children}</ProgressProvider>
+                    <Toaster richColors position="top-center" dir="rtl" />
+                </DirectionProvider>
             </body>
         </html>
     );

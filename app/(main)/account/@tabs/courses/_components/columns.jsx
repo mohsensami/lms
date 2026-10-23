@@ -21,7 +21,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    نام دوره <ArrowUpDown className="ml-2 h-4 w-4" />
+                    نام دوره <ArrowUpDown className="mr-2 h-4 w-4" />
                 </Button>
             );
         },
@@ -31,7 +31,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    قیمت <ArrowUpDown className="ml-2 h-4 w-4" />
+                    قیمت <ArrowUpDown className="mr-2 h-4 w-4" />
                 </Button>
             );
         },
@@ -46,7 +46,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    وضعیت <ArrowUpDown className="ml-2 h-4 w-4" />
+                    وضعیت <ArrowUpDown className="mr-2 h-4 w-4" />
                 </Button>
             );
         },
@@ -75,19 +75,19 @@ export const columns = [
                     <DropdownMenuContent align="end">
                         <Link href={`/account/courses/${id}`}>
                             <DropdownMenuItem className="cursor-pointer">
-                                <Pencil className="h-4 w-4 mr-2" />
+                                <Pencil className="h-4 w-4 ml-2" />
                                 ویرایش
                             </DropdownMenuItem>
                         </Link>
                         <Link href={`/account/courses/${id}/enrollments`}>
                             <DropdownMenuItem className="cursor-pointer">
-                                <GraduationCap className="h-4 w-4 mr-2" />
+                                <GraduationCap className="h-4 w-4 ml-2" />
                                 مشاهده ثبت‌نام‌ها
                             </DropdownMenuItem>
                         </Link>
                         <Link href={`/account/courses/${id}/reviews`}>
                             <DropdownMenuItem className="cursor-pointer">
-                                <Star className="h-4 w-4 mr-2 fill-primary" />
+                                <Star className="h-4 w-4 ml-2 fill-primary" />
                                 مشاهده نظرات
                             </DropdownMenuItem>
                         </Link>

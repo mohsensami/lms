@@ -31,7 +31,7 @@ function CounterBar({ length, min, max }) {
                     style={{ width: `${Math.min(100, (length / max) * 100)}%` }}
                 />
             </div>
-            <span className="w-16 shrink-0 text-left text-xs text-muted-foreground">
+            <span className="w-16 shrink-0 text-start text-xs text-muted-foreground">
                 {length}/{max}
             </span>
         </div>

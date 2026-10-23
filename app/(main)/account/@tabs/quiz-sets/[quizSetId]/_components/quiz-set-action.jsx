@@ -20,26 +20,26 @@ export const QuizSetAction = ({ quizSetId, quiz, quizId }) => {
                 case 'change-active': {
                     const activeState = await changeQuizPublishState(quizSetId);
                     setPublished(!activeState);
-                    toast.success('The Quiz has been updated');
+                    toast.success('آزمون به‌روزرسانی شد');
                     router.refresh();
                     break;
                 }
                 case 'delete': {
                     if (published) {
-                        toast.error('A published quiz can not be deleted. First Unpublish it, Then delete');
+                        toast.error('آزمون منتشرشده قابل حذف نیست. ابتدا آن را از حالت انتشار خارج کنید، سپس حذف کنید.');
                     } else {
                         await deleteQuiz(quizSetId, quizId);
-                        toast.success('Quiz has been deleted');
+                        toast.success('آزمون حذف شد');
                         router.push(`/account/quiz-sets`);
                     }
                     break;
                 }
                 default: {
-                    throw new Error('Invalid Action');
+                    throw new Error('عملیات نامعتبر است');
                 }
             }
         } catch (e) {
-            toast.error(`Error: ${e.message}`);
+            toast.error(`خطا: ${e.message}`);
         }
     }
 

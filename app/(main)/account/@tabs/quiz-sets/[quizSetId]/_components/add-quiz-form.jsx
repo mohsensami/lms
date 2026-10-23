@@ -27,55 +27,55 @@ import { addQuizToQuizSet } from "@/app/actions/quiz";
 const formSchema = z.object({
   title: z
     .string({
-      required_error: "Question is required",
+      required_error: "سوال الزامی است",
     })
     .min(1, {
-      message: "Title is required",
+      message: "عنوان الزامی است",
     }),
   description: z
     .string({
-      required_error: "Description is required",
+      required_error: "توضیحات الزامی است",
     })
     .min(1, {
-      message: "Description is required",
+      message: "توضیحات الزامی است",
     }),
   optionA: z.object({
     label: z
       .string({
-        required_error: "Option label is required",
+        required_error: "متن گزینه الزامی است",
       })
       .min(1, {
-        message: "Option label is required",
+        message: "متن گزینه الزامی است",
       }),
     isTrue: z.boolean().default(false),
   }),
   optionB: z.object({
     label: z
       .string({
-        required_error: "Option label is required",
+        required_error: "متن گزینه الزامی است",
       })
       .min(1, {
-        message: "Option label is required",
+        message: "متن گزینه الزامی است",
       }),
     isTrue: z.boolean().default(false),
   }),
   optionC: z.object({
     label: z
       .string({
-        required_error: "Option label is required",
+        required_error: "متن گزینه الزامی است",
       })
       .min(1, {
-        message: "Option label is required",
+        message: "متن گزینه الزامی است",
       }),
     isTrue: z.boolean().default(false),
   }),
   optionD: z.object({
     label: z
       .string({
-        required_error: "Option label is required",
+        required_error: "متن گزینه الزامی است",
       })
       .min(1, {
-        message: "Option label is required",
+        message: "متن گزینه الزامی است",
       }),
     isTrue: z.boolean().default(false),
   }),
@@ -147,21 +147,21 @@ export const AddQuizForm = ({ quizSetId }) => {
             isTrue: false,
           },
         });
-        toast.success("Quiz Added Successfully");
+        toast.success("سوال با موفقیت اضافه شد");
         // toggleEdit();
         router.refresh();
       } else {
-        toast.error("You must make only one correct answer");
+        toast.error("فقط یک گزینه باید به‌عنوان پاسخ صحیح انتخاب شود");
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("مشکلی پیش آمد");
     }
   };
 
   return (
     <div className="mt-6 border bg-gray-50 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Add New Quiz
+        افزودن سوال جدید
       </div>
 
       {
@@ -176,11 +176,11 @@ export const AddQuizForm = ({ quizSetId }) => {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Quiz Title</FormLabel>
+                  <FormLabel>متن سوال</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="Enter quiz question"
+                      placeholder="متن سوال را وارد کنید"
                       {...field}
                     />
                   </FormControl>
@@ -194,11 +194,11 @@ export const AddQuizForm = ({ quizSetId }) => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Quiz Description</FormLabel>
+                  <FormLabel>توضیحات سوال</FormLabel>
                   <FormControl>
                     <Textarea
                       disabled={isSubmitting}
-                      placeholder="Enter quiz description"
+                      placeholder="توضیحات سوال را وارد کنید"
                       {...field}
                     />
                   </FormControl>
@@ -209,13 +209,13 @@ export const AddQuizForm = ({ quizSetId }) => {
 
             {/* --------------- OPTION A -------- */}
             <div className="space-y-3">
-              <FormLabel>Option A</FormLabel>
+              <FormLabel>گزینه الف</FormLabel>
               <div className="flex items-start gap-3">
                 <FormField
                   control={form.control}
                   name="optionA.isTrue"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
+                    <FormItem className="flex flex-row items-start space-x-3 rtl:space-x-reverse space-y-0 rounded-md border p-3">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -235,7 +235,7 @@ export const AddQuizForm = ({ quizSetId }) => {
                         <FormControl>
                           <Input
                             disabled={isSubmitting}
-                            placeholder="Enter quiz question"
+                            placeholder="متن سوال را وارد کنید"
                             {...field}
                           />
                         </FormControl>
@@ -250,13 +250,13 @@ export const AddQuizForm = ({ quizSetId }) => {
 
             {/* --------------- OPTION B -------- */}
             <div className="space-y-3">
-              <FormLabel>Option B</FormLabel>
+              <FormLabel>گزینه ب</FormLabel>
               <div className="flex items-start gap-3">
                 <FormField
                   control={form.control}
                   name="optionB.isTrue"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
+                    <FormItem className="flex flex-row items-start space-x-3 rtl:space-x-reverse space-y-0 rounded-md border p-3">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -276,7 +276,7 @@ export const AddQuizForm = ({ quizSetId }) => {
                         <FormControl>
                           <Input
                             disabled={isSubmitting}
-                            placeholder="Enter quiz question"
+                            placeholder="متن سوال را وارد کنید"
                             {...field}
                           />
                         </FormControl>
@@ -291,13 +291,13 @@ export const AddQuizForm = ({ quizSetId }) => {
 
             {/* --------------- OPTION C -------- */}
             <div className="space-y-3">
-              <FormLabel>Option C</FormLabel>
+              <FormLabel>گزینه ج</FormLabel>
               <div className="flex items-start gap-3">
                 <FormField
                   control={form.control}
                   name="optionC.isTrue"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
+                    <FormItem className="flex flex-row items-start space-x-3 rtl:space-x-reverse space-y-0 rounded-md border p-3">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -317,7 +317,7 @@ export const AddQuizForm = ({ quizSetId }) => {
                         <FormControl>
                           <Input
                             disabled={isSubmitting}
-                            placeholder="Enter quiz question"
+                            placeholder="متن سوال را وارد کنید"
                             {...field}
                           />
                         </FormControl>
@@ -332,13 +332,13 @@ export const AddQuizForm = ({ quizSetId }) => {
 
             {/* --------------- OPTION D -------- */}
             <div className="space-y-3">
-              <FormLabel>Option D</FormLabel>
+              <FormLabel>گزینه د</FormLabel>
               <div className="flex items-start gap-3">
                 <FormField
                   control={form.control}
                   name="optionD.isTrue"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
+                    <FormItem className="flex flex-row items-start space-x-3 rtl:space-x-reverse space-y-0 rounded-md border p-3">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -358,7 +358,7 @@ export const AddQuizForm = ({ quizSetId }) => {
                         <FormControl>
                           <Input
                             disabled={isSubmitting}
-                            placeholder="Enter quiz question"
+                            placeholder="متن سوال را وارد کنید"
                             {...field}
                           />
                         </FormControl>
@@ -372,7 +372,7 @@ export const AddQuizForm = ({ quizSetId }) => {
             {/* --------------- OPTION D ENDS -------- */}
             <div className="flex items-center justify-end gap-x-2">
               <Button disabled={isSubmitting} type="submit">
-                Save
+                ذخیره
               </Button>
             </div>
           </form>

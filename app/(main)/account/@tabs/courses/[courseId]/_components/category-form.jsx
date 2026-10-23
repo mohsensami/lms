@@ -45,11 +45,11 @@ export const CategoryForm = ({ initialData, courseId, options }) => {
         (option) => option.value === values.value,
       );
       await updateCourse(courseId, { category: selectedCategory.id });
-      toast.success("Course updated");
+      toast.success("دوره به‌روزرسانی شد");
       toggleEdit();
       router.refresh();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("مشکلی پیش آمد");
     }
   };
 
@@ -66,7 +66,7 @@ export const CategoryForm = ({ initialData, courseId, options }) => {
             <>انصراف</>
           ) : (
             <>
-              <Pencil className="h-4 w-4 mr-2" />
+              <Pencil className="h-4 w-4 ml-2" />
               ویرایش
             </>
           )}
@@ -79,7 +79,7 @@ export const CategoryForm = ({ initialData, courseId, options }) => {
             !initialData.value && "text-slate-500 italic",
           )}
         >
-          {selectedOptions?.label || "No category"}
+          {selectedOptions?.label || "بدون دسته‌بندی"}
         </p>
       )}
       {console.log({ options })}

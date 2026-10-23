@@ -15,10 +15,10 @@ import { createCourse } from '@/app/actions/course';
 
 const formSchema = z.object({
     title: z.string().min(1, {
-        message: 'Title is required!',
+        message: 'عنوان الزامی است',
     }),
     description: z.string().min(1, {
-        message: 'Description is required!',
+        message: 'توضیحات الزامی است',
     }),
 });
 
@@ -41,7 +41,7 @@ const AddCourseForm = () => {
             router.push(`/account/courses/${course?._id}`);
             toast.success('دوره ایجاد شد');
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         }
         console.log(values);
     };

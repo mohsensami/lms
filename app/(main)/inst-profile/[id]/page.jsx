@@ -48,19 +48,19 @@ const InstructorProfile = async ({ params: { id } }) => {
                                     {courseDetailsByInstructor?.Designation}
                                 </div>
                                 <ul className=" items-center gap-3 flex-wrap text-sm text-gray-600 font-medium grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 md:grid-cols-4">
-                                    <li className="flex items-center space-x-3">
+                                    <li className="flex items-center space-x-3 rtl:space-x-reverse">
                                         <Presentation className="text-gray-600 w-4" />
                                         <div>{courseDetailsByInstructor?.courses} دوره ها</div>
                                     </li>
-                                    <li className="flex items-center space-x-3">
+                                    <li className="flex items-center space-x-3 rtl:space-x-reverse">
                                         <UsersRound className="text-gray-600 w-4" />
                                         <div>{courseDetailsByInstructor?.enrollments}+ دانشجو</div>
                                     </li>
-                                    <li className="flex items-center space-x-3">
+                                    <li className="flex items-center space-x-3 rtl:space-x-reverse">
                                         <MessageSquare className="text-gray-600 w-4" />
                                         <div>{courseDetailsByInstructor?.reviews} دیدگاه ها</div>
                                     </li>
-                                    <li className="flex items-center space-x-3">
+                                    <li className="flex items-center space-x-3 rtl:space-x-reverse">
                                         <Star className="text-gray-600 w-4" />
                                         <div>{courseDetailsByInstructor?.ratings} میانگین امتیاز</div>
                                     </li>

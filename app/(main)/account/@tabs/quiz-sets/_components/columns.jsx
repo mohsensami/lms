@@ -21,7 +21,7 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Title <ArrowUpDown className="ml-2 h-4 w-4" />
+          عنوان <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },
@@ -34,7 +34,7 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Total Quiz <ArrowUpDown className="ml-2 h-4 w-4" />
+          تعداد سوالات <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },
@@ -47,7 +47,7 @@ export const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Published <ArrowUpDown className="ml-2 h-4 w-4" />
+          وضعیت انتشار <ArrowUpDown className="mr-2 h-4 w-4" />
         </Button>
       );
     },
@@ -56,7 +56,7 @@ export const columns = [
 
       return (
         <Badge className={cn("bg-gray-500", isPublished && "bg-green-500")}>
-          {isPublished ? "Published" : "Unpublished"}
+          {isPublished ? "منتشر شده" : "منتشر نشده"}
         </Badge>
       );
     },
@@ -69,15 +69,15 @@ export const columns = [
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-4 w-8 p-0">
-              <span className="sr-only">Open Menu</span>
+              <span className="sr-only">باز کردن منو</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <Link href={`/account/quiz-sets/${id}`}>
               <DropdownMenuItem>
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit
+                <Pencil className="h-4 w-4 ml-2" />
+                ویرایش
               </DropdownMenuItem>
             </Link>
           </DropdownMenuContent>

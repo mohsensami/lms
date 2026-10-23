@@ -18,7 +18,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    عنوان پست <ArrowUpDown className="ml-2 h-4 w-4" />
+                    عنوان پست <ArrowUpDown className="mr-2 h-4 w-4" />
                 </Button>
             );
         },
@@ -40,7 +40,7 @@ export const columns = [
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    تاریخ انتشار <ArrowUpDown className="ml-2 h-4 w-4" />
+                    تاریخ انتشار <ArrowUpDown className="mr-2 h-4 w-4" />
                 </Button>
             );
         },
@@ -70,7 +70,7 @@ export const columns = [
                     <DropdownMenuContent align="end">
                         <Link href={`/account/posts/${id}`}>
                             <DropdownMenuItem className="cursor-pointer">
-                                <Pencil className="h-4 w-4 mr-2" />
+                                <Pencil className="h-4 w-4 ml-2" />
                                 ویرایش
                             </DropdownMenuItem>
                         </Link>

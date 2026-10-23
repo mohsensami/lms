@@ -12,7 +12,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 const Success = async ({ searchParams: { Authority, Status, courseId } }) => {
-  if (!Authority) throw new Error("Authority code is missing");
+  if (!Authority) throw new Error("کد پیگیری پرداخت پیدا نشد.");
 
   const userSession = await auth();
   if (!userSession?.user?.email) redirect("/login");
@@ -66,13 +66,13 @@ const Success = async ({ searchParams: { Authority, Status, courseId } }) => {
       const emailsToSend = [
         {
           to: instructorEmail,
-          subject: `New Enrollment For ${productName}`,
-          message: `Congratulations, ${instructorName}. A new student, ${customerName} has enrolled in your course ${productName}.`,
+          subject: `ثبت‌نام جدید در دوره ${productName}`,
+          message: `${instructorName} عزیز، تبریک! ${customerName} در دوره‌ی «${productName}» ثبت‌نام کرد.`,
         },
         {
           to: customerEmail,
-          subject: `Enrollment success for ${productName}`,
-          message: `Hey, ${customerName}. You have successfully enrolled in the course ${productName}.`,
+          subject: `ثبت‌نام شما در دوره ${productName} انجام شد`,
+          message: `${customerName} عزیز، ثبت‌نام شما در دوره‌ی «${productName}» با موفقیت انجام شد. برای شروع یادگیری وارد حساب کاربری خود شوید.`,
         },
       ];
 

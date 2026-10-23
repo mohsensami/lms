@@ -8,7 +8,7 @@ const StarRating = ({ rating }) => {
     <>
       {stars.map((star, index) => (
         <Image
-          alt="Rating"
+          alt="امتیاز"
           key={index}
           src={`/assets/star.svg`}
           width={20}

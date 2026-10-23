@@ -66,7 +66,7 @@ const CourseDetailsIntro = async ({ course }) => {
                                     className="object-cover"
                                     fill
                                     src={`/assets/images/courses/${course?.thumbnail}`}
-                                    alt={course?.title || 'Course image'}
+                                    alt={course?.title || 'تصویر دوره'}
                                 />
                             </div>
 

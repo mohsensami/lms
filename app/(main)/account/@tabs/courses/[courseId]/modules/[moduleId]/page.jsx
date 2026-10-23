@@ -1,6 +1,6 @@
 import AlertBanner from '@/components/alert-banner';
 import { IconBadge } from '@/components/icon-badge';
-import { ArrowLeft, BookOpenCheck, Eye, LayoutDashboard, Video } from 'lucide-react';
+import { ArrowRight, BookOpenCheck, Eye, LayoutDashboard, Video } from 'lucide-react';
 import Link from 'next/link';
 import { ModuleTitleForm } from './_components/module-title-form';
 import { LessonForm } from './_components/lesson-form';
@@ -41,8 +41,8 @@ const Module = async ({ params: { courseId, moduleId } }) => {
                             href={`/account/courses/${courseId}`}
                             className="flex items-center text-sm hover:opacity-75 transition mb-6"
                         >
-                            <ArrowLeft className="h-4 w-4 mr-2" />
-                            Back to course setup
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                            بازگشت به تنظیمات دوره
                         </Link>
                         <div className="flex items-center justify-end">
                             <ModuleActions module={sanitizedModule} courseId={courseId} />
@@ -54,7 +54,7 @@ const Module = async ({ params: { courseId, moduleId } }) => {
                         <div>
                             <div className="flex items-center gap-x-2">
                                 <IconBadge icon={LayoutDashboard} />
-                                <h2 className="text-xl">Customize Your module</h2>
+                                <h2 className="text-xl">سفارشی‌سازی فصل</h2>
                             </div>
                             <ModuleTitleForm
                                 initialData={{ title: module.title }}
@@ -65,7 +65,7 @@ const Module = async ({ params: { courseId, moduleId } }) => {
                         <div>
                             <div className="flex items-center gap-x-2">
                                 <IconBadge icon={BookOpenCheck} />
-                                <h2 className="text-xl">Module Lessons</h2>
+                                <h2 className="text-xl">درس‌های این فصل</h2>
                             </div>
                             <LessonForm initialData={lessons} moduleId={moduleId} courseId={courseId} />
                         </div>

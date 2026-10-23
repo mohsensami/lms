@@ -22,14 +22,14 @@ export const ModuleActions = ({ module, courseId }) => {
                 case 'change-active': {
                     const activeState = await changeModulePublishState(module.id);
                     setPublished(!activeState);
-                    toast.success('The Module has been updated');
+                    toast.success('فصل به‌روزرسانی شد');
                     router.refresh();
                     break;
                 }
 
                 case 'delete': {
                     if (published) {
-                        toast.error('A published lesson can not be deleted. First unpublish it, then delete');
+                        toast.error('درس منتشرشده قابل حذف نیست. ابتدا آن را از حالت انتشار خارج کنید، سپس حذف کنید.');
                     } else {
                         await deleteModule(module.id, courseId);
                         router.push(`/account/courses/${courseId}`);
@@ -37,7 +37,7 @@ export const ModuleActions = ({ module, courseId }) => {
                     break;
                 }
                 default:
-                    throw new Error('Invalid Lesson Action');
+                    throw new Error('عملیات نامعتبر است');
             }
         } catch (e) {
             toast.error(e.message);

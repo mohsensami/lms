@@ -29,7 +29,7 @@ import { doCreateQuizSet } from "@/app/actions/quiz";
 
 const formSchema = z.object({
   title: z.string().min(1, {
-    message: "Title is required!",
+    message: "عنوان الزامی است",
   }),
 });
 
@@ -49,9 +49,9 @@ const AddQuizSetForm = () => {
     try {
       const quizSetId = await doCreateQuizSet(values);
       router.push(`/account/quiz-sets/${quizSetId}`);
-      toast.success("Quiz Set Created");
+      toast.success("آزمون ایجاد شد");
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("مشکلی پیش آمد");
     }
   };
   return (
@@ -68,11 +68,11 @@ const AddQuizSetForm = () => {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Quiz Set Title</FormLabel>
+                  <FormLabel>عنوان آزمون</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g 'Reactive Accelerator'"
+                      placeholder="مثلاً: «آزمون پایانی دوره متلب»"
                       {...field}
                     />
                   </FormControl>
@@ -84,11 +84,11 @@ const AddQuizSetForm = () => {
             <div className="flex items-center gap-x-2">
               <Link href="/account/quiz-sets">
                 <Button variant="outline" type="button">
-                  Cancel
+                  انصراف
                 </Button>
               </Link>
               <Button type="submit" disabled={!isValid || isSubmitting}>
-                Continue
+                ادامه
               </Button>
             </div>
           </form>

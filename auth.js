@@ -28,7 +28,7 @@ export const {
 
           if (!user) {
             console.error("User not found:", credentials.email);
-            throw new Error("User not found");
+            throw new Error("کاربری با این ایمیل پیدا نشد.");
           }
 
           const isMatch = await bcrypt.compare(
@@ -38,7 +38,7 @@ export const {
 
           if (!isMatch) {
             console.error("Password mismatch for:", credentials.email);
-            throw new Error("Check your password");
+            throw new Error("رمز عبور اشتباه است.");
           }
 
           if (user.isActive === false) {
@@ -53,7 +53,7 @@ export const {
           };
         } catch (err) {
           console.error("❌ Authorize error:", err);
-          throw new Error(err.message || "Authentication failed");
+          throw new Error(err.message || "ورود ناموفق بود. دوباره تلاش کنید.");
         }
       },
     }),

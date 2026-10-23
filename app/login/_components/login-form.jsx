@@ -68,7 +68,7 @@ export function LoginForm() {
                             <div className="flex items-center">
                                 <Label htmlFor="password">رمز عبور</Label>
                                 {/* <Link href="#" className="ml-auto inline-block text-sm underline">
-                Forgot your password?
+                رمز عبور را فراموش کرده‌اید؟
               </Link> */}
                             </div>
                             <Input id="password" name="password" type="password" required disabled={isSubmitting} />

@@ -22,7 +22,7 @@ import { toast } from "sonner";
 
 const formSchema = z.object({
   title: z.string().min(1, {
-    message: "Title is required",
+    message: "عنوان الزامی است",
   }),
 });
 
@@ -42,25 +42,25 @@ export const TitleForm = ({ initialData = {}, quizSetId }) => {
   const onSubmit = async (values) => {
     try {
       await updateQuizSet(quizSetId, values);
-      toast.success("Quize Tittle Updated");
+      toast.success("عنوان آزمون به‌روزرسانی شد");
       toggleEdit();
       router.refresh();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("مشکلی پیش آمد");
     }
   };
 
   return (
     <div className="mt-6 border bg-gray-50 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Quiz set title
+        عنوان مجموعه آزمون
         <Button variant="ghost" onClick={toggleEdit}>
           {isEditing ? (
-            <>Cancel</>
+            <>انصراف</>
           ) : (
             <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit Title
+              <Pencil className="h-4 w-4 ml-2" />
+              ویرایش عنوان
             </>
           )}
         </Button>
@@ -80,7 +80,7 @@ export const TitleForm = ({ initialData = {}, quizSetId }) => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g. 'Advanced web development'"
+                      placeholder="مثلاً: «آموزش پیشرفته متلب»"
                       {...field}
                     />
                   </FormControl>
@@ -90,7 +90,7 @@ export const TitleForm = ({ initialData = {}, quizSetId }) => {
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
+                ذخیره
               </Button>
             </div>
           </form>

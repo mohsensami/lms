@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 
 const formSchema = z.object({
     title: z.string().min(1, {
-        message: 'Title is required',
+        message: 'عنوان الزامی است',
     }),
 });
 
@@ -38,9 +38,9 @@ export const TitleForm = ({ initialData = {}, courseId }) => {
             await updateCourse(courseId, values);
             toggleEdit();
             router.refresh();
-            toast.success('Course Tittle has been updated');
+            toast.success('عنوان دوره به‌روزرسانی شد');
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         }
     };
 
@@ -53,7 +53,7 @@ export const TitleForm = ({ initialData = {}, courseId }) => {
                         <>انصراف</>
                     ) : (
                         <>
-                            <Pencil className="h-4 w-4 mr-2" />
+                            <Pencil className="h-4 w-4 ml-2" />
                             ویرایش نام
                         </>
                     )}
@@ -71,7 +71,7 @@ export const TitleForm = ({ initialData = {}, courseId }) => {
                                     <FormControl>
                                         <Input
                                             disabled={isSubmitting}
-                                            placeholder="e.g. 'Advanced web development'"
+                                            placeholder="مثلاً: «آموزش پیشرفته متلب»"
                                             {...field}
                                         />
                                     </FormControl>

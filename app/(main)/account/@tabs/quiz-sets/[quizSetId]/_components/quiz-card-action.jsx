@@ -25,16 +25,16 @@ export const QuizCardActions = ({ quiz, quizSetId }) => {
         }
         case "delete-quiz": {
           await deleteQuiz(quizSetId, quiz.id);
-          toast.success("Quiz has been deleted");
+          toast.success("آزمون حذف شد");
           router.refresh();
           break;
         }
         default: {
-          throw new Error("Invalid Action");
+          throw new Error("عملیات نامعتبر است");
         }
       }
     } catch (e) {
-      toast.error(`Error: ${e.message}`);
+      toast.error(`خطا: ${e.message}`);
     } finally {
       setLoading(false);
     }
@@ -48,7 +48,7 @@ export const QuizCardActions = ({ quiz, quizSetId }) => {
         onClick={() => setAction("edit-quiz")}
         disabled={loading}
       >
-        <Pencil className="w-3 mr-1" /> Edit
+        <Pencil className="w-3 ml-1" /> ویرایش
       </Button>
       <Button
         className="text-destructive"
@@ -57,7 +57,7 @@ export const QuizCardActions = ({ quiz, quizSetId }) => {
         onClick={() => setAction("delete-quiz")}
         disabled={loading}
       >
-        <Trash className="w-3 mr-1" /> Delete
+        <Trash className="w-3 ml-1" /> حذف
       </Button>
     </form>
   );

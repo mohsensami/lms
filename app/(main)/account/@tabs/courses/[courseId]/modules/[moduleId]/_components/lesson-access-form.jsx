@@ -51,25 +51,25 @@ export const LessonAccessForm = ({ initialData, courseId, lessonId }) => {
       }
       await updateLesson(lessonId, payload);
       setFree(!free);
-      toast.success("Lesson updated");
+      toast.success("درس به‌روزرسانی شد");
       toggleEdit();
       router.refresh();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("مشکلی پیش آمد");
     }
   };
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Lesson access
+        دسترسی درس
         <Button variant="ghost" onClick={toggleEdit}>
           {isEditing ? (
-            <>Cancel</>
+            <>انصراف</>
           ) : (
             <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit access
+              <Pencil className="h-4 w-4 ml-2" />
+              ویرایش دسترسی
             </>
           )}
         </Button>
@@ -77,9 +77,9 @@ export const LessonAccessForm = ({ initialData, courseId, lessonId }) => {
       {!isEditing && (
         <p className={cn("text-sm mt-2", !free && "text-slate-500 italic")}>
           {free ? (
-            <>This chapter is free for preview</>
+            <>این درس برای پیش‌نمایش رایگان است</>
           ) : (
-            <>This chapter is not free</>
+            <>این درس رایگان نیست</>
           )}
         </p>
       )}
@@ -93,7 +93,7 @@ export const LessonAccessForm = ({ initialData, courseId, lessonId }) => {
               control={form.control}
               name="isFree"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                <FormItem className="flex flex-row items-start space-x-3 rtl:space-x-reverse space-y-0 rounded-md border p-4">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -102,8 +102,7 @@ export const LessonAccessForm = ({ initialData, courseId, lessonId }) => {
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormDescription>
-                      Check this box if you want to make this chapter free for
-                      preview
+                      اگر می‌خواهید این درس برای پیش‌نمایش رایگان باشد، این گزینه را فعال کنید
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -111,7 +110,7 @@ export const LessonAccessForm = ({ initialData, courseId, lessonId }) => {
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
+                ذخیره
               </Button>
             </div>
           </form>

@@ -41,14 +41,14 @@ export function DataTable({ columns, data }) {
         <div>
             <div className="flex items-center justify-between py-4">
                 <Input
-                    placeholder="Filter courses..."
+                    placeholder="جستجو در دوره‌ها..."
                     value={table.getColumn('title')?.getFilterValue() ?? ''}
                     onChange={(event) => table.getColumn('title')?.setFilterValue(event.target.value)}
                     className="max-w-sm"
                 />
                 <Link href="/account/courses/add">
                     <Button>
-                        <PlusCircle className="h-4 w-4 mr-2" />
+                        <PlusCircle className="h-4 w-4 ml-2" />
                         دوره جدید
                     </Button>
                 </Link>
@@ -91,17 +91,17 @@ export function DataTable({ columns, data }) {
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex items-center justify-end space-x-2 rtl:space-x-reverse py-4">
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                 >
-                    Previous
+                    قبلی
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                    Next
+                    بعدی
                 </Button>
             </div>
         </div>

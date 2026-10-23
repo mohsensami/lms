@@ -33,15 +33,15 @@ export const Combobox = ({ options, value, onChange }) => {
         >
           {value
             ? options.find((option) => option.value === value)?.label
-            : "Select options..."}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            : "انتخاب کنید..."}
+          <ChevronsUpDown className="ms-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command>
-          <CommandInput placeholder="Search options..." />
+          <CommandInput placeholder="جستجو..." />
           <CommandList>
-            <CommandEmpty>No options found.</CommandEmpty>
+            <CommandEmpty>موردی یافت نشد.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
@@ -54,7 +54,7 @@ export const Combobox = ({ options, value, onChange }) => {
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4",
+                      "me-2 h-4 w-4",
                       value === option.value ? "opacity-100" : "opacity-0"
                     )}
                   />

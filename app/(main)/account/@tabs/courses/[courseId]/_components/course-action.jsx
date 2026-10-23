@@ -35,13 +35,13 @@ export const CourseActions = ({ courseId, isActive }) => {
                         );
                     } else {
                         await deleteCourse(courseId);
-                        toast.success('The Course has been deleted successfully');
+                        toast.success('دوره با موفقیت حذف شد');
                         router.push(`/account/courses`);
                     }
                     break;
                 }
                 default:
-                    throw new Error('Invalid Lesson Action');
+                    throw new Error('عملیات نامعتبر است');
             }
         } catch (e) {
             toast.error(e.message);

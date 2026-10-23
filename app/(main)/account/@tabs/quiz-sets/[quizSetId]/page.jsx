@@ -39,7 +39,7 @@ const EditQuizSet = async ({ params: { quizSetId } }) => {
         <>
             {!quizSet.active && (
                 <AlertBanner
-                    label="This Quiz is unpublished. It will not be visible in the course."
+                    label="این آزمون منتشر نشده است و در دوره نمایش داده نمی‌شود."
                     variant="warning"
                 />
             )}
@@ -54,7 +54,7 @@ const EditQuizSet = async ({ params: { quizSetId } }) => {
                         <h2 className="text-xl mb-6">لیست آزمون ها</h2>
                         {quizzes.length === 0 && (
                             <AlertBanner
-                                label="No Quiz are in the set, add some using the form above."
+                                label="هنوز سوالی در این آزمون وجود ندارد. با فرم بالا سوال اضافه کنید."
                                 variant="warning"
                                 className="rounded mb-6"
                             />

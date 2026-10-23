@@ -57,11 +57,11 @@ export const PriceForm = ({ initialData, courseId }) => {
                 // so we never end up with a dangling date and no discount.
                 discountEndsAt: values.discountPrice ? discountEndsAt : null,
             });
-            toast.success('Course updated');
+            toast.success('دوره به‌روزرسانی شد');
             toggleEdit();
             router.refresh();
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         }
     };
 
@@ -76,7 +76,7 @@ export const PriceForm = ({ initialData, courseId }) => {
                         <>انصراف</>
                     ) : (
                         <>
-                            <Pencil className="h-4 w-4 mr-2" />
+                            <Pencil className="h-4 w-4 ml-2" />
                             ویرایش قیمت
                         </>
                     )}
@@ -103,7 +103,7 @@ export const PriceForm = ({ initialData, courseId }) => {
                             formatPrice(initialData.price)
                         )
                     ) : (
-                        'No price'
+                        'بدون قیمت'
                     )}
                 </div>
             )}
@@ -121,7 +121,7 @@ export const PriceForm = ({ initialData, courseId }) => {
                                             type="number"
                                             step="0.01"
                                             disabled={isSubmitting}
-                                            placeholder="Set a price for your course"
+                                            placeholder="قیمت دوره را وارد کنید"
                                             {...field}
                                         />
                                     </FormControl>

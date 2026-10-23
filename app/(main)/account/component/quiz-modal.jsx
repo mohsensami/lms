@@ -84,7 +84,7 @@ function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
     <>
       <Dialog open={open} onOpenChange={(next) => (next ? setOpen(true) : handleClose())}>
         <DialogContent className="sm:max-w-[95%] block">
-          <DialogTitle className="sr-only">Quiz Details</DialogTitle>
+          <DialogTitle className="sr-only">جزئیات آزمون</DialogTitle>
 
           {result ? (
             <div className="flex flex-col items-center gap-4 py-6 text-center">
@@ -110,10 +110,10 @@ function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
           ) : (
             <>
               <div className="pb-4 border-b border-border text-sm">
-                <span className="text-success inline-block mr-1">
+                سوال{" "}
+                <span className="text-success inline-block">
                   {quizIndex + 1} / {totalQuizes}
                 </span>
-                Number
               </div>
               <div className="py-4">
                 <h3 className="text-xl font-medium mb-10">
@@ -150,8 +150,7 @@ function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
                     <path d="M10 12h-4v-1h1v-3h-1v-1h3v4h1z"></path>
                     <path d="M8 0c-4.418 0-8 3.582-8 8s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8zM8 14.5c-3.59 0-6.5-2.91-6.5-6.5s2.91-6.5 6.5-6.5 6.5 2.91 6.5 6.5-2.91 6.5-6.5 6.5z"></path>
                   </svg>{" "}
-                  A question can have multiple answers & there is no negative
-                  marking for incorrect selection.
+                  هر سوال می‌تواند چند پاسخ داشته باشد و برای پاسخ‌های اشتباه نمره منفی در نظر گرفته نمی‌شود.
                 </span>
               </div>
               <div className="grid md:grid-cols-2 gap-5 mb-6">
@@ -186,7 +185,7 @@ function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
                   disabled={quizIndex === 0}
                   onClick={() => quizChangeHanlder("prev")}
                 >
-                  <ArrowLeft /> Previous Quiz
+                  <ArrowRight /> سوال قبلی
                 </Button>
 
                 {quizIndex >= lastQuizIndex ? (
@@ -196,14 +195,14 @@ function QuizModal({ quizzes, courseId, quizSetId, open, setOpen }) {
                     disabled={isSubmitting}
                     onClick={submitQuiz}
                   >
-                    {isSubmitting ? 'در حال ثبت...' : 'Submit'}
+                    {isSubmitting ? 'در حال ثبت...' : 'ثبت نهایی'}
                   </Button>
                 ) : (
                   <Button
                     className="gap-2 rounded-3xl"
                     onClick={() => quizChangeHanlder("next")}
                   >
-                    Next Quiz <ArrowRight />
+                    سوال بعدی <ArrowLeft />
                   </Button>
                 )}
               </DialogFooter>

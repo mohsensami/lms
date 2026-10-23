@@ -49,7 +49,7 @@ export function DataTable({ columns, data }) {
     <div>
       <div className="flex items-center justify-between py-4">
         <Input
-          placeholder="Filter by student name..."
+          placeholder="جستجو بر اساس نام دانشجو..."
           value={table.getColumn("name")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
@@ -107,14 +107,14 @@ export function DataTable({ columns, data }) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 rtl:space-x-reverse py-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          Previous
+          قبلی
         </Button>
         <Button
           variant="outline"
@@ -122,7 +122,7 @@ export function DataTable({ columns, data }) {
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
+          بعدی
         </Button>
       </div>
     </div>

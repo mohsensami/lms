@@ -44,25 +44,25 @@ export const LessonDescriptionForm = ({ initialData, courseId, lessonId }) => {
     try {
       await updateLesson(lessonId, values);
       setDescription(values.title);
-      toast.success("Lesson updated");
+      toast.success("درس به‌روزرسانی شد");
       toggleEdit();
       router.refresh();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("مشکلی پیش آمد");
     }
   };
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Chapter Description
+        توضیحات درس
         <Button variant="ghost" onClick={toggleEdit}>
           {isEditing ? (
-            <>Cancel</>
+            <>انصراف</>
           ) : (
             <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit Description
+              <Pencil className="h-4 w-4 ml-2" />
+              ویرایش توضیحات
             </>
           )}
         </Button>
@@ -82,7 +82,7 @@ export const LessonDescriptionForm = ({ initialData, courseId, lessonId }) => {
                   <FormControl>
                     <Textarea
                       disabled={isSubmitting}
-                      placeholder="e.g. 'This course is about...'"
+                      placeholder="مثلاً: «در این دوره با ... آشنا می‌شوید»"
                       {...field}
                     />
                   </FormControl>
@@ -92,7 +92,7 @@ export const LessonDescriptionForm = ({ initialData, courseId, lessonId }) => {
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
+                ذخیره
               </Button>
             </div>
           </form>

@@ -22,12 +22,12 @@ const formSchema = z.object({
 const initialModules = [
     {
         id: '1',
-        title: 'Module 1',
+        title: 'فصل ۱',
         isPublished: true,
     },
     {
         id: '2',
-        title: 'Module 2',
+        title: 'فصل ۲',
     },
 ];
 export const ModulesForm = ({ initialData, courseId }) => {
@@ -64,11 +64,11 @@ export const ModulesForm = ({ initialData, courseId }) => {
                     title: values.title,
                 },
             ]);
-            toast.success('Module created');
+            toast.success('فصل ایجاد شد');
             toggleCreating();
             router.refresh();
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         }
     };
 
@@ -78,10 +78,10 @@ export const ModulesForm = ({ initialData, courseId }) => {
             reOrderModules(updateData);
             setIsUpdating(true);
 
-            toast.success('Chapters reordered');
+            toast.success('ترتیب فصل‌ها ذخیره شد');
             router.refresh();
         } catch {
-            toast.error('Something went wrong');
+            toast.error('مشکلی پیش آمد');
         } finally {
             setIsUpdating(false);
         }
@@ -105,7 +105,7 @@ export const ModulesForm = ({ initialData, courseId }) => {
                         <>انصراف</>
                     ) : (
                         <>
-                            <PlusCircle className="h-4 w-4 mr-2" />
+                            <PlusCircle className="h-4 w-4 ml-2" />
                             افزودن سرفصل جدید
                         </>
                     )}
@@ -123,7 +123,7 @@ export const ModulesForm = ({ initialData, courseId }) => {
                                     <FormControl>
                                         <Input
                                             disabled={isSubmitting}
-                                            placeholder="e.g. 'Introduction to the course...'"
+                                            placeholder="مثلاً: «معرفی دوره...»"
                                             {...field}
                                         />
                                     </FormControl>
@@ -132,18 +132,18 @@ export const ModulesForm = ({ initialData, courseId }) => {
                             )}
                         />
                         <Button disabled={!isValid || isSubmitting} type="submit">
-                            Create
+                            ایجاد
                         </Button>
                     </form>
                 </Form>
             )}
             {!isCreating && (
                 <div className={cn('text-sm mt-2', !modules?.length && 'text-slate-500 italic')}>
-                    {!modules?.length && 'No module'}
+                    {!modules?.length && 'بدون فصل'}
                     <ModuleList onEdit={onEdit} onReorder={onReorder} items={modules || []} />
                 </div>
             )}
-            {!isCreating && <p className="text-xs text-muted-foreground mt-4">Drag & Drop to reorder the modules</p>}
+            {!isCreating && <p className="text-xs text-muted-foreground mt-4">برای تغییر ترتیب فصل‌ها، آن‌ها را بکشید و رها کنید</p>}
         </div>
     );
 };

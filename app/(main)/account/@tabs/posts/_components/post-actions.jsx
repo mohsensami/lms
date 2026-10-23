@@ -25,7 +25,7 @@ export const PostActions = ({ postId }) => {
 
     return (
         <Button size="sm" variant="destructive" onClick={handleDelete}>
-            <Trash className="h-4 w-4 mr-2" />
+            <Trash className="h-4 w-4 ml-2" />
             حذف پست
         </Button>
     );

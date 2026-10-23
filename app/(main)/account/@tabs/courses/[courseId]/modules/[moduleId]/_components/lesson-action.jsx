@@ -19,13 +19,13 @@ export const LessonActions = ({ lesson, moduleId, onDelete }) => {
                 case 'change-active': {
                     const activeState = await changeLessonPublishState(lesson.id);
                     setPublished(!activeState);
-                    toast.success('The lesson has been updated');
+                    toast.success('درس به‌روزرسانی شد');
                     break;
                 }
 
                 case 'delete': {
                     if (published) {
-                        toast.error('A published lesson can not be deleted. First unpublish it, then delete');
+                        toast.error('درس منتشرشده قابل حذف نیست. ابتدا آن را از حالت انتشار خارج کنید، سپس حذف کنید.');
                     } else {
                         await deleteLesson(lesson.id, moduleId);
                         onDelete();
@@ -33,7 +33,7 @@ export const LessonActions = ({ lesson, moduleId, onDelete }) => {
                     break;
                 }
                 default:
-                    throw new Error('Invalid Lesson Action');
+                    throw new Error('عملیات نامعتبر است');
             }
         } catch (e) {
             toast.error(e.message);

@@ -2,7 +2,9 @@ export const EmailTemplate = ({ message }) => {
   return (
     <div
       style={{
-        fontFamily: "Arial, sans-serif",
+        fontFamily: "Tahoma, Arial, sans-serif",
+        direction: "rtl",
+        textAlign: "right",
         backgroundColor: "#f4f4f4",
         padding: "20px",
         color: "#333",
@@ -27,7 +29,7 @@ export const EmailTemplate = ({ message }) => {
               textAlign: "center",
             }}
           >
-            Easy LMS
+            آکادمی آموزشی
           </h1>
         </div>
         <div style={{ padding: "20px" }}>
@@ -55,12 +57,13 @@ export const EmailTemplate = ({ message }) => {
               color: "#777",
             }}
           >
-            This email was sent by Your Company. If you have any questions, feel
-            free to{" "}
+            این ایمیل از طرف آکادمی آموزشی ارسال شده است. در صورت داشتن هر پرسشی
+            می‌توانید{" "}
             <a href="mailto:support@example.com" style={{ color: "#007BFF" }}>
-              contact us
+              با ما تماس بگیرید
             </a>
             .
+
           </p>
         </div>
       </div>
