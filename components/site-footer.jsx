@@ -54,7 +54,15 @@ const SiteFooter = () => {
             <div className="border-t border-border">
                 <div className="container flex flex-col items-center gap-2 py-5 text-xs text-muted-foreground sm:flex-row sm:justify-between">
                     <p>© {new Date().getFullYear()} تمامی حقوق محفوظ است.</p>
-                    <p>ساخته شده با ❤ توسط محسن سامی</p>
+                    <div>
+                        <a href="https://greendata.ir/order" target="_blank" rel="noopener" className="hover:text-primary">
+                            طراحی سایت
+                        </a>
+                        :{' '}
+                        <a href="https://greendata.ir" target="_blank" rel="noopener" className="hover:text-primary">
+                            greendata
+                        </a>
+                    </div>
                 </div>
             </div>
         </footer>

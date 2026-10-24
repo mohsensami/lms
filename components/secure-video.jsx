@@ -10,6 +10,19 @@ const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 
 const MAX_REFRESH_RETRIES = 3;
 
+/** Aparat page links (aparat.com/v/xxxx) can only be shown through their embed player. */
+function getAparatEmbedUrl(url) {
+    try {
+        const { hostname, pathname } = new URL(url);
+        if (!/(^|\.)aparat\.com$/.test(hostname)) return null;
+        const match = /\/v\/([A-Za-z0-9]+)/.exec(pathname);
+        if (match) return `https://www.aparat.com/video/video/embed/videohash/${match[1]}/vt/frame`;
+        return pathname.includes('/embed/') ? url : null;
+    } catch {
+        return null;
+    }
+}
+
 /**
  * Plays a lesson video WITHOUT the page ever knowing where it lives.
  *
@@ -90,6 +103,19 @@ export default function SecureVideo({ lessonId, autoPlay = false, onStart, onEnd
     }
 
     if (source.external) {
+        const aparatUrl = getAparatEmbedUrl(source.url);
+        if (aparatUrl) {
+            return (
+                <iframe
+                    src={aparatUrl}
+                    title="ویدیوی درس"
+                    className="h-full w-full border-0"
+                    allowFullScreen
+                    allow="fullscreen; picture-in-picture"
+                />
+            );
+        }
+
         return (
             <ReactPlayer
                 url={source.url}

@@ -1,13 +1,14 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Film, Loader2, Trash2, UploadCloud, X } from 'lucide-react';
+import { Film, Link2, Loader2, Trash2, UploadCloud, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import SecureVideo from '@/components/secure-video';
-import { removeLessonVideo } from '@/app/actions/lesson';
+import { getVideoInputMode, removeLessonVideo, setLessonVideoLink } from '@/app/actions/lesson';
 import { useUploadThing } from '@/lib/uploadthing';
 
 const PART_CONCURRENCY = 3;
@@ -140,6 +141,22 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
     const [phase, setPhase] = useState('idle'); // idle | preparing | uploading | finishing
     const [progress, setProgress] = useState(0);
     const [removing, setRemoving] = useState(false);
+
+    // "upload" or "link", decided by the storage option picked in Settings.
+    const [mode, setMode] = useState('upload');
+    const [linkUrl, setLinkUrl] = useState(initialData?.video_url || '');
+    const [linkDuration, setLinkDuration] = useState(initialData?.duration ? formatClock(initialData.duration) : '');
+    const [savingLink, setSavingLink] = useState(false);
+
+    useEffect(() => {
+        let alive = true;
+        getVideoInputMode()
+            .then((value) => alive && setMode(value))
+            .catch(() => {});
+        return () => {
+            alive = false;
+        };
+    }, []);
     const [canCancel, setCanCancel] = useState(true);
 
     // UploadThing uploads go through its own SDK; progress is reported here.
@@ -354,12 +371,49 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
         if (file) uploadFile(file);
     }
 
+    async function handleSaveLink() {
+        let duration;
+        if (linkDuration.trim()) {
+            const parts = linkDuration.trim().split(':').map(Number);
+            if (parts.length !== 3 || parts.some((n) => !Number.isFinite(n) || n < 0)) {
+                toast.error('قالب مدت زمان باید به‌صورت hh:mm:ss باشد');
+                return;
+            }
+            duration = parts[0] * 3600 + parts[1] * 60 + parts[2];
+        }
+
+        setSavingLink(true);
+        try {
+            const result = await setLessonVideoLink(lessonId, linkUrl, duration);
+            if (!result.ok) {
+                toast.error(result.message);
+                return;
+            }
+            setVideo({
+                hasStored: false,
+                hasExternal: true,
+                name: null,
+                size: null,
+                duration: duration || video.duration,
+            });
+            setPreviewKey((value) => value + 1);
+            toast.success(result.message);
+            router.refresh();
+        } catch {
+            toast.error('مشکلی پیش آمد');
+        } finally {
+            setSavingLink(false);
+        }
+    }
+
     async function handleRemove() {
         if (!window.confirm('این ویدیو برای همیشه حذف شود؟')) return;
         setRemoving(true);
         try {
             await removeLessonVideo(lessonId);
             setVideo({ hasStored: false, hasExternal: false, name: null, size: null, duration: null });
+            setLinkUrl('');
+            setLinkDuration('');
             toast.success('ویدیو حذف شد');
             router.refresh();
         } catch {
@@ -402,10 +456,12 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
                                 حذف
                             </Button>
                         )}
-                        <Button type="button" size="sm" onClick={() => fileInputRef.current?.click()}>
-                            <UploadCloud className="ml-1.5 h-4 w-4" />
-                            {hasVideo ? 'جایگزینی ویدیو' : 'آپلود ویدیو'}
-                        </Button>
+                        {mode === 'upload' && (
+                            <Button type="button" size="sm" onClick={() => fileInputRef.current?.click()}>
+                                <UploadCloud className="ml-1.5 h-4 w-4" />
+                                {hasVideo ? 'جایگزینی ویدیو' : 'آپلود ویدیو'}
+                            </Button>
+                        )}
                     </div>
                 )}
             </div>
@@ -418,6 +474,38 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
                 onChange={handleFileChange}
                 disabled={isBusy}
             />
+
+            {mode === 'link' && (
+                <div className="mt-4 space-y-3 rounded-md border bg-white p-3">
+                    <p className="flex items-center gap-1.5 text-sm font-medium">
+                        <Link2 className="h-4 w-4" />
+                        لینک ویدیو
+                    </p>
+                    <Input
+                        dir="ltr"
+                        type="url"
+                        placeholder="https://example.com/video.mp4"
+                        value={linkUrl}
+                        onChange={(e) => setLinkUrl(e.target.value)}
+                        disabled={savingLink}
+                    />
+                    <Input
+                        dir="ltr"
+                        placeholder="مدت ویدیو (اختیاری) — hh:mm:ss"
+                        value={linkDuration}
+                        onChange={(e) => setLinkDuration(e.target.value)}
+                        disabled={savingLink}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                        فایل mp4 مستقیم، HLS (m3u8)، یوتیوب، ویمیو یا آپارات پشتیبانی می‌شود. لینک فقط برای کاربرانی که اجازه‌ی
+                        دیدن درس را دارند از سرور داده می‌شود.
+                    </p>
+                    <Button type="button" size="sm" disabled={savingLink || !linkUrl.trim()} onClick={handleSaveLink}>
+                        {savingLink && <Loader2 className="ml-1.5 h-4 w-4 animate-spin" />}
+                        ذخیره‌ی لینک
+                    </Button>
+                </div>
+            )}
 
             {isBusy && (
                 <div className="mt-4 space-y-2">
@@ -461,8 +549,8 @@ export const LessonVideoForm = ({ initialData, lessonId }) => {
                             </div>
                         ) : (
                             <p className="text-muted-foreground">
-                                این درس هنوز به یک لینک خارجی (روش قدیمی) متصل است. با «جایگزینی ویدیو» می‌توانید فایل را روی
-                                فضای ذخیره‌سازی آپلود کنید.
+                                این درس به یک لینک خارجی متصل است
+                                {mode === 'upload' ? ' (با «جایگزینی ویدیو» می‌توانید فایل را روی فضای ذخیره‌سازی آپلود کنید).' : '.'}
                             </p>
                         )}
                     </div>

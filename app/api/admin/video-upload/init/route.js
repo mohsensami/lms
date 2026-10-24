@@ -65,6 +65,13 @@ export async function POST(request) {
             return Response.json({ error: error.message }, { status: 400 });
         }
 
+        if (driver.type === 'link') {
+            return Response.json(
+                { error: 'ذخیره‌سازی روی «لینک ساده» است؛ به‌جای آپلود، لینک ویدیو را وارد کنید.' },
+                { status: 400 },
+            );
+        }
+
         // ---- UploadThing: the SDK handles everything client-side ----
         if (driver.type === 'uploadthing') {
             return Response.json({ kind: 'uploadthing', provider: providerId, contentType: resolvedType });

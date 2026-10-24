@@ -6,6 +6,7 @@ import { COURSES_CACHE_TAG } from "@/queries/courses";
 import { revalidateTag } from "next/cache";
 import { assertAdmin } from "@/lib/admin-guard";
 import { deleteStoredVideos } from "@/lib/video-cleanup";
+import { getActiveProviderId, PROVIDERS } from "@/lib/storage";
 
 // Fields that describe the stored video are only ever written by the
 // upload-complete API route (after the file really exists in the bucket).
@@ -129,5 +130,57 @@ export async function deleteLesson(lessonId, moduleId) {
     revalidateTag(COURSES_CACHE_TAG);
   } catch (err) {
     throw new Error(err);
+  }
+}
+
+/** "upload" or "link" — what the lesson form should offer, from Settings -> storage. */
+export async function getVideoInputMode() {
+  await assertAdmin();
+  const providerId = await getActiveProviderId();
+  return PROVIDERS[providerId]?.type === "link" ? "link" : "upload";
+}
+
+/**
+ * Saves a plain video link on a lesson (video hosted somewhere else). Replaces
+ * any video we stored ourselves, deleting that file from its bucket.
+ */
+export async function setLessonVideoLink(lessonId, rawUrl, durationSeconds) {
+  try {
+    await assertAdmin();
+
+    let url;
+    try {
+      url = new URL(String(rawUrl || "").trim());
+    } catch {
+      return { ok: false, message: "لینک واردشده معتبر نیست." };
+    }
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      return { ok: false, message: "لینک باید با http:// یا https:// شروع شود." };
+    }
+
+    const lesson = await prisma.lesson.findUnique({ where: { id: lessonId } });
+    if (!lesson) return { ok: false, message: "درس پیدا نشد." };
+
+    const data = {
+      video_url: url.toString(),
+      videoProvider: null,
+      videoKey: null,
+      videoUrl: null,
+      videoName: null,
+      videoSize: null,
+      videoContentType: null,
+    };
+    if (Number.isFinite(durationSeconds) && durationSeconds > 0) {
+      data.duration = Math.round(durationSeconds);
+    }
+
+    await prisma.lesson.update({ where: { id: lessonId }, data });
+    await deleteStoredVideos([lesson]);
+    revalidateTag(COURSES_CACHE_TAG);
+
+    return { ok: true, message: "لینک ویدیو ذخیره شد." };
+  } catch (error) {
+    console.error("setLessonVideoLink error:", error);
+    return { ok: false, message: "ذخیره‌ی لینک با مشکل مواجه شد." };
   }
 }

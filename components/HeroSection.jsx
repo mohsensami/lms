@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function HeroSection() {
     return (
         <section className="relative overflow-hidden bg-gray-950 text-white">
@@ -23,9 +25,12 @@ export default function HeroSection() {
                     </p>
 
                     <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                        <button className="rounded-xl bg-primary px-6 py-3 font-medium hover:bg-primary transition">
+                        <Link
+                            href="/courses"
+                            className="rounded-xl bg-primary px-6 py-3 text-center font-medium text-primary-foreground transition hover:bg-primary/90"
+                        >
                             شروع یادگیری
-                        </button>
+                        </Link>
                         {/* <button className="rounded-xl border border-white/20 px-6 py-3 text-gray-200 hover:bg-white/10 transition">
                             مشاهده دوره‌ها
                         </button> */}
