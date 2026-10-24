@@ -69,7 +69,7 @@ export const {
     // User row if one doesn't already exist (matched by email). Every other
     // part of the app looks the user up by `session.user.email`, so nothing
     // else needs to change for Google-authenticated users to work.
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       if (account?.provider !== "google") {
         return true;
       }
@@ -78,13 +78,25 @@ export const {
         return false;
       }
 
+      // Only trust e-mail addresses that Google itself has verified.
+      if (profile?.email_verified === false) {
+        console.error("Google account with unverified e-mail rejected:", user.email);
+        return false;
+      }
+
+      // Google serves the avatar as a small 96px image by default; ask for a
+      // sharper one (the URL suffix "=s96-c" means "96px, cropped square").
+      const googlePicture = (profile?.picture || user.image || "").replace(/=s\d+-c$/, "=s256-c") || null;
+
       try {
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email },
         });
 
         if (!existingUser) {
-          const [firstName, ...rest] = (user.name || "کاربر گوگل").split(" ");
+          const [fallbackFirst, ...rest] = (user.name || "کاربر گوگل").split(" ");
+          const firstName = profile?.given_name || fallbackFirst;
+          const lastName = profile?.family_name || rest.join(" ");
           // Google accounts don't have a password in our system; store a
           // random, never-used hash just to satisfy the required column.
           const randomPassword = await bcrypt.hash(crypto.randomUUID(), 5);
@@ -92,16 +104,24 @@ export const {
           await prisma.user.create({
             data: {
               firstName: firstName || "کاربر",
-              lastName: rest.join(" ") || "گوگل",
+              lastName: lastName || "گوگل",
               email: user.email,
               password: randomPassword,
               role: "student",
-              profilePicture: user.image || null,
+              profilePicture: googlePicture,
             },
           });
         } else if (existingUser.isActive === false) {
           console.error("Deactivated account tried to log in via Google:", user.email);
           return false;
+        } else if (!existingUser.profilePicture && googlePicture) {
+          // Existing account (e.g. registered with e-mail first) that has no
+          // picture yet: use the Google one. A picture the user uploaded
+          // themselves is never overwritten.
+          await prisma.user.update({
+            where: { email: user.email },
+            data: { profilePicture: googlePicture },
+          });
         }
 
         return true;

@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 const UserAvatar = ({ src, alt = 'کاربر', className, iconClassName }) => {
     return (
         <Avatar className={className}>
-            {src && <AvatarImage src={src} alt={alt} className="object-cover" />}
+            {src && <AvatarImage src={src} alt={alt} className="object-cover" referrerPolicy="no-referrer" />}
             <AvatarFallback>
                 <User className={cn('h-1/2 w-1/2 text-muted-foreground', iconClassName)} />
             </AvatarFallback>
