@@ -1,7 +1,7 @@
 "use server";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
-import { zarinpal } from "@/lib/zarinpal";
+import { getZarinpal } from "@/lib/zarinpal";
 import { getCourseDetails } from "@/queries/courses";
 import { getUserByEmail } from "@/queries/users";
 import { createOrder } from "@/queries/orders";
@@ -21,7 +21,7 @@ export async function createZarinpalPayment(data) {
   const chargePrice = getEffectivePrice(course); // uses discountPrice if one is active
   const amount = Math.round(Number(chargePrice) * 10); // ✅ FIXED
 
-  const response = await zarinpal.PaymentRequest({
+  const response = await getZarinpal().PaymentRequest({
     Amount: amount,
     CallbackURL: `${origin}/enroll-success?courseId=${courseId}`,
     Description: `Purchase course: ${course.title}`,

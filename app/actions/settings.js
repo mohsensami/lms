@@ -2,6 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { DEFAULT_PRIMARY, normalizeHex } from "@/lib/theme";
+import { GATEWAYS, getMissingGatewayEnv, isKnownGateway } from "@/lib/payments/gateways";
+import { BALE_TEST_PROVIDER_TOKEN, baleApi } from "@/lib/payments/bale";
+import { SITE_URL } from "@/lib/seo";
 import { assertAdmin } from "@/lib/admin-guard";
 import { setSetting } from "@/lib/settings";
 import {
@@ -139,5 +142,94 @@ export async function resetThemeColor() {
   } catch (error) {
     console.error("resetThemeColor error:", error);
     return { ok: false, message: "بازگردانی رنگ با مشکل مواجه شد." };
+  }
+}
+
+// ---------------------------------------------------------------- payments
+
+export async function savePaymentGateways(ids) {
+  try {
+    await assertAdmin();
+
+    const selected = [...new Set(Array.isArray(ids) ? ids : [])];
+    if (selected.length === 0) {
+      return { ok: false, message: "حداقل یک درگاه پرداخت باید فعال باشد." };
+    }
+
+    for (const id of selected) {
+      if (!isKnownGateway(id)) {
+        return { ok: false, message: "درگاه انتخاب‌شده نامعتبر است." };
+      }
+      const missing = getMissingGatewayEnv(id);
+      if (missing.length > 0) {
+        return {
+          ok: false,
+          message: `«${GATEWAYS[id].label}» هنوز کامل تنظیم نشده. این متغیرها را در env بگذارید: ${missing.join(", ")}`,
+        };
+      }
+    }
+
+    await setSetting("payments", { enabledGateways: selected });
+    revalidatePath("/account/settings");
+    return { ok: true, message: "درگاه‌های پرداخت ذخیره شد." };
+  } catch (error) {
+    console.error("savePaymentGateways error:", error);
+    return { ok: false, message: "ذخیره‌ی تنظیمات با مشکل مواجه شد." };
+  }
+}
+
+export async function testBaleConnection() {
+  try {
+    await assertAdmin();
+
+    const missing = getMissingGatewayEnv("bale");
+    if (missing.length > 0) {
+      return { ok: false, message: `ابتدا این متغیرها را تنظیم کنید: ${missing.join(", ")}` };
+    }
+
+    const me = await baleApi.getMe();
+    const configured = String(process.env.BALE_BOT_USERNAME || "").replace(/^@/, "").toLowerCase();
+    const actual = String(me?.username || "").toLowerCase();
+
+    const notes = [];
+    if (actual && configured && actual !== configured) {
+      notes.push(`⚠️ BALE_BOT_USERNAME با نام کاربری واقعی بازو (@${me.username}) یکی نیست.`);
+    }
+    if (process.env.BALE_PROVIDER_TOKEN === BALE_TEST_PROVIDER_TOKEN) {
+      notes.push("توکن پرداخت از نوع آزمایشی است؛ پول واقعی جابه‌جا نمی‌شود.");
+    }
+
+    return {
+      ok: true,
+      message: `به بازوی «${me?.first_name || me?.username}» (@${me?.username}) وصل شد. ${notes.join(" ")}`.trim(),
+    };
+  } catch (error) {
+    return { ok: false, message: `اتصال به بله برقرار نشد: ${error?.message || "خطای ناشناخته"}` };
+  }
+}
+
+export async function registerBaleWebhook() {
+  try {
+    await assertAdmin();
+
+    const missing = getMissingGatewayEnv("bale");
+    if (missing.length > 0) {
+      return { ok: false, message: `ابتدا این متغیرها را تنظیم کنید: ${missing.join(", ")}` };
+    }
+    if (!SITE_URL.startsWith("https://")) {
+      return {
+        ok: false,
+        message: "وب‌هوک بله فقط روی آدرس HTTPS کار می‌کند. NEXT_PUBLIC_SITE_URL را روی دامنه‌ی https سایت بگذارید.",
+      };
+    }
+
+    const url = `${SITE_URL}/api/bale/webhook/${process.env.BALE_WEBHOOK_SECRET}`;
+    await baleApi.setWebhook(url);
+    const info = await baleApi.getWebhookInfo().catch(() => null);
+
+    const registered = info?.url ? "ثبت شد" : "ثبت شد (وضعیت قابل خواندن نبود)";
+    return { ok: true, message: `وب‌هوک بله ${registered}: ${SITE_URL}/api/bale/webhook/••••••` };
+  } catch (error) {
+    return { ok: false, message: `ثبت وب‌هوک ناموفق بود: ${error?.message || "خطای ناشناخته"}` };
   }
 }

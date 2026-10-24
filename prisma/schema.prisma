@@ -192,6 +192,12 @@ model Order {
   createdAt DateTime  @default(now())
   paidAt    DateTime?
 
+  // Bale Pay only: the Bale chat that started the payment, and the Bale
+  // transaction id (used to double-check a payment with inquireTransaction).
+  baleChatId    String?
+  transactionId String?
+  payUrl        String? // Bale: where the customer completes the payment
+
   courseId String?
   course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
