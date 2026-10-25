@@ -3,12 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Loader2, Lock } from 'lucide-react';
+import LessonPlayer from '@/components/lesson-player';
 
-// Only used for legacy lessons that still point at an external link
-// (YouTube, plain .mp4, ...). react-player needs browser APIs.
+// Only used for external links we cannot play natively (YouTube, Vimeo, HLS...).
+// react-player needs browser APIs.
 const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 
 const MAX_REFRESH_RETRIES = 3;
+const DIRECT_FILE = /\.(mp4|webm|mov|m4v|ogv)(\?|#|$)/i;
 
 /** Aparat page links (aparat.com/v/xxxx) can only be shown through their embed player. */
 function getAparatEmbedUrl(url) {
@@ -26,17 +28,16 @@ function getAparatEmbedUrl(url) {
 /**
  * Plays a lesson video WITHOUT the page ever knowing where it lives.
  *
- * It asks /api/video/:lessonId for a short-lived signed URL (the server
- * decides whether this visitor may watch), plays it, and — because signed
- * URLs expire — quietly fetches a fresh one and resumes from the same
- * position if playback fails mid-way.
+ * It asks /api/video/:lessonId for a short-lived link (the server decides
+ * whether this visitor may watch) and plays it in our own player. Because
+ * signed links expire, if playback fails it quietly fetches a fresh one and
+ * resumes from the same second.
  */
 export default function SecureVideo({ lessonId, autoPlay = false, onStart, onEnded, className = '' }) {
     const [source, setSource] = useState(null); // { url, external? }
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const videoRef = useRef(null);
     const resumeAt = useRef(0);
     const retries = useRef(0);
 
@@ -64,23 +65,14 @@ export default function SecureVideo({ lessonId, autoPlay = false, onStart, onEnd
         loadSource();
     }, [loadSource]);
 
-    function handlePlaybackError() {
+    function handlePlaybackError(time) {
         if (retries.current >= MAX_REFRESH_RETRIES) {
             setError('پخش ویدیو با مشکل مواجه شد. صفحه را رفرش کنید.');
             return;
         }
         retries.current += 1;
-        resumeAt.current = videoRef.current?.currentTime || 0;
+        resumeAt.current = time || 0;
         loadSource();
-    }
-
-    function handleLoadedMetadata() {
-        const video = videoRef.current;
-        if (video && resumeAt.current > 0) {
-            video.currentTime = resumeAt.current;
-            resumeAt.current = 0;
-            video.play().catch(() => {});
-        }
     }
 
     if (loading) {
@@ -102,7 +94,7 @@ export default function SecureVideo({ lessonId, autoPlay = false, onStart, onEnd
         );
     }
 
-    if (source.external) {
+    if (source.external && !DIRECT_FILE.test(source.url)) {
         const aparatUrl = getAparatEmbedUrl(source.url);
         if (aparatUrl) {
             return (
@@ -130,25 +122,22 @@ export default function SecureVideo({ lessonId, autoPlay = false, onStart, onEnd
         );
     }
 
+    // Uploaded videos and direct .mp4/.webm links: our own player.
     return (
-        <video
-            ref={videoRef}
+        <LessonPlayer
             key={source.url}
             src={source.url}
-            className={`h-full w-full bg-black ${className}`}
-            controls
-            playsInline
+            storageKey={`lesson:${lessonId}`}
             autoPlay={autoPlay}
-            preload="metadata"
-            controlsList="nodownload"
-            onContextMenu={(event) => event.preventDefault()}
-            onLoadedMetadata={handleLoadedMetadata}
-            onPlay={() => onStart?.()}
+            startAt={resumeAt.current}
+            onStart={onStart}
+            onEnded={onEnded}
             onPlaying={() => {
                 retries.current = 0;
+                resumeAt.current = 0;
             }}
-            onEnded={() => onEnded?.()}
-            onError={handlePlaybackError}
+            onFatalError={handlePlaybackError}
+            className={className}
         />
     );
 }

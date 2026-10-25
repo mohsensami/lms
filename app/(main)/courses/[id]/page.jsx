@@ -11,11 +11,12 @@ import MoneyBack from '@/components/money-back';
 import { getLoggedInUser } from '@/lib/loggedin-user';
 import { hasEnrollmentForCourse } from '@/queries/enrollments';
 import { buildCourseMetadata, buildCourseJsonLd } from '@/lib/seo';
+import { getSiteName } from '@/lib/site-settings';
 
 export async function generateMetadata({ params }) {
     const { id } = await params;
     const course = await getCourseDetails(id);
-    return buildCourseMetadata(course);
+    return buildCourseMetadata(course, await getSiteName());
 }
 
 const SingleCoursePage = async ({ params }) => {
@@ -63,7 +64,7 @@ const SingleCoursePage = async ({ params }) => {
         })),
     );
 
-    const jsonLd = buildCourseJsonLd(course);
+    const jsonLd = buildCourseJsonLd(course, await getSiteName());
 
     return (
         <>

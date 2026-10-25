@@ -8,7 +8,7 @@ import Logo from './logo';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
-const MobileNav = ({ items, open, onOpenChange }) => {
+const MobileNav = ({ items, logoUrl, siteName, open, onOpenChange }) => {
     const { data: session } = useSession();
     const [loginSession, setLoginSession] = useState(null);
 
@@ -21,7 +21,7 @@ const MobileNav = ({ items, open, onOpenChange }) => {
             <SheetContent side="right" className="flex w-3/4 flex-col gap-6 sm:max-w-sm">
                 <SheetHeader>
                     <SheetTitle>
-                        <Logo className="max-w-[140px]" />
+                        <Logo className="max-w-[140px]" logoUrl={logoUrl} siteName={siteName} />
                     </SheetTitle>
                 </SheetHeader>
 

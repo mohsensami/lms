@@ -68,6 +68,27 @@ export const ourFileRouter = {
             return { url: file.ufsUrl ?? file.url, name: file.name };
         }),
 
+    // Site images (logo, favicon, hero/about pictures) edited in Settings. Admin only.
+    siteImageUploader: f({
+        image: { maxFileSize: '4MB', maxFileCount: 1 },
+    })
+        .middleware(async () => {
+            const loggedinUser = await getLoggedInUser();
+
+            if (!loggedinUser) {
+                throw new UploadThingError('شما وارد حساب کاربری خود نشده‌اید.');
+            }
+
+            if (loggedinUser.role !== 'admin') {
+                throw new UploadThingError('فقط مدیران می‌توانند تصویر سایت را تغییر دهند.');
+            }
+
+            return { userId: loggedinUser.id };
+        })
+        .onUploadComplete(async ({ file }) => {
+            return { url: file.ufsUrl ?? file.url };
+        }),
+
     // Lesson videos when the admin picked UploadThing as the video storage.
     // Admin only. The finished file is attached to the lesson through
     // /api/admin/video-upload/complete.

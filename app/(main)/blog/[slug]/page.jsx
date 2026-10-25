@@ -5,6 +5,7 @@ import { CalendarDays, Clock, ArrowRight, Newspaper, MessageCircle } from 'lucid
 import { getPostBySlug } from '@/queries/posts';
 import { getApprovedCommentsForPost, getApprovedCommentCountForPost } from '@/queries/postComments';
 import { buildPostMetadata, buildPostJsonLd } from '@/lib/seo';
+import { getSiteName } from '@/lib/site-settings';
 import { getPostReadTime } from '@/lib/post-content';
 import { isPostLive, getPostState, POST_STATE_LABEL } from '@/lib/post-status';
 import { renderPostContent } from '@/lib/sanitize-post-html';
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }) {
     if (post && !isPostLive(post)) {
         return { title: 'پیش‌نمایش مقاله', robots: { index: false, follow: false } };
     }
-    return buildPostMetadata(post);
+    return buildPostMetadata(post, await getSiteName());
 }
 
 const BlogPostPage = async ({ params }) => {
@@ -53,7 +54,7 @@ const BlogPostPage = async ({ params }) => {
         ? new Date(post.publishedAt || post.createdAt).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })
         : '';
     const authorName = post?.author ? `${post.author.firstName || ''} ${post.author.lastName || ''}`.trim() : null;
-    const jsonLd = buildPostJsonLd(post);
+    const jsonLd = buildPostJsonLd(post, await getSiteName());
     const canReply = loggedInUser?.role === 'admin';
 
     return (

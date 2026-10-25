@@ -5,6 +5,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import StorageSettingsForm from './_components/storage-settings-form';
 import ThemeSettingsForm from './_components/theme-settings-form';
 import PaymentSettingsForm from './_components/payment-settings-form';
+import SiteSectionForm from './_components/site-section-form';
+import { SITE_FORMS } from './_components/site-sections-config';
+import { getSiteSettings } from '@/lib/site-settings';
 import { GATEWAYS, getMissingGatewayEnv } from '@/lib/payments/gateways';
 import { getSelectedGatewayIds } from '@/lib/payments/settings';
 import { BALE_TEST_PROVIDER_TOKEN, getBaleMode } from '@/lib/payments/bale';
@@ -14,11 +17,24 @@ export const dynamic = 'force-dynamic';
 const SettingsPage = async () => {
     await requireRole('admin');
 
-    const [activeProvider, primaryColor, selectedGateways] = await Promise.all([
+    const [activeProvider, primaryColor, selectedGateways, site] = await Promise.all([
         getActiveProviderId(),
         getPrimaryColor(),
         getSelectedGatewayIds(),
+        getSiteSettings(),
     ]);
+
+    // One settings form per content section (see site-sections-config.js).
+    const form = (section) => (
+        <SiteSectionForm
+            key={section}
+            section={section}
+            title={SITE_FORMS[section].title}
+            description={SITE_FORMS[section].description}
+            fields={SITE_FORMS[section].fields}
+            initial={site[section]}
+        />
+    );
 
     // Names of missing env variables only — never their values.
     const gateways = Object.values(GATEWAYS).map((gateway) => {
@@ -50,14 +66,42 @@ const SettingsPage = async () => {
     return (
         <div className="p-6">
             <h4 className="mb-1 text-xl font-bold text-foreground">تنظیمات سایت</h4>
-            <p className="mb-6 text-sm text-muted-foreground">ظاهر سایت، درگاه‌های پرداخت و محل ذخیره‌ی ویدیوها را مدیریت کنید.</p>
+            <p className="mb-6 text-sm text-muted-foreground">نام و محتوای سایت، رنگ، درگاه‌های پرداخت و محل ذخیره‌ی ویدیوها را از اینجا مدیریت کنید.</p>
 
-            <Tabs defaultValue="appearance">
-                <TabsList className="mb-6">
-                    <TabsTrigger value="appearance">ظاهر سایت</TabsTrigger>
+            <Tabs defaultValue="general">
+                <TabsList className="mb-6 h-auto flex-wrap justify-start gap-1">
+                    <TabsTrigger value="general">مشخصات سایت</TabsTrigger>
+                    <TabsTrigger value="home">صفحه‌ی اصلی</TabsTrigger>
+                    <TabsTrigger value="menu">منو و فوتر</TabsTrigger>
+                    <TabsTrigger value="contact">تماس و شبکه‌ها</TabsTrigger>
+                    <TabsTrigger value="about">درباره ما</TabsTrigger>
+                    <TabsTrigger value="appearance">رنگ و ظاهر</TabsTrigger>
                     <TabsTrigger value="payments">درگاه‌های پرداخت</TabsTrigger>
                     <TabsTrigger value="storage">ذخیره‌سازی ویدیو</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="general" className="space-y-6">
+                    {form('general')}
+                </TabsContent>
+
+                <TabsContent value="home" className="space-y-6">
+                    {form('home')}
+                    {form('guarantee')}
+                </TabsContent>
+
+                <TabsContent value="menu" className="space-y-6">
+                    {form('header')}
+                    {form('footer')}
+                </TabsContent>
+
+                <TabsContent value="contact" className="space-y-6">
+                    {form('contact')}
+                    {form('social')}
+                </TabsContent>
+
+                <TabsContent value="about" className="space-y-6">
+                    {form('about')}
+                </TabsContent>
 
                 <TabsContent value="appearance">
                     <ThemeSettingsForm savedColor={primaryColor} />

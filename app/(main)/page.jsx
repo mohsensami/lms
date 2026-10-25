@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { ArrowLeftIcon } from 'lucide-react';
 
 import FullWidthCourseCard from './courses/_components/FullWidthCourseCard';
+import { getSiteSettings } from '@/lib/site-settings';
 
 // Re-check every minute so scheduled posts show up once their time arrives.
 export const revalidate = 60;
@@ -18,7 +19,8 @@ export const revalidate = 60;
 const HomePage = async () => {
     const courses = await getCourseList();
     const categories = await getCategories();
-    const latestPosts = (await getPublishedPostList()).slice(0, 5);
+    const { home } = await getSiteSettings();
+    const latestPosts = home.showPosts ? (await getPublishedPostList()).slice(0, 5) : [];
     // console.log(cat);
 
     return (
@@ -27,7 +29,7 @@ const HomePage = async () => {
             {/* Courses */}
             <section id="courses" className="container space-y-8 py-12 md:py-16 lg:py-20">
                 <div className="flex items-center justify-between">
-                    <SectionTitle>دوره‌ها</SectionTitle>
+                    <SectionTitle>{home.coursesTitle}</SectionTitle>
                     {/* <Link
                         href={'/courses'}
                         className="flex items-center gap-1 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground/80 transition hover:border-primary hover:text-primary"
@@ -50,7 +52,7 @@ const HomePage = async () => {
             {latestPosts.length > 0 && (
                 <section id="latest-articles" className="container space-y-8 py-12 md:py-16 lg:py-20">
                     <div className="flex items-center justify-between">
-                        <SectionTitle>آخرین مقالات</SectionTitle>
+                        <SectionTitle>{home.postsTitle}</SectionTitle>
                         <Link
                             href="/blog"
                             className="flex items-center gap-1 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground/80 transition hover:border-primary hover:text-primary"

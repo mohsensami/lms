@@ -8,6 +8,7 @@ import { DirectionProvider } from '@/components/providers/direction-provider';
 import localFont from 'next/font/local';
 import { SITE_URL } from '@/lib/seo';
 import { getPrimaryColor } from '@/lib/site-theme';
+import { getSiteSettings } from '@/lib/site-settings';
 import { buildThemeCss, DEFAULT_PRIMARY } from '@/lib/theme';
 
 // const geistSans = localFont({
@@ -21,14 +22,35 @@ import { buildThemeCss, DEFAULT_PRIMARY } from '@/lib/theme';
 //   weight: "100 900",
 // });
 
-export const metadata = {
-    metadataBase: new URL(SITE_URL),
-    title: {
-        default: 'آکادمی آموزشی - آموزش متلب',
-        template: '%s | آکادمی آموزشی',
-    },
-    description: 'بهترین آموزشگاه',
-};
+// Name, description, icon and share image come from Settings -> site info.
+export async function generateMetadata() {
+    const { general } = await getSiteSettings();
+    const defaultTitle = general.tagline ? `${general.name} - ${general.tagline}` : general.name;
+
+    return {
+        metadataBase: new URL(SITE_URL),
+        applicationName: general.name,
+        title: {
+            default: defaultTitle,
+            template: `%s | ${general.name}`,
+        },
+        description: general.description,
+        ...(general.keywords ? { keywords: general.keywords.split(/[,،]/).map((k) => k.trim()).filter(Boolean) } : {}),
+        icons: { icon: general.faviconUrl || '/favicon.ico', apple: general.faviconUrl || undefined },
+        openGraph: {
+            siteName: general.name,
+            title: defaultTitle,
+            description: general.description,
+            type: 'website',
+            locale: 'fa_IR',
+            ...(general.ogImageUrl ? { images: [{ url: general.ogImageUrl }] } : {}),
+        },
+        twitter: {
+            card: general.ogImageUrl ? 'summary_large_image' : 'summary',
+            ...(general.ogImageUrl ? { images: [general.ogImageUrl] } : {}),
+        },
+    };
+}
 
 // const poppins = Inter({ subsets: ["latin"], variable: "--font-poppins" });
 

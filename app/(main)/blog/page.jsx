@@ -6,12 +6,15 @@ import { getPublishedPostList } from '@/queries/posts';
 import { getPublicPostCategories } from '@/queries/post-categories';
 import { cn } from '@/lib/utils';
 import { getPostExcerpt, getPostReadTime } from '@/lib/post-content';
-import { SITE_NAME } from '@/lib/seo';
+import { getSiteName } from '@/lib/site-settings';
 
-export const metadata = {
-    title: 'وبلاگ',
-    description: `آخرین مقالات و آموزش‌های ${SITE_NAME} در زمینه‌ی برنامه‌نویسی و طراحی.`,
-};
+export async function generateMetadata() {
+    const siteName = await getSiteName();
+    return {
+        title: 'وبلاگ',
+        description: `آخرین مقالات و آموزش‌های ${siteName}.`,
+    };
+}
 
 // Re-check every minute so scheduled posts show up once their time arrives.
 export const revalidate = 60;

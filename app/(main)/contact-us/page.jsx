@@ -4,48 +4,38 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Mail, MapPin, Phone, Send, Instagram, MessageCircle } from 'lucide-react';
+import { getSiteSettings } from '@/lib/site-settings';
+import { toTelHref } from '@/lib/site-defaults';
 
-const contactDetails = [
-    {
-        icon: Phone,
-        title: 'شماره تماس',
-        value: '۰۲۱-۱۲۳۴۵۶۷۸',
-        href: 'tel:02112345678',
-    },
-    {
-        icon: Mail,
-        title: 'ایمیل',
-        value: 'support@example.com',
-        href: 'mailto:support@example.com',
-    },
-    {
-        icon: MapPin,
-        title: 'آدرس',
-        value: 'تهران، خیابان ولیعصر، پلاک ۱۲۰',
-        href: '#',
-    },
-];
+const ContactPage = async () => {
+    const { contact, social } = await getSiteSettings();
 
-const ContactPage = () => {
+    // Only the contact methods the admin filled in are shown.
+    const contactDetails = [
+        contact.phone && { icon: Phone, title: 'شماره تماس', value: contact.phone, href: toTelHref(contact.phone) || '#' },
+        contact.email && { icon: Mail, title: 'ایمیل', value: contact.email, href: `mailto:${contact.email}` },
+        contact.address && { icon: MapPin, title: 'آدرس', value: contact.address, href: contact.mapUrl || '#' },
+    ].filter(Boolean);
+    const chatUrl = contact.chatUrl || social.instagram;
+
     return (
         <div className="bg-gradient-to-b from-primary/[0.06] to-transparent">
             <section className="container py-14 md:py-20">
                 {/* Header */}
                 <div className="mx-auto mb-14 max-w-2xl text-center">
-                    <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
-                        در تماس باشید
-                    </span>
+                    {contact.badge && (
+                        <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
+                            {contact.badge}
+                        </span>
+                    )}
                     <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                        چطور می‌تونیم کمکتون کنیم؟
+                        {contact.title}
                     </h1>
-                    <p className="mt-4 leading-8 text-muted-foreground">
-                        سوالی دارید، پیشنهادی دارید یا نیاز به پشتیبانی دارید؟ فرم زیر رو پر کنید یا از راه‌های زیر
-                        مستقیم با ما در ارتباط باشید. معمولاً کمتر از ۲۴ ساعت پاسخ می‌دیم.
-                    </p>
+                    <p className="mt-4 leading-8 text-muted-foreground">{contact.intro}</p>
                 </div>
 
                 {/* Contact info cards */}
-                <div className="mx-auto mb-12 grid max-w-4xl gap-5 sm:grid-cols-3">
+                <div className="mx-auto mb-12 grid max-w-4xl gap-5 sm:grid-cols-3 empty:hidden">
                     {contactDetails.map(({ icon: Icon, title, value, href }) => (
                         <a
                             key={title}
@@ -115,37 +105,38 @@ const ContactPage = () => {
                     </Card>
 
                     <div className="flex flex-col gap-6">
-                        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-                            <h3 className="mb-4 text-lg font-bold text-foreground">ساعات پاسخگویی</h3>
-                            <ul className="space-y-3 text-sm text-muted-foreground">
-                                <li className="flex items-center justify-between border-b border-border pb-3">
-                                    <span>شنبه تا چهارشنبه</span>
-                                    <span className="font-semibold text-foreground">۹ الی ۱۸</span>
-                                </li>
-                                <li className="flex items-center justify-between border-b border-border pb-3">
-                                    <span>پنجشنبه</span>
-                                    <span className="font-semibold text-foreground">۹ الی ۱۳</span>
-                                </li>
-                                <li className="flex items-center justify-between">
-                                    <span>جمعه و تعطیلات</span>
-                                    <span className="font-semibold text-foreground">تعطیل</span>
-                                </li>
-                            </ul>
-                        </div>
+                        {contact.hours.length > 0 && (
+                            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                                <h3 className="mb-4 text-lg font-bold text-foreground">{contact.hoursTitle}</h3>
+                                <ul className="space-y-3 text-sm text-muted-foreground">
+                                    {contact.hours.map((row, index) => (
+                                        <li
+                                            key={`${row.label}-${index}`}
+                                            className="flex items-center justify-between border-b border-border pb-3 last:border-0 last:pb-0"
+                                        >
+                                            <span>{row.label}</span>
+                                            <span className="font-semibold text-foreground">{row.value}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
                         <div className="rounded-2xl bg-primary p-6 text-primary-foreground shadow-lg shadow-primary/25">
                             <MessageCircle className="mb-3 h-6 w-6" />
-                            <h3 className="mb-2 text-lg font-bold">چت آنلاین</h3>
-                            <p className="mb-5 text-sm text-primary-foreground/80">
-                                برای پاسخ سریع‌تر می‌تونید از طریق پیج اینستاگرام هم پیام بدید.
-                            </p>
-                            <a
-                                href="#"
-                                className="inline-flex items-center gap-2 rounded-full bg-background/15 px-4 py-2 text-sm font-semibold backdrop-blur transition hover:bg-background/25"
-                            >
-                                <Instagram className="h-4 w-4" />
-                                پیج اینستاگرام ما
-                            </a>
+                            <h3 className="mb-2 text-lg font-bold">{contact.chatTitle}</h3>
+                            <p className="mb-5 text-sm text-primary-foreground/80">{contact.chatText}</p>
+                            {chatUrl && (
+                                <a
+                                    href={chatUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-full bg-background/15 px-4 py-2 text-sm font-semibold backdrop-blur transition hover:bg-background/25"
+                                >
+                                    <Instagram className="h-4 w-4" />
+                                    {contact.chatButton}
+                                </a>
+                            )}
                         </div>
                     </div>
                 </div>

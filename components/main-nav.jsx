@@ -28,7 +28,7 @@ const roleMenus = {
     ],
 };
 
-const MainNav = ({ items, children }) => {
+const MainNav = ({ items, logoUrl, siteName, children }) => {
     const { data: session } = useSession();
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [loginSession, setLoginSession] = useState(null);
@@ -56,7 +56,7 @@ const MainNav = ({ items, children }) => {
         <>
             <div className="flex gap-6 lg:gap-10">
                 <Link href="/">
-                    <Logo />
+                    <Logo logoUrl={logoUrl} siteName={siteName} />
                 </Link>
                 {items?.length ? (
                     <nav className="hidden gap-6 lg:flex">
@@ -75,7 +75,13 @@ const MainNav = ({ items, children }) => {
                 ) : null}
             </div>
 
-            {items && <MobileNav items={items} open={showMobileMenu} onOpenChange={setShowMobileMenu} />}
+            {items && <MobileNav
+                    items={items}
+                    logoUrl={logoUrl}
+                    siteName={siteName}
+                    open={showMobileMenu}
+                    onOpenChange={setShowMobileMenu}
+                />}
 
             <nav className="flex items-center gap-3">
                 {!loginSession && (

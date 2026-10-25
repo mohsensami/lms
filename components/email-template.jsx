@@ -1,4 +1,4 @@
-export const EmailTemplate = ({ message }) => {
+export const EmailTemplate = ({ message, siteName = "آکادمی آموزشی", supportEmail = "support@example.com" }) => {
   return (
     <div
       style={{
@@ -29,7 +29,7 @@ export const EmailTemplate = ({ message }) => {
               textAlign: "center",
             }}
           >
-            آکادمی آموزشی
+            {siteName}
           </h1>
         </div>
         <div style={{ padding: "20px" }}>
@@ -57,9 +57,9 @@ export const EmailTemplate = ({ message }) => {
               color: "#777",
             }}
           >
-            این ایمیل از طرف آکادمی آموزشی ارسال شده است. در صورت داشتن هر پرسشی
+            این ایمیل از طرف {siteName} ارسال شده است. در صورت داشتن هر پرسشی
             می‌توانید{" "}
-            <a href="mailto:support@example.com" style={{ color: "#007BFF" }}>
+            <a href={`mailto:${supportEmail}`} style={{ color: "#007BFF" }}>
               با ما تماس بگیرید
             </a>
             .

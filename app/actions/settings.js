@@ -5,6 +5,8 @@ import { DEFAULT_PRIMARY, normalizeHex } from "@/lib/theme";
 import { GATEWAYS, getMissingGatewayEnv, isKnownGateway } from "@/lib/payments/gateways";
 import { BALE_TEST_PROVIDER_TOKEN, baleApi } from "@/lib/payments/bale";
 import { SITE_URL } from "@/lib/seo";
+import { SITE_SECTIONS, sanitizeSiteSection } from "@/lib/site-defaults";
+import { getSetting } from "@/lib/settings";
 import { assertAdmin } from "@/lib/admin-guard";
 import { setSetting } from "@/lib/settings";
 import {
@@ -231,5 +233,49 @@ export async function registerBaleWebhook() {
     return { ok: true, message: `وب‌هوک بله ${registered}: ${SITE_URL}/api/bale/webhook/••••••` };
   } catch (error) {
     return { ok: false, message: `ثبت وب‌هوک ناموفق بود: ${error?.message || "خطای ناشناخته"}` };
+  }
+}
+
+// ---------------------------------------------------------------- site info
+
+// Saves ONE section of the site content (general, footer, contact, ...).
+export async function saveSiteSection(section, values) {
+  try {
+    await assertAdmin();
+
+    if (!SITE_SECTIONS.includes(section)) {
+      return { ok: false, message: "بخش نامعتبر است." };
+    }
+
+    const clean = sanitizeSiteSection(section, values);
+    const stored = (await getSetting("site")) || {};
+    await setSetting("site", { ...stored, [section]: clean });
+
+    revalidatePath("/", "layout");
+    return { ok: true, message: "تغییرات ذخیره شد.", values: clean };
+  } catch (error) {
+    console.error("saveSiteSection error:", error);
+    return { ok: false, message: "ذخیره‌ی تغییرات با مشکل مواجه شد." };
+  }
+}
+
+// Puts a section back to the built-in defaults.
+export async function resetSiteSection(section) {
+  try {
+    await assertAdmin();
+
+    if (!SITE_SECTIONS.includes(section)) {
+      return { ok: false, message: "بخش نامعتبر است." };
+    }
+
+    const stored = (await getSetting("site")) || {};
+    const { [section]: _removed, ...rest } = stored;
+    await setSetting("site", rest);
+
+    revalidatePath("/", "layout");
+    return { ok: true, message: "به حالت پیش‌فرض برگشت.", values: sanitizeSiteSection(section, {}) };
+  } catch (error) {
+    console.error("resetSiteSection error:", error);
+    return { ok: false, message: "بازگردانی با مشکل مواجه شد." };
   }
 }

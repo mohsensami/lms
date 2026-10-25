@@ -1,52 +1,30 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import { getSiteSettings } from '@/lib/site-settings';
 import { Award, BookOpen, GraduationCap, Heart, Rocket, ShieldCheck, Sparkles, UsersRound } from 'lucide-react';
 
-const stats = [
-    { icon: UsersRound, label: 'دانشجو', value: '۱۲,۰۰۰+' },
-    { icon: BookOpen, label: 'دوره آموزشی', value: '۸۰+' },
-    { icon: GraduationCap, label: 'مدرس متخصص', value: '۲۵+' },
-    { icon: Award, label: 'سال تجربه', value: '۹+' },
-];
+const STAT_ICONS = [UsersRound, BookOpen, GraduationCap, Award];
+const VALUE_ICONS = [Rocket, ShieldCheck, Heart, Sparkles];
 
-const values = [
-    {
-        icon: Rocket,
-        title: 'یادگیری عملی و پروژه‌محور',
-        desc: 'دوره‌ها با تمرکز روی پروژه‌های واقعی طراحی شدن تا مهارت واقعی بگیرید، نه فقط تئوری.',
-    },
-    {
-        icon: ShieldCheck,
-        title: 'کیفیت تضمین‌شده',
-        desc: 'محتوای هر دوره قبل از انتشار چندین بار بازبینی و به‌روزرسانی می‌شه.',
-    },
-    {
-        icon: Heart,
-        title: 'پشتیبانی همیشگی',
-        desc: 'تیم پشتیبانی و مدرسین همیشه برای پاسخ به سوالات شما در دسترس هستن.',
-    },
-    {
-        icon: Sparkles,
-        title: 'مسیر شغلی مشخص',
-        desc: 'هر دوره بخشی از یک مسیر یادگیری بزرگ‌تره که شما رو به یه هدف شغلی می‌رسونه.',
-    },
-];
+const AboutPage = async () => {
+    const { about } = await getSiteSettings();
+    const stats = about.stats.map((stat, index) => ({ ...stat, icon: STAT_ICONS[index % STAT_ICONS.length] }));
+    const values = about.values.map((value, index) => ({ ...value, icon: VALUE_ICONS[index % VALUE_ICONS.length] }));
 
-const AboutPage = () => {
     return (
         <div className="bg-gradient-to-b from-primary/[0.06] to-transparent">
             {/* Hero */}
             <section className="container py-14 md:py-20">
                 <div className="mx-auto max-w-2xl text-center">
-                    <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
-                        درباره ما
-                    </span>
+                    {about.badge && (
+                        <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
+                            {about.badge}
+                        </span>
+                    )}
                     <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                        یادگیری رو ساده‌تر، عملی‌تر و لذت‌بخش‌تر می‌کنیم
+                        {about.title}
                     </h1>
-                    <p className="mt-4 leading-8 text-muted-foreground">
-                        ما یه تیم کوچیک از برنامه‌نویس‌ها و مدرس‌هایی هستیم که باور داریم هرکسی می‌تونه با آموزش درست و
-                        پشتیبانی مناسب، مهارت‌های حرفه‌ای یاد بگیره و مسیر شغلی خودش رو بسازه.
-                    </p>
+                    <p className="mt-4 leading-8 text-muted-foreground">{about.intro}</p>
                 </div>
             </section>
 
@@ -67,19 +45,15 @@ const AboutPage = () => {
             <section className="container pb-16">
                 <div className="grid items-center gap-10 lg:grid-cols-2">
                     <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border shadow-sm">
-                        <Image src="https://picsum.photos/600/400" alt="داستان ما" fill className="object-cover" />
+                        {about.storyImageUrl && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={about.storyImageUrl} alt={about.storyTitle} className="absolute inset-0 h-full w-full object-cover" />
+                        )}
                     </div>
                     <div>
-                        <h2 className="text-2xl font-extrabold text-foreground">داستان ما از کجا شروع شد</h2>
-                        <p className="mt-4 leading-8 text-muted-foreground">
-                            همه‌چیز از یه سوال ساده شروع شد: چرا خیلی‌ها بعد از گذروندن چندین دوره آموزشی هنوز نمی‌تونن
-                            یه پروژه واقعی رو از صفر بسازن؟ ما تصمیم گرفتیم دوره‌هایی بسازیم که به‌جای حجم زیاد تئوری،
-                            روی ساخت پروژه‌های واقعی و کاربردی تمرکز دارن.
-                        </p>
-                        <p className="mt-4 leading-8 text-muted-foreground">
-                            امروز با کمک ده‌ها مدرس متخصص، هزاران دانشجو تونستن مهارت‌های جدید یاد بگیرن، وارد بازار کار
-                            بشن یا کسب‌وکار خودشون رو راه بندازن.
-                        </p>
+                        <h2 className="text-2xl font-extrabold text-foreground">{about.storyTitle}</h2>
+                        {about.storyP1 && <p className="mt-4 leading-8 text-muted-foreground">{about.storyP1}</p>}
+                        {about.storyP2 && <p className="mt-4 leading-8 text-muted-foreground">{about.storyP2}</p>}
                     </div>
                 </div>
             </section>
@@ -87,8 +61,8 @@ const AboutPage = () => {
             {/* Values */}
             <section className="container pb-20">
                 <div className="mb-10 text-center">
-                    <h2 className="text-2xl font-extrabold text-foreground">چرا ما رو انتخاب کنید؟</h2>
-                    <p className="mt-2 text-muted-foreground">اصولی که هیچ‌وقت ازشون عقب‌نشینی نمی‌کنیم</p>
+                    <h2 className="text-2xl font-extrabold text-foreground">{about.valuesTitle}</h2>
+                    {about.valuesSubtitle && <p className="mt-2 text-muted-foreground">{about.valuesSubtitle}</p>}
                 </div>
                 <div className="grid gap-5 sm:grid-cols-2">
                     {values.map(({ icon: Icon, title, desc }) => (
@@ -111,16 +85,16 @@ const AboutPage = () => {
             {/* CTA */}
             <section className="container pb-20">
                 <div className="flex flex-col items-center gap-5 rounded-2xl bg-primary px-6 py-12 text-center text-primary-foreground shadow-lg shadow-primary/25">
-                    <h2 className="text-2xl font-extrabold sm:text-3xl">آماده‌ای شروع کنی؟</h2>
-                    <p className="max-w-lg text-primary-foreground/80">
-                        همین حالا سری به دوره‌های ما بزن و مسیر یادگیریت رو با انتخاب دوره مناسب شروع کن.
-                    </p>
-                    <a
-                        href="/courses"
-                        className="rounded-full bg-background px-6 py-3 text-sm font-bold text-primary shadow transition hover:opacity-90"
-                    >
-                        مشاهده دوره‌ها
-                    </a>
+                    <h2 className="text-2xl font-extrabold sm:text-3xl">{about.ctaTitle}</h2>
+                    <p className="max-w-lg text-primary-foreground/80">{about.ctaText}</p>
+                    {about.ctaButton && (
+                        <Link
+                            href="/courses"
+                            className="rounded-full bg-background px-6 py-3 text-sm font-bold text-primary shadow transition hover:opacity-90"
+                        >
+                            {about.ctaButton}
+                        </Link>
+                    )}
                 </div>
             </section>
         </div>
