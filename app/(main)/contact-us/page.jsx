@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Mail, MapPin, Phone, Send, Instagram, MessageCircle } from 'lucide-react';
 import { getSiteSettings } from '@/lib/site-settings';
+import ContactForm from './contact-form';
 import { toTelHref } from '@/lib/site-defaults';
 
 const ContactPage = async () => {
@@ -58,49 +59,7 @@ const ContactPage = async () => {
                     <Card className="rounded-2xl border-border shadow-sm">
                         <CardContent className="p-6 sm:p-8">
                             <h2 className="mb-6 text-xl font-bold text-foreground">ارسال پیام</h2>
-                            <form className="grid gap-5">
-                                <div className="grid gap-5 sm:grid-cols-2">
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="name">نام و نام خانوادگی</Label>
-                                        <Input id="name" name="name" placeholder="مثلاً علی محمدی" required />
-                                    </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="email">ایمیل</Label>
-                                        <Input
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                            placeholder="you@example.com"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid gap-2">
-                                    <Label htmlFor="subject">موضوع</Label>
-                                    <Input id="subject" name="subject" placeholder="موضوع پیام شما" required />
-                                </div>
-
-                                <div className="grid gap-2">
-                                    <Label htmlFor="message">پیام</Label>
-                                    <Textarea
-                                        id="message"
-                                        name="message"
-                                        placeholder="پیام خودتون رو اینجا بنویسید..."
-                                        className="min-h-[140px]"
-                                        required
-                                    />
-                                </div>
-
-                                <Button
-                                    type="submit"
-                                    size="lg"
-                                    className="mt-2 w-full gap-2 rounded-xl font-bold shadow-lg shadow-primary/25"
-                                >
-                                    ارسال پیام
-                                    <Send className="h-4 w-4" />
-                                </Button>
-                            </form>
+                            <ContactForm />
                         </CardContent>
                     </Card>
 

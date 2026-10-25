@@ -7,6 +7,7 @@ import { BALE_TEST_PROVIDER_TOKEN, baleApi } from "@/lib/payments/bale";
 import { SITE_URL } from "@/lib/seo";
 import { SITE_SECTIONS, sanitizeSiteSection } from "@/lib/site-defaults";
 import { getSetting } from "@/lib/settings";
+import { sendTestEmail } from "@/lib/email/notify";
 import { assertAdmin } from "@/lib/admin-guard";
 import { setSetting } from "@/lib/settings";
 import {
@@ -277,5 +278,24 @@ export async function resetSiteSection(section) {
   } catch (error) {
     console.error("resetSiteSection error:", error);
     return { ok: false, message: "بازگردانی با مشکل مواجه شد." };
+  }
+}
+
+export async function sendTestEmailAction(to) {
+  try {
+    await assertAdmin();
+
+    const address = String(to || "").trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
+      return { ok: false, message: "آدرس ایمیل معتبر نیست." };
+    }
+
+    const result = await sendTestEmail(address);
+    return result.ok
+      ? { ok: true, message: `ایمیل آزمایشی به ${address} ارسال شد. صندوق ورودی و اسپم را چک کنید.` }
+      : { ok: false, message: result.error || "ارسال ایمیل ناموفق بود." };
+  } catch (error) {
+    console.error("sendTestEmailAction error:", error);
+    return { ok: false, message: "ارسال ایمیل ناموفق بود." };
   }
 }

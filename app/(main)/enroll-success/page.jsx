@@ -109,6 +109,7 @@ async function ZarinpalResult({ Authority, Status, courseId, user }) {
   const chargedPrice = existingOrder?.amount ?? getEffectivePrice(course);
   const amount = Math.round(Number(chargedPrice) * 10); // IRR
   let paymentSuccess = existingOrder?.status === "paid";
+  let refId = existingOrder?.refId;
 
   // Only hit Zarinpal's verification endpoint (and mutate the order) the
   // first time this callback is reached — refreshing this page shouldn't
@@ -122,6 +123,7 @@ async function ZarinpalResult({ Authority, Status, courseId, user }) {
 
       if (verify.status === 100 || verify.status === 101) {
         paymentSuccess = true;
+        refId = verify.RefID;
         await markOrderPaid(Authority, verify.RefID);
       } else {
         await markOrderFailed(Authority);
@@ -141,6 +143,8 @@ async function ZarinpalResult({ Authority, Status, courseId, user }) {
       customerName,
       customerEmail: user.email,
       method: "zarinpal",
+      amountToman: chargedPrice,
+      refId,
     });
   }
 

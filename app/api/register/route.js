@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { sendWelcomeEmail } from "@/lib/email/notify";
 
 const PHONE_REGEX = /^09\d{9}$/;
 
@@ -48,6 +49,9 @@ export const POST = async (request) => {
 
   try {
     await prisma.user.create({ data: newUser });
+
+    // Welcome e-mail. Never blocks or fails the sign-up (see lib/email/send.js).
+    await sendWelcomeEmail(newUser);
     return NextResponse.json(
       { message: "حساب کاربری با موفقیت ساخته شد." },
       { status: 201 },

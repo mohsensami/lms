@@ -111,6 +111,19 @@ export const {
               profilePicture: googlePicture,
             },
           });
+
+          // Welcome e-mail for brand-new Google accounts. Loaded lazily and
+          // never allowed to break the sign-in.
+          try {
+            const { sendWelcomeEmail } = await import("@/lib/email/notify");
+            await sendWelcomeEmail({
+              firstName: firstName || "کاربر",
+              lastName: lastName || "",
+              email: user.email,
+            });
+          } catch (error) {
+            console.error("Welcome e-mail failed:", error?.message);
+          }
         } else if (existingUser.isActive === false) {
           console.error("Deactivated account tried to log in via Google:", user.email);
           return false;

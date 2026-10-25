@@ -9,6 +9,7 @@ import Menu from "./account-menu";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getUserByEmail } from "@/queries/users";
+import { prisma } from "@/lib/prisma";
 
 const AccountSidebar = async () => {
   const session = await auth();
@@ -17,6 +18,12 @@ const AccountSidebar = async () => {
   }
 
   const loggedInUser = await getUserByEmail(session?.user?.email);
+
+  // Admins see how many contact messages are still unread next to the menu item.
+  const unreadMessages =
+    loggedInUser?.role === "admin"
+      ? await prisma.contactMessage.count({ where: { status: "new" } }).catch(() => 0)
+      : 0;
   // console.log(loggedInUser);
 
   return (
@@ -39,7 +46,7 @@ const AccountSidebar = async () => {
   </div>
 </div>
           <div className="border-t border-border pt-2">
-            <Menu role={loggedInUser?.role} />
+            <Menu role={loggedInUser?.role} unreadMessages={unreadMessages} />
           </div>
         </div>
       </div>

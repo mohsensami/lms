@@ -349,3 +349,17 @@ model SiteSetting {
   value     Json
   updatedAt DateTime @updatedAt
 }
+
+// Messages sent from the public "تماس با ما" form. Managed by admins in
+// the dashboard (Messages): read / unread / delete.
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    String   @default("new") // new | read
+  createdAt DateTime @default(now())
+
+  @@index([status, createdAt])
+}

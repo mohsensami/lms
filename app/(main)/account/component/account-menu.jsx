@@ -24,10 +24,11 @@ const adminMenu = [
   { label: "آزمون‌ساز", href: "/account/quiz-sets" },
   { label: "درخواست‌های مدرک", href: "/account/certificate-requests" },
   { label: "فاکتورها", href: "/account/Order" },
+  { label: "پیام‌ها", href: "/account/messages", badgeKey: "unreadMessages" },
   { label: "تنظیمات", href: "/account/settings" },
 ];
 
-function Menu({ role }) {
+function Menu({ role, unreadMessages = 0 }) {
   const pathname = usePathname();
 
   let menu = studentMenu;
@@ -46,6 +47,11 @@ function Menu({ role }) {
             }`}
           >
             <h6 className="mb-0">{item?.label}</h6>
+            {item?.badgeKey === "unreadMessages" && unreadMessages > 0 && (
+              <span className="me-auto ms-2 inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-bold text-primary-foreground">
+                {unreadMessages.toLocaleString("fa-IR")}
+              </span>
+            )}
           </Link>
         </li>
       ))}

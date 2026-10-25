@@ -68,6 +68,32 @@ export const SITE_FORMS = {
         ],
     },
 
+    email: {
+        title: 'متن و تنظیمات ایمیل‌ها',
+        description:
+            'در متن‌ها می‌توانید از {siteName} (نام سایت)، {courseTitle} (نام دوره؛ فقط در ایمیل خرید) استفاده کنید. ایمیل خرید همیشه شامل فاکتور و لینک تمام درس‌های دوره است.',
+        fields: [
+            { name: 'welcomeEnabled', label: 'ارسال ایمیل خوش‌آمد بعد از ثبت‌نام', type: 'switch' },
+            { name: 'welcomeSubject', label: 'عنوان ایمیل خوش‌آمد', type: 'text' },
+            { name: 'welcomeText', label: 'متن ایمیل خوش‌آمد', type: 'textarea' },
+            { name: 'contactEnabled', label: 'ارسال ایمیل تأیید بعد از پیام «تماس با ما»', type: 'switch' },
+            { name: 'contactSubject', label: 'عنوان ایمیل تأیید پیام', type: 'text' },
+            { name: 'contactText', label: 'متن ایمیل تأیید پیام', type: 'textarea' },
+            { name: 'purchaseEnabled', label: 'ارسال ایمیل بعد از خرید دوره', type: 'switch' },
+            { name: 'purchaseSubject', label: 'عنوان ایمیل خرید', type: 'text' },
+            { name: 'purchaseText', label: 'متن ایمیل خرید', type: 'textarea' },
+            { name: 'signature', label: 'امضای پایان ایمیل‌ها', type: 'text' },
+            { name: 'adminNotifyEnabled', label: 'پیام جدید تماس با ما را برای مدیر هم ایمیل کن', type: 'switch' },
+            {
+                name: 'adminEmail',
+                label: 'ایمیل مدیر (گیرنده‌ی اعلان پیام‌ها)',
+                type: 'text',
+                dir: 'ltr',
+                hint: 'اگر خالی باشد از متغیر ADMIN_NOTIFY_EMAIL در env استفاده می‌شود.',
+            },
+        ],
+    },
+
     guarantee: {
         title: 'ضمانت بازگشت وجه',
         description: 'بخشی که پایین صفحه‌ی هر دوره نمایش داده می‌شود.',

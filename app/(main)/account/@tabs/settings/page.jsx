@@ -6,6 +6,9 @@ import StorageSettingsForm from './_components/storage-settings-form';
 import ThemeSettingsForm from './_components/theme-settings-form';
 import PaymentSettingsForm from './_components/payment-settings-form';
 import SiteSectionForm from './_components/site-section-form';
+import EmailTestCard from './_components/email-test-card';
+import { isEmailConfigured } from '@/lib/email/send';
+import { getLoggedInUser } from '@/lib/loggedin-user';
 import { SITE_FORMS } from './_components/site-sections-config';
 import { getSiteSettings } from '@/lib/site-settings';
 import { GATEWAYS, getMissingGatewayEnv } from '@/lib/payments/gateways';
@@ -16,6 +19,7 @@ export const dynamic = 'force-dynamic';
 
 const SettingsPage = async () => {
     await requireRole('admin');
+    const me = await getLoggedInUser();
 
     const [activeProvider, primaryColor, selectedGateways, site] = await Promise.all([
         getActiveProviderId(),
@@ -75,6 +79,7 @@ const SettingsPage = async () => {
                     <TabsTrigger value="menu">منو و فوتر</TabsTrigger>
                     <TabsTrigger value="contact">تماس و شبکه‌ها</TabsTrigger>
                     <TabsTrigger value="about">درباره ما</TabsTrigger>
+                    <TabsTrigger value="emails">ایمیل‌ها</TabsTrigger>
                     <TabsTrigger value="appearance">رنگ و ظاهر</TabsTrigger>
                     <TabsTrigger value="payments">درگاه‌های پرداخت</TabsTrigger>
                     <TabsTrigger value="storage">ذخیره‌سازی ویدیو</TabsTrigger>
@@ -101,6 +106,15 @@ const SettingsPage = async () => {
 
                 <TabsContent value="about" className="space-y-6">
                     {form('about')}
+                </TabsContent>
+
+                <TabsContent value="emails" className="space-y-6">
+                    <EmailTestCard
+                        configured={isEmailConfigured()}
+                        hasFrom={Boolean(process.env.EMAIL_FROM)}
+                        defaultTo={me?.email}
+                    />
+                    {form('email')}
                 </TabsContent>
 
                 <TabsContent value="appearance">
