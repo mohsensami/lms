@@ -32,7 +32,7 @@ export default async function HeroSection() {
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <Link
                                 href={home.buttonHref || '/courses'}
-                                className="rounded-xl bg-primary px-6 py-3 text-center font-medium text-primary-foreground transition hover:bg-primary/90"
+                                className="ui-btn rounded-[8px] bg-primary px-6 py-3 text-center font-medium text-primary-foreground transition hover:bg-primary/90"
                             >
                                 {home.buttonText}
                             </Link>

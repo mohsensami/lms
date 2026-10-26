@@ -10,6 +10,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getUserByEmail } from "@/queries/users";
 import { prisma } from "@/lib/prisma";
+import { countTicketsNeedingAttention } from "@/queries/tickets";
 
 const AccountSidebar = async () => {
   const session = await auth();
@@ -19,6 +20,12 @@ const AccountSidebar = async () => {
 
   const loggedInUser = await getUserByEmail(session?.user?.email);
 
+  // Admin: open tickets waiting for staff. Student: tickets support has answered.
+  const ticketBadge = await countTicketsNeedingAttention({
+    isAdmin: loggedInUser?.role === "admin",
+    userId: loggedInUser?.id,
+  });
+
   // Admins see how many contact messages are still unread next to the menu item.
   const unreadMessages =
     loggedInUser?.role === "admin"
@@ -27,7 +34,7 @@ const AccountSidebar = async () => {
   // console.log(loggedInUser);
 
   return (
-    <div className="lg:w-1/4 md:px-3">
+    <div className="lg:w-72 xl:w-80 lg:shrink-0">
       <div className="relative">
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
 <div className="profile-pic text-center mb-5">
@@ -46,7 +53,7 @@ const AccountSidebar = async () => {
   </div>
 </div>
           <div className="border-t border-border pt-2">
-            <Menu role={loggedInUser?.role} unreadMessages={unreadMessages} />
+            <Menu role={loggedInUser?.role} unreadMessages={unreadMessages} tickets={ticketBadge} />
           </div>
         </div>
       </div>

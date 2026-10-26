@@ -9,6 +9,8 @@ import StarRating from '@/components/start-rating';
 import CommentModerationActions from '../../component/comment-moderation-actions';
 import PostCommentModerationActions from '../../component/post-comment-moderation-actions';
 import CommentReplyBox from '../../component/comment-reply-box';
+import EmailSwitches from '../../component/email-switch';
+import { getSiteSettings } from '@/lib/site-settings';
 
 const STATUS_LABEL = {
     pending: 'در حال بررسی',
@@ -29,9 +31,25 @@ async function CommentsPage() {
     const user = await requireRole('admin');
     const isAdmin = user.role === 'admin';
 
-    const [courseComments, postComments] = await Promise.all([getAllTestimonials(), getAllPostComments()]);
+    const [courseComments, postComments, { email }] = await Promise.all([
+        getAllTestimonials(),
+        getAllPostComments(),
+        getSiteSettings(),
+    ]);
 
     return (
+        <div className="space-y-5 p-6">
+        <EmailSwitches
+            title="ایمیل پاسخ به دیدگاه‌ها"
+            items={[
+                {
+                    key: 'commentReplyEnabled',
+                    label: 'وقتی به دیدگاه کسی پاسخ می‌دهید، برای او ایمیل ارسال شود',
+                    description: 'برای دیدگاه‌های دوره‌ها و مقالات. ویرایش یک پاسخ قبلی دوباره ایمیل نمی‌فرستد.',
+                    initial: email.commentReplyEnabled,
+                },
+            ]}
+        />
         <Tabs defaultValue="courses" className="w-full">
             <TabsList>
                 <TabsTrigger value="courses">دیدگاه‌های دوره‌ها ({courseComments.length})</TabsTrigger>
@@ -119,6 +137,7 @@ async function CommentsPage() {
                 </div>
             </TabsContent>
         </Tabs>
+        </div>
     );
 }
 

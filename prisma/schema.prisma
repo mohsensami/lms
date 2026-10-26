@@ -42,6 +42,8 @@ model User {
   postsAuthored Post[]        @relation("PostAuthor")
   postComments  PostComment[]
   certificateRequests CertificateRequest[] @relation("CertificateRequestStudent")
+  tickets        Ticket[]
+  ticketMessages TicketMessage[]
 }
 
 model Category {
@@ -362,4 +364,39 @@ model ContactMessage {
   createdAt DateTime @default(now())
 
   @@index([status, createdAt])
+}
+
+// Support tickets: a student opens a ticket with a priority, admins see all
+// tickets, answer them and close them. The conversation is a list of messages.
+model Ticket {
+  id        String   @id @default(cuid())
+  number    Int      @unique @default(autoincrement()) // friendly number shown to people (#12)
+  subject   String
+  priority  String   @default("medium") // low | medium | high
+  status    String   @default("open")   // open (waiting for staff) | answered (waiting for student) | closed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  messages TicketMessage[]
+
+  @@index([status, updatedAt])
+  @@index([userId])
+}
+
+model TicketMessage {
+  id        String   @id @default(cuid())
+  body      String
+  isStaff   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  authorId String?
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([ticketId, createdAt])
 }

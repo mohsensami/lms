@@ -61,7 +61,7 @@ const EnrollCourse = ({ asLink, courseId, isLoggedIn = true }) => {
         return asLink ? (
             <Link
                 href={loginHref}
-                className="inline-flex h-8 items-center gap-1 rounded-full bg-secondary px-3 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+                className="ui-btn inline-flex h-8 items-center gap-1 rounded-[8px] bg-secondary px-3 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
             >
                 ثبت نام
                 <ArrowLeft className="w-3" />
@@ -71,7 +71,7 @@ const EnrollCourse = ({ asLink, courseId, isLoggedIn = true }) => {
                 href={loginHref}
                 className={cn(
                     buttonVariants({ size: 'lg' }),
-                    'w-full rounded-xl text-base font-bold shadow-lg shadow-primary/25',
+                    'w-full text-base font-bold shadow-lg shadow-primary/25',
                 )}
             >
                 ثبت نام در دوره
@@ -89,7 +89,7 @@ const EnrollCourse = ({ asLink, courseId, isLoggedIn = true }) => {
                     variant="secondary"
                     disabled={busy}
                     onClick={handleStart}
-                    className="h-8 gap-1 rounded-full text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+                    className="h-8 gap-1 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
                 >
                     {loading ? <Loader2 className="w-3 animate-spin" /> : null}
                     ثبت نام
@@ -102,7 +102,7 @@ const EnrollCourse = ({ asLink, courseId, isLoggedIn = true }) => {
                     onClick={handleStart}
                     className={cn(
                         buttonVariants({ size: 'lg' }),
-                        'w-full rounded-xl text-base font-bold shadow-lg shadow-primary/25',
+                        'w-full text-base font-bold shadow-lg shadow-primary/25',
                     )}
                 >
                     {loading ? <Loader2 className="ml-2 h-4 w-4 animate-spin" /> : null}

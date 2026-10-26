@@ -115,6 +115,7 @@ export default function MessagesList({ initialItems }) {
                         <li key={m.id}>
                             <button
                                 type="button"
+                                data-keep-radius
                                 onClick={() => open(m)}
                                 className={cn(
                                     'flex w-full items-start gap-3 p-4 text-start transition-colors hover:bg-muted/50',

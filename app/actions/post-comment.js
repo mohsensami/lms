@@ -12,6 +12,7 @@ import {
 import { POSTS_CACHE_TAG } from "@/queries/posts";
 import { revalidateTag } from "next/cache";
 import { isPostLive } from "@/lib/post-status";
+import { sendCommentReplyEmail } from "@/lib/email/notify";
 
 export async function createPostComment(content, postId) {
   // Always trust the logged-in session for who the author is, never a
@@ -94,8 +95,25 @@ export async function replyToPostComment(commentId, reply) {
   if (!reply?.trim()) {
     throw new Error("متن پاسخ نمی‌تواند خالی باشد");
   }
+  const existing = await prisma.postComment.findUnique({
+    where: { id: commentId },
+    include: { user: true, post: true },
+  });
+
   await setPostCommentReply(commentId, reply.trim(), user.id);
   revalidateTag(POSTS_CACHE_TAG);
+
+  // E-mail the commenter about a NEW reply (editing an old reply stays quiet),
+  // unless they are the one answering. Never blocks or fails the reply.
+  if (existing?.user && !existing.reply && existing.userId !== user.id) {
+    await sendCommentReplyEmail({
+      author: existing.user,
+      comment: existing.content,
+      reply: reply.trim(),
+      replier: `${user.firstName} ${user.lastName}`.trim(),
+      target: existing.post ? { title: existing.post.title, path: `/blog/${existing.post.slug}` } : null,
+    });
+  }
 }
 
 // A student can delete their own comment (any status) — but nobody else's.

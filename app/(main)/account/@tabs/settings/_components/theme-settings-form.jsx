@@ -155,6 +155,7 @@ export default function ThemeSettingsForm({ savedColor }) {
                                 <button
                                     key={preset.value}
                                     type="button"
+                                    data-keep-radius
                                     title={preset.name}
                                     aria-label={preset.name}
                                     onClick={() => pick(preset.value)}

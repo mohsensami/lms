@@ -90,7 +90,7 @@ const AboutPage = async () => {
                     {about.ctaButton && (
                         <Link
                             href="/courses"
-                            className="rounded-full bg-background px-6 py-3 text-sm font-bold text-primary shadow transition hover:opacity-90"
+                            className="ui-btn rounded-[8px] bg-background px-6 py-3 text-sm font-bold text-primary shadow transition hover:opacity-90"
                         >
                             {about.ctaButton}
                         </Link>

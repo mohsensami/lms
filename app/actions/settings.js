@@ -299,3 +299,27 @@ export async function sendTestEmailAction(to) {
     return { ok: false, message: "ارسال ایمیل ناموفق بود." };
   }
 }
+
+// Quick on/off switches shown next to the feature they control (messages,
+// comments, tickets pages). Same values as in Settings -> e-mails.
+const EMAIL_SWITCHES = ["contactEnabled", "adminNotifyEnabled", "commentReplyEnabled", "ticketEnabled"];
+
+export async function setEmailSwitch(key, value) {
+  try {
+    await assertAdmin();
+
+    if (!EMAIL_SWITCHES.includes(key)) {
+      return { ok: false, message: "گزینه‌ی نامعتبر است." };
+    }
+
+    const stored = (await getSetting("site")) || {};
+    const email = sanitizeSiteSection("email", { ...(stored.email || {}), [key]: Boolean(value) });
+    await setSetting("site", { ...stored, email });
+
+    revalidatePath("/", "layout");
+    return { ok: true, message: value ? "ارسال ایمیل فعال شد." : "ارسال ایمیل غیرفعال شد." };
+  } catch (error) {
+    console.error("setEmailSwitch error:", error);
+    return { ok: false, message: "ذخیره‌ی تغییر با مشکل مواجه شد." };
+  }
+}

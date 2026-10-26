@@ -90,7 +90,7 @@ const ContactPage = async () => {
                                     href={chatUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 rounded-full bg-background/15 px-4 py-2 text-sm font-semibold backdrop-blur transition hover:bg-background/25"
+                                    className="ui-btn inline-flex items-center gap-2 rounded-[8px] bg-background/15 px-4 py-2 text-sm font-semibold backdrop-blur transition hover:bg-background/25"
                                 >
                                     <Instagram className="h-4 w-4" />
                                     {contact.chatButton}

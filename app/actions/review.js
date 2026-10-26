@@ -10,6 +10,7 @@ import {
   getTestimonialById,
 } from "@/queries/testimonials";
 import { COURSES_CACHE_TAG } from "@/queries/courses";
+import { sendCommentReplyEmail } from "@/lib/email/notify";
 import { revalidateTag } from "next/cache";
 
 export async function createReview(data, loginid, courseId) {
@@ -93,8 +94,24 @@ export async function replyToComment(testimonialId, reply) {
   if (!reply?.trim()) {
     throw new Error("متن پاسخ نمی‌تواند خالی باشد");
   }
+  const existing = await prisma.testimonial.findUnique({
+    where: { id: testimonialId },
+    include: { user: true, course: true },
+  });
+
   await setTestimonialReply(testimonialId, reply.trim(), user.id);
   revalidateTag(COURSES_CACHE_TAG);
+
+  // E-mail the reviewer about a NEW reply (editing an old reply stays quiet).
+  if (existing?.user && !existing.reply && existing.userId !== user.id) {
+    await sendCommentReplyEmail({
+      author: existing.user,
+      comment: existing.content,
+      reply: reply.trim(),
+      replier: `${user.firstName} ${user.lastName}`.trim(),
+      target: existing.course ? { title: existing.course.title, path: `/courses/${existing.courseId}` } : null,
+    });
+  }
 }
 
 // A student can delete their own comment (any status) — but nobody else's.

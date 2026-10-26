@@ -471,3 +471,12 @@ body {
     .edu-msg { animation: none; }
     .edu-msg--1 { opacity: 1; }
 }
+
+/* ---- Buttons have an 8px corner radius site-wide ----
+   `.ui-btn` is on every <Button> / buttonVariants() element, and plain
+   <button>s follow too. Opt out with data-keep-radius (e.g. colour swatches),
+   toggle switches and card-like radio buttons keep their own shape. */
+.ui-btn,
+button:not([role='switch']):not([role='radio']):not([data-keep-radius]) {
+    border-radius: 8px !important;
+}
