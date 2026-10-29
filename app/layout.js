@@ -9,6 +9,8 @@ import localFont from 'next/font/local';
 import { SITE_URL } from '@/lib/seo';
 import { getPrimaryColor } from '@/lib/site-theme';
 import { getSiteSettings } from '@/lib/site-settings';
+import { getSiteStatus } from '@/lib/site-status';
+import MaintenanceBanner from '@/components/maintenance-banner';
 import { buildThemeCss, DEFAULT_PRIMARY } from '@/lib/theme';
 
 // const geistSans = localFont({
@@ -81,6 +83,7 @@ export default async function RootLayout({ children }) {
     // Brand colour chosen by the admin (Settings -> Appearance). Injected as
     // CSS variables so every component that uses the `primary` token follows it.
     const primaryColor = await getPrimaryColor();
+    const { maintenance } = await getSiteStatus();
 
     return (
         <html lang="fa" dir="rtl" className={cn('antialiased', IranSans.variable)}>
@@ -88,8 +91,11 @@ export default async function RootLayout({ children }) {
                 {primaryColor !== DEFAULT_PRIMARY && (
                     <style id="site-theme" dangerouslySetInnerHTML={{ __html: buildThemeCss(primaryColor) }} />
                 )}
+                {/* Reserve room for the fixed maintenance bar before it measures itself (avoids a jump). */}
+                {maintenance.enabled && <style id="maintenance-offset" dangerouslySetInnerHTML={{ __html: ':root{--banner-h:2.5rem}' }} />}
             </head>
-            <body className="antialiased">
+            <body className="antialiased" style={{ paddingTop: 'var(--banner-h, 0px)' }}>
+                {maintenance.enabled && <MaintenanceBanner message={maintenance.message} />}
                 <DirectionProvider dir="rtl">
                     <ProgressProvider>{children}</ProgressProvider>
                     <Toaster richColors position="top-center" dir="rtl" />

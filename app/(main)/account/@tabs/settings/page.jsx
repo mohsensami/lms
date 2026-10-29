@@ -5,6 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import StorageSettingsForm from './_components/storage-settings-form';
 import ThemeSettingsForm from './_components/theme-settings-form';
 import PaymentSettingsForm from './_components/payment-settings-form';
+import SiteStatusForm from './_components/site-status-form';
+import { getSiteStatus } from '@/lib/site-status';
 import SiteSectionForm from './_components/site-section-form';
 import EmailTestCard from './_components/email-test-card';
 import { isEmailConfigured } from '@/lib/email/send';
@@ -21,11 +23,12 @@ const SettingsPage = async () => {
     await requireRole('admin');
     const me = await getLoggedInUser();
 
-    const [activeProvider, primaryColor, selectedGateways, site] = await Promise.all([
+    const [activeProvider, primaryColor, selectedGateways, site, siteStatus] = await Promise.all([
         getActiveProviderId(),
         getPrimaryColor(),
         getSelectedGatewayIds(),
         getSiteSettings(),
+        getSiteStatus(),
     ]);
 
     // One settings form per content section (see site-sections-config.js).
@@ -74,6 +77,7 @@ const SettingsPage = async () => {
 
             <Tabs defaultValue="general">
                 <TabsList className="mb-6 h-auto flex-wrap justify-start gap-1">
+                    <TabsTrigger value="status">وضعیت سایت</TabsTrigger>
                     <TabsTrigger value="general">مشخصات سایت</TabsTrigger>
                     <TabsTrigger value="home">صفحه‌ی اصلی</TabsTrigger>
                     <TabsTrigger value="menu">منو و فوتر</TabsTrigger>
@@ -84,6 +88,10 @@ const SettingsPage = async () => {
                     <TabsTrigger value="payments">درگاه‌های پرداخت</TabsTrigger>
                     <TabsTrigger value="storage">ذخیره‌سازی ویدیو</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="status">
+                    <SiteStatusForm initial={siteStatus} />
+                </TabsContent>
 
                 <TabsContent value="general" className="space-y-6">
                     {form('general')}

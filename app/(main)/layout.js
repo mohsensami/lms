@@ -11,7 +11,7 @@ const MainLayout = async ({ children }) => {
 
     return (
         <div className="flex min-h-screen flex-col">
-            <header className="z-40 bg-background/70 backdrop-blur-md fixed top-0 left-0 right-0 border-b border-border shadow-sm">
+            <header className="z-40 bg-background/70 backdrop-blur-md fixed top-[var(--banner-h,0px)] left-0 right-0 border-b border-border shadow-sm">
                 <SessionProvider>
                     <div className="container flex h-20 items-center justify-between py-6">
                         <MainNav items={navLinks} logoUrl={general.logoUrl} siteName={general.name} />

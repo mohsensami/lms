@@ -9,6 +9,7 @@ import { SITE_SECTIONS, sanitizeSiteSection } from "@/lib/site-defaults";
 import { getSetting } from "@/lib/settings";
 import { sendTestEmail } from "@/lib/email/notify";
 import { assertAdmin } from "@/lib/admin-guard";
+import { SITE_STATUS_KEY, sanitizeSiteStatus } from "@/lib/site-status-defaults";
 import { setSetting } from "@/lib/settings";
 import {
   PROVIDERS,
@@ -145,6 +146,21 @@ export async function resetThemeColor() {
   } catch (error) {
     console.error("resetThemeColor error:", error);
     return { ok: false, message: "بازگردانی رنگ با مشکل مواجه شد." };
+  }
+}
+
+// ------------------------------------------------------------- site status
+
+export async function saveSiteStatus(input) {
+  try {
+    await assertAdmin();
+    const status = sanitizeSiteStatus(input);
+    await setSetting(SITE_STATUS_KEY, status);
+    revalidatePath("/", "layout");
+    return { ok: true, message: "وضعیت سایت ذخیره شد.", status };
+  } catch (error) {
+    console.error("saveSiteStatus error:", error);
+    return { ok: false, message: "ذخیره‌ی وضعیت سایت با مشکل مواجه شد." };
   }
 }
 
