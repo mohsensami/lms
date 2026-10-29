@@ -2,7 +2,7 @@
 //
 // Seed data in Persian, suitable for a Farsi-language LMS demo.
 // One course only ("آموزش متلب"), but fleshed out completely: many
-// modules, lessons in each module, a quiz set with several questions, an
+// modules, lessons in each module, a final exam with several questions, an
 // admin (the course teacher), a few students, enrollments, testimonials/reviews, and
 // progress reports.
 //
@@ -24,11 +24,11 @@ async function clearExistingData() {
     await prisma.post.deleteMany();
     await prisma.watch.deleteMany();
     await prisma.report.deleteMany();
-    await prisma.assessment.deleteMany();
+    await prisma.examAttempt.deleteMany();
+    await prisma.examQuestion.deleteMany();
+    await prisma.exam.deleteMany();
     await prisma.testimonial.deleteMany();
     await prisma.enrollment.deleteMany();
-    await prisma.quiz.deleteMany();
-    await prisma.quizset.deleteMany();
     await prisma.lesson.deleteMany();
     await prisma.module.deleteMany();
     await prisma.course.deleteMany();
@@ -285,15 +285,6 @@ async function main() {
     }
 
     console.log('در حال ساخت آزمون پایانی دوره...');
-    const quizSet = await prisma.quizset.create({
-        data: {
-            title: 'آزمون پایانی دوره متلب',
-            description: 'این آزمون میزان یادگیری شما از مباحث مطرح‌شده در دوره متلب را می‌سنجد.',
-            slug: 'final-matlab-quiz',
-            active: true,
-        },
-    });
-
     const quizzesData = [
         {
             title: 'کدام دستور برای ساخت یک ماتریس ۳ در ۳ پر شده از صفر استفاده می‌شود؟',
@@ -369,21 +360,23 @@ async function main() {
         },
     ];
 
-    for (const quizInfo of quizzesData) {
-        await prisma.quiz.create({
-            data: {
-                title: quizInfo.title,
-                slug: slugify(quizInfo.title).slice(0, 60),
-                options: quizInfo.options,
-                mark: 5,
-                quizsetId: quizSet.id,
+    await prisma.exam.create({
+        data: {
+            courseId: course.id,
+            title: 'آزمون پایانی دوره متلب',
+            description: 'این آزمون میزان یادگیری شما از مباحث مطرح‌شده در دوره متلب را می‌سنجد.',
+            durationMinutes: 15,
+            requiredCorrect: 6,
+            active: true,
+            questions: {
+                create: quizzesData.map((quizInfo, order) => ({
+                    text: quizInfo.title,
+                    options: quizInfo.options.map((o) => o.text),
+                    correctIndex: quizInfo.options.findIndex((o) => o.is_correct),
+                    order,
+                })),
             },
-        });
-    }
-
-    await prisma.course.update({
-        where: { id: course.id },
-        data: { quizSetId: quizSet.id },
+        },
     });
 
     console.log('در حال ثبت‌نام دانشجویان در دوره...');

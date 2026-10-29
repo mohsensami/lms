@@ -44,6 +44,7 @@ model User {
   certificateRequests CertificateRequest[] @relation("CertificateRequestStudent")
   tickets        Ticket[]
   ticketMessages TicketMessage[]
+  examAttempts   ExamAttempt[]
 }
 
 model Category {
@@ -75,8 +76,8 @@ model Course {
   instructorId String?
   instructor   User?   @relation("CourseInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
 
-  quizSetId String?
-  quizSet   Quizset? @relation(fields: [quizSetId], references: [id])
+  // One final exam per course (managed by admins under «آزمون‌ها»).
+  exam Exam?
 
   modules      Module[]
   testimonials Testimonial[]
@@ -139,31 +140,64 @@ model Lesson {
   watches Watch[]
 }
 
-model Quizset {
-  id          String  @id @default(cuid())
-  title       String
-  description String?
-  slug        String?
-  active      Boolean @default(false)
+// ---------------------------------------------------------------------------
+// Final exam (the requirement for getting a certificate).
+// An admin creates ONE exam per course: 4-option questions, a time limit and
+// the number of correct answers needed to pass. A student who fails (or runs
+// out of time) is locked out of the exam — and therefore of requesting a
+// certificate — for 7 days.
+// ---------------------------------------------------------------------------
+model Exam {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  durationMinutes Int      // time limit for one attempt
+  requiredCorrect Int      // correct answers needed to pass
+  active          Boolean  @default(false) // students only see published exams
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  // Relation field intentionally named `quizIds` to match existing
-  // frontend usage of `quizSet.quizIds`.
-  quizIds Quiz[]
-  courses Course[]
+  courseId String @unique
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  questions ExamQuestion[]
+  attempts  ExamAttempt[]
 }
 
-model Quiz {
+model ExamQuestion {
   id           String   @id @default(cuid())
-  title        String
-  description  String?
-  slug         String?
-  explanations String?
-  options      Json?
-  mark         Int      @default(5)
-  createdAt    DateTime @default(now())
+  text         String
+  options      String[] // always exactly 4 options
+  correctIndex Int      // 0-3: index of the correct option (never sent to students)
+  order        Int      @default(0)
 
-  quizsetId String?
-  quizset   Quizset? @relation(fields: [quizsetId], references: [id], onDelete: Cascade)
+  examId String
+  exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@index([examId, order])
+}
+
+// One try of a student at an exam. `deadline` is fixed by the server when the
+// attempt starts, so the time limit can't be cheated from the browser.
+model ExamAttempt {
+  id              String    @id @default(cuid())
+  status          String    @default("in_progress") // in_progress | passed | failed
+  startedAt       DateTime  @default(now())
+  deadline        DateTime
+  finishedAt      DateTime?
+  correctCount    Int       @default(0)
+  totalQuestions  Int       @default(0)
+  requiredCorrect Int       @default(0) // snapshot of the exam's requirement
+  timedOut        Boolean   @default(false)
+  answers         Json?     // { [questionId]: selectedIndex }
+
+  examId String
+  exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([examId, studentId, startedAt])
 }
 
 model Enrollment {
@@ -225,14 +259,6 @@ model Testimonial {
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
-model Assessment {
-  id         String @id @default(cuid())
-  assessments Json
-  otherMarks Int    @default(0)
-
-  report Report?
-}
-
 model Report {
   id                     String    @id @default(cuid())
   totalCompletedLessons  String[]  @default([])
@@ -244,9 +270,6 @@ model Report {
 
   studentId String?
   student   User?   @relation(fields: [studentId], references: [id], onDelete: SetNull)
-
-  quizAssessmentId String?     @unique
-  quizAssessment   Assessment? @relation(fields: [quizAssessmentId], references: [id])
 }
 
 model Watch {

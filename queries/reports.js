@@ -7,7 +7,6 @@ export async function getReportsForUser(studentId) {
   try {
     const reports = await prisma.report.findMany({
       where: { studentId },
-      include: { quizAssessment: true },
     });
     return reports;
   } catch (error) {
@@ -23,9 +22,6 @@ export async function getReport(filter) {
 
     const report = await prisma.report.findFirst({
       where,
-      include: {
-        quizAssessment: true,
-      },
     });
     return replaceMongoIdInObject(report);
   } catch (error) {
@@ -87,33 +83,6 @@ export async function createWatchReport(data) {
       where: { id: report._id },
       data: updateData,
     });
-  } catch (error) {
-    throw new Error(error);
-  }
-}
-
-export async function createAssessmentReport(data) {
-  try {
-    let report = await prisma.report.findFirst({
-      where: {
-        courseId: data.courseId,
-        studentId: data.userId,
-      },
-    });
-    if (!report) {
-      await prisma.report.create({
-        data: {
-          courseId: data.courseId,
-          studentId: data.userId,
-          quizAssessmentId: data.quizAssessment,
-        },
-      });
-    } else if (!report.quizAssessmentId) {
-      await prisma.report.update({
-        where: { id: report._id },
-        data: { quizAssessmentId: data.quizAssessment },
-      });
-    }
   } catch (error) {
     throw new Error(error);
   }

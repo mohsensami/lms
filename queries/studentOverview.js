@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { getQuizScore } from '@/lib/quiz-score';
+import { getExamStateForStudent } from '@/lib/exam';
 
 /**
  * Returns one entry per distinct student who has any activity on one of the
@@ -28,7 +28,7 @@ export async function getStudentsOverview() {
 
         await Promise.all(
             Array.from(studentIds).map(async (studentId) => {
-                const [student, order, report, certificateRequest, commentCount] = await Promise.all([
+                const [student, order, report, certificateRequest, commentCount, examState] = await Promise.all([
                     prisma.user.findUnique({ where: { id: studentId } }),
                     prisma.order.findFirst({
                         where: { courseId: course.id, userId: studentId },
@@ -36,7 +36,6 @@ export async function getStudentsOverview() {
                     }),
                     prisma.report.findFirst({
                         where: { courseId: course.id, studentId },
-                        include: { quizAssessment: true },
                     }),
                     prisma.certificateRequest
                         .findUnique({
@@ -44,6 +43,7 @@ export async function getStudentsOverview() {
                         })
                         .catch(() => null),
                     prisma.testimonial.count({ where: { courseId: course.id, userId: studentId } }),
+                    getExamStateForStudent(course.id, studentId),
                 ]);
 
                 if (!student) return;
@@ -51,7 +51,6 @@ export async function getStudentsOverview() {
                 const totalModules = course._count?.modules || 0;
                 const completedModules = report?.totalCompletedModeules?.length || 0;
                 const progressPercent = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
-                const quizScore = report?.quizAssessment ? getQuizScore(report.quizAssessment) : null;
                 const isEnrolled = enrollments.some((e) => e.studentId === studentId);
 
                 const courseEntry = {
@@ -60,8 +59,9 @@ export async function getStudentsOverview() {
                     orderStatus: order?.status || null,
                     isEnrolled,
                     progressPercent,
-                    quizTaken: Boolean(report?.quizAssessment),
-                    quizScore,
+                    examState: examState.state,
+                    examScore: examState.state === 'passed' ? examState.attempt : null,
+                    examLockedUntil: examState.lockedUntil || null,
                     certificateStatus: certificateRequest?.status || 'none',
                     commentCount,
                 };

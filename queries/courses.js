@@ -53,9 +53,7 @@ const getCachedCourseDetails = unstable_cache(
                             lessonIds: { orderBy: { order: 'asc' } },
                         },
                     },
-                    quizSet: {
-                        include: { quizIds: true },
-                    },
+                    exam: { include: { _count: { select: { questions: true } } } },
                 },
             });
             return replaceMongoIdInObject(course);

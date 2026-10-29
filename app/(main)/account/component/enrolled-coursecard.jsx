@@ -29,29 +29,6 @@ const EnrolledCourseCard = async ({ enrollment }) => {
     /// Total Progress
     const totalProgress = totalModuleCount ? (totalCompletedModules / totalModuleCount) * 100 : 0;
 
-    // Get all Quizzes and Assignments
-    const quizzes = report?.quizAssessment?.assessments;
-    const totalQuizzes = quizzes?.length ?? 0;
-
-    // Find attempted quizzes
-    const quizzesTaken = quizzes ? quizzes.filter((q) => q.attempted) : [];
-    //console.log(quizzesTaken);
-
-    // find how many quizzes answered correct
-    const totalCorrect = quizzesTaken
-        .map((quiz) => {
-            const item = quiz.options;
-            return item.filter((o) => {
-                return o.isCorrect === true && o.isSelected === true;
-            });
-        })
-        .filter((elem) => elem.length > 0)
-        .flat();
-    //console.log(totalCorrect);
-
-    const marksFromQuizzes = totalCorrect?.length * 5;
-    const otherMarks = report?.quizAssessment?.otherMarks ?? 0;
-    const totalMarks = marksFromQuizzes + otherMarks;
 
   return (
     <div className="group h-full overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-sm transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
@@ -86,40 +63,7 @@ const EnrolledCourseCard = async ({ enrollment }) => {
               <Badge variant="success">{totalCompletedModules}</Badge>
             </div>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground/80">
-              مجموع آزمون‌ها: {totalQuizzes}
-            </span>
-            <div className="flex items-center gap-1.5 text-sm font-medium text-foreground/80">
-              آزمون‌های داده‌شده <Badge variant="success">{quizzesTaken?.length}</Badge>
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground/80">
-              نمره از آزمون‌ها
-            </span>
-            <span className="text-sm font-medium text-foreground/80">
-              {marksFromQuizzes}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground/80">
-              سایر موارد
-            </span>
-            <span className="text-sm font-medium text-foreground/80">
-              {otherMarks}
-            </span>
-          </div>
         </div>
-        <div className="mb-4 flex items-center justify-between">
-          <span className="text-sm font-bold text-foreground">
-            مجموع نمرات
-          </span>
-          <span className="text-sm font-bold text-primary">
-            {totalMarks}
-          </span>
-        </div>
-
                 <CourseProgress size="sm" value={totalProgress} variant={110 === 100 ? 'success' : ''} />
             </div>
         </div>

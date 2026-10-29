@@ -22,7 +22,7 @@ const adminMenu = [
   { label: "دوره‌ها", href: "/account/courses" },
   { label: "مقالات", href: "/account/posts" },
   { label: "دیدگاه‌ها", href: "/account/comments" },
-  { label: "آزمون‌ساز", href: "/account/quiz-sets" },
+  { label: "آزمون‌ها", href: "/account/exams" },
   { label: "درخواست‌های مدرک", href: "/account/certificate-requests" },
   { label: "فاکتورها", href: "/account/Order" },
   { label: "پیام‌ها", href: "/account/messages", badgeKey: "unreadMessages" },

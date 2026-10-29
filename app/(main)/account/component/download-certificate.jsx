@@ -11,14 +11,19 @@ const STATUS_LABEL = {
     rejected: 'رد شده — می‌توانید دوباره درخواست دهید',
 };
 
-export const DownloadCertificate = ({ courseId, totalProgress, requestStatus }) => {
+export const DownloadCertificate = ({ courseId, requestStatus }) => {
     const router = useRouter();
     const [isBusy, setIsBusy] = useState(false);
 
     async function handleRequest() {
         setIsBusy(true);
         try {
-            await requestCertificate(courseId);
+            const res = await requestCertificate(courseId);
+            if (!res?.ok) {
+                toast.error(res?.error || 'مشکلی پیش آمد');
+                router.refresh();
+                return;
+            }
             toast.success('درخواست تایید مدرک ثبت شد');
             router.refresh();
         } catch (error) {
@@ -32,6 +37,11 @@ export const DownloadCertificate = ({ courseId, totalProgress, requestStatus }) 
         setIsBusy(true);
         try {
             const response = await fetch(`/api/certificate?courseId=${courseId}`);
+            if (!response.ok) {
+                const data = await response.json().catch(() => null);
+                toast.error(data?.error || 'دانلود مدرک با مشکل مواجه شد');
+                return;
+            }
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -45,14 +55,6 @@ export const DownloadCertificate = ({ courseId, totalProgress, requestStatus }) 
         } finally {
             setIsBusy(false);
         }
-    }
-
-    if (totalProgress < 100) {
-        return (
-            <Button size="sm" disabled>
-                دانلود مدرک
-            </Button>
-        );
     }
 
     if (requestStatus === 'approved') {

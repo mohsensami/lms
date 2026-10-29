@@ -6,8 +6,7 @@ import { create, COURSES_CACHE_TAG } from "@/queries/courses";
 import { revalidateTag } from "next/cache";
 import { deleteStoredVideos, getLessonsOfCourse } from "@/lib/video-cleanup";
 
-// The UI still passes Mongoose-style ref field names (category, instructor,
-// quizSet) — map them to the Prisma scalar FK column names before hitting
+// The UI still passes Mongoose-style ref field names (category, instructor) — map them to the Prisma scalar FK column names before hitting
 // the database.
 function mapCourseRefKeys(data) {
   const mapped = { ...data };
@@ -18,10 +17,6 @@ function mapCourseRefKeys(data) {
   if ("instructor" in mapped) {
     mapped.instructorId = mapped.instructor;
     delete mapped.instructor;
-  }
-  if ("quizSet" in mapped) {
-    mapped.quizSetId = mapped.quizSet;
-    delete mapped.quizSet;
   }
   return mapped;
 }
@@ -72,17 +67,5 @@ export async function deleteCourse(courseId) {
     revalidateTag(COURSES_CACHE_TAG);
   } catch (err) {
     throw new Error(err);
-  }
-}
-
-export async function updateQuizSetForCourse(courseId, dataUpdated) {
-  try {
-    await prisma.course.update({
-      where: { id: courseId },
-      data: { quizSetId: dataUpdated.quizSetId },
-    });
-    revalidateTag(COURSES_CACHE_TAG);
-  } catch (error) {
-    throw new Error(error);
   }
 }

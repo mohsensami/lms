@@ -83,8 +83,16 @@ function StudentOverviewCard({ overview, hideHeader, canGrantAccess }) {
                         </div>
 
                         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                            <Badge variant={c.quizTaken ? (c.quizScore?.percentage >= 60 ? 'success' : 'destructive') : 'secondary'}>
-                                {c.quizTaken ? `آزمون: ${c.quizScore.correct}/${c.quizScore.total} (${c.quizScore.percentage}٪)` : 'آزمون نداده'}
+                            <Badge
+                                variant={c.examState === 'passed' ? 'success' : c.examState === 'locked' ? 'destructive' : 'secondary'}
+                            >
+                                {c.examState === 'passed' && c.examScore
+                                    ? `آزمون: قبول (${c.examScore.correctCount}/${c.examScore.totalQuestions})`
+                                    : c.examState === 'locked'
+                                      ? 'آزمون: مردود (قفل ۷ روزه)'
+                                      : c.examState === 'no_exam'
+                                        ? 'آزمون تعریف نشده'
+                                        : 'آزمون نداده'}
                             </Badge>
 
                             <Link href="/account/certificate-requests">

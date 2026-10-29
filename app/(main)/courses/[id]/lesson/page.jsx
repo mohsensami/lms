@@ -15,7 +15,7 @@ const LessonPage = async ({ params, searchParams }) => {
     const totalProgress = await getCourseProgressPercent(course, loggedinUser.id);
 
     const totalLessons = course?.modules?.reduce((sum, module) => sum + (module.lessonIds?.length ?? 0), 0);
-    const quizCount = course?.quizSet?.quizIds?.length ?? 0;
+    const quizCount = course?.exam?.active ? 1 : 0;
     const instructorName = course?.instructor
         ? `${course.instructor.firstName} ${course.instructor.lastName}`
         : 'مدرس';

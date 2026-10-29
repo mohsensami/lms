@@ -23,7 +23,7 @@ const CourseDetailsIntro = async ({ course }) => {
     const totalProgress = hasEnrollment ? await getCourseProgressPercent(course, loggedInUser.id) : 0;
     const instructorName = course?.instructor ? `${course.instructor.firstName} ${course.instructor.lastName}` : 'مدرس';
     const lessonCount = course?.modules?.reduce((sum, module) => sum + (module.lessonIds?.length ?? 0), 0) ?? 0;
-    const quizCount = course?.quizSet?.quizIds?.length ?? 0;
+    const quizCount = course?.exam ? 1 : 0;
     const chapterCount = course?.modules?.length ?? 0;
 
     return (

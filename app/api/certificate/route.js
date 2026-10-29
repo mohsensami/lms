@@ -5,9 +5,8 @@ import path from "path";
 
 import { getCourseDetails } from "@/queries/courses";
 import { getLoggedInUser } from "@/lib/loggedin-user";
-import { getReport } from "@/queries/reports";
 import { getCertificateRequest } from "@/queries/certificateRequests";
-import { getQuizScore } from "@/lib/quiz-score";
+import { getPassedAttempt } from "@/lib/exam";
 import { formatMyDate } from "@/lib/date";
 
 /* مهم: جلوگیری از build-time execution */
@@ -45,16 +44,21 @@ export async function GET(request) {
       );
     }
 
-    const report = await getReport({
-      course: courseId,
-      student: loggedInUser.id,
-    });
+    // Passing the exam is enforced when the request is created (see
+    // requestCertificate). An approved request is enough here, so certificates
+    // approved before the exam system existed keep working (without a score).
+    const attempt = await getPassedAttempt(courseId, loggedInUser.id);
 
-    const completionDate = report?.completion_date
-      ? formatMyDate(report.completion_date)
-      : formatMyDate(Date.now());
+    const completionDate = formatMyDate(attempt?.finishedAt || Date.now());
 
-    const quizScore = report?.quizAssessment ? getQuizScore(report.quizAssessment) : null;
+    const quizScore =
+      attempt && attempt.totalQuestions > 0
+        ? {
+            correct: attempt.correctCount,
+            total: attempt.totalQuestions,
+            percentage: Math.round((attempt.correctCount / attempt.totalQuestions) * 100),
+          }
+        : null;
 
     const completionInfo = {
       name: `${loggedInUser.firstName} ${loggedInUser.lastName}`,
@@ -154,11 +158,10 @@ export async function GET(request) {
     });
 
     /* -----------------
-     * Quiz score (optional — the quiz itself is optional, but if the
-     * student took it, their score is printed as a bonus achievement)
+     * Exam score (the student passed the course exam to get here)
      *-------------------*/
     if (quizScore && quizScore.total > 0) {
-      const quizText = `Quiz Score: ${quizScore.correct}/${quizScore.total} (${quizScore.percentage}%)`;
+      const quizText = `Exam Score: ${quizScore.correct}/${quizScore.total} (${quizScore.percentage}%)`;
       const quizTextWidth = montserratItalic.widthOfTextAtSize(quizText, 14);
 
       page.drawText(quizText, {
