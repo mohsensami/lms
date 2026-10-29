@@ -179,26 +179,26 @@ body {
         direction: ltr;
         unicode-bidi: embed;
     }
-    /* Code blocks (Prism "tomorrow" theme supplies colours) */
-    .post-content pre[class*='language-'],
+    /* Code blocks: highlight.js (github-dark theme) colours the tokens */
     .post-content pre {
         direction: ltr;
         text-align: left;
+        background: #0d1117;
+        color: #c9d1d9;
         border-radius: 1rem;
-        padding: 1.1rem 1.25rem;
+        padding: 0;
         overflow-x: auto;
         font-size: 0.9rem;
         line-height: 1.8;
         tab-size: 4;
     }
-    .post-content pre:not([class*='language-']) {
-        background: #2d2d2d;
-        color: #ccc;
-    }
-    .post-content pre code {
+    .post-content pre code,
+    .post-content pre code.hljs {
+        display: block;
         background: transparent;
-        padding: 0;
+        padding: 1.1rem 1.25rem;
         font-size: inherit;
+        unicode-bidi: plaintext;
     }
 }
 

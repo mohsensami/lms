@@ -1,4 +1,4 @@
-import 'prismjs/themes/prism-tomorrow.css';
+import 'highlight.js/styles/github-dark.css';
 
 // Renders already-sanitized post HTML (see lib/sanitize-post-html.js).
 // Pure markup + CSS: server component safe, and also reused by the editor's

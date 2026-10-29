@@ -38,6 +38,35 @@ export async function getPublishedPostList() {
     return (posts || []).filter((post) => isPostLive(post, now));
 }
 
+/**
+ * Public posts grouped by category, for the blog sidebar (accordion).
+ * Only the fields the sidebar needs are returned (no post bodies).
+ * Categories are sorted by name; posts without a category come last.
+ */
+export async function getPublishedPostsByCategory() {
+    const posts = await getPublishedPostList();
+    const groups = new Map();
+
+    for (const post of posts) {
+        const key = post.categoryId || 'none';
+        if (!groups.has(key)) {
+            groups.set(key, {
+                key,
+                name: post.category?.name || 'بدون دسته‌بندی',
+                slug: post.category?.slug || null,
+                posts: [],
+            });
+        }
+        groups.get(key).posts.push({ id: post.id, title: post.title, slug: post.slug });
+    }
+
+    return [...groups.values()].sort((a, b) => {
+        if (a.key === 'none') return 1;
+        if (b.key === 'none') return -1;
+        return a.name.localeCompare(b.name, 'fa');
+    });
+}
+
 const getCachedPostBySlug = unstable_cache(
     async (slug) => {
         return withDb(async () => {

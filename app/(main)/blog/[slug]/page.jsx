@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CalendarDays, Clock, ArrowRight, Newspaper, MessageCircle } from 'lucide-react';
-import { getPostBySlug } from '@/queries/posts';
+import { getPostBySlug, getPublishedPostsByCategory } from '@/queries/posts';
 import { getApprovedCommentsForPost, getApprovedCommentCountForPost } from '@/queries/postComments';
 import { buildPostMetadata, buildPostJsonLd } from '@/lib/seo';
 import { getSiteName } from '@/lib/site-settings';
@@ -13,6 +13,7 @@ import { PostBody } from '@/components/post-html';
 import { getLoggedInUser } from '@/lib/loggedin-user';
 import UserAvatar from '@/components/user-avatar';
 import PostCommentForm from '../_components/PostCommentForm';
+import CategoryPostsSidebar from '../_components/CategoryPostsSidebar';
 import CommentReplyBox from '@/app/(main)/account/component/comment-reply-box';
 import { replyToPostComment } from '@/app/actions/post-comment';
 
@@ -35,10 +36,11 @@ const BlogPostPage = async ({ params }) => {
         notFound();
     }
 
-    const [comments, commentCount, loggedInUser] = await Promise.all([
+    const [comments, commentCount, loggedInUser, categoryGroups] = await Promise.all([
         getApprovedCommentsForPost(post.id),
         getApprovedCommentCountForPost(post.id),
         getLoggedInUser(),
+        getPublishedPostsByCategory(),
     ]);
 
     // Not live yet (draft or scheduled): only admins and the post's own
@@ -62,7 +64,18 @@ const BlogPostPage = async ({ params }) => {
             {/* eslint-disable-next-line react/no-danger */}
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-            <article className="container max-w-3xl py-10 md:py-16">
+            <div className="container max-w-6xl py-10 md:py-16">
+                <div className="grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start">
+                    {/* Sidebar: all categories as an accordion (the current one is open) */}
+                    <aside className="order-2 lg:sticky lg:top-24 lg:order-1">
+                        <CategoryPostsSidebar
+                            groups={categoryGroups}
+                            currentCategoryKey={post.categoryId || 'none'}
+                            currentSlug={post.slug}
+                        />
+                    </aside>
+
+            <article className="order-1 min-w-0 lg:order-2">
                 {!isLive && (
                     <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
                         این مقاله هنوز عمومی نیست ({POST_STATE_LABEL[getPostState(post)]}
@@ -200,6 +213,8 @@ const BlogPostPage = async ({ params }) => {
                     </div>
                 </section>
             </article>
+                </div>
+            </div>
         </div>
     );
 };

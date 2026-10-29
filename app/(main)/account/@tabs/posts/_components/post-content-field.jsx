@@ -6,9 +6,26 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { UploadButton } from '@/lib/uploadthing';
+import { PostImageUploader } from './post-image-uploader';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PostBody } from '@/components/post-html';
 import { previewPostContent } from '@/app/actions/post';
+
+const CODE_LANGUAGES = [
+    { value: 'matlab', label: 'MATLAB' },
+    { value: 'python', label: 'Python' },
+    { value: 'javascript', label: 'JavaScript' },
+    { value: 'typescript', label: 'TypeScript' },
+    { value: 'cpp', label: 'C++' },
+    { value: 'c', label: 'C' },
+    { value: 'java', label: 'Java' },
+    { value: 'bash', label: 'Bash' },
+    { value: 'sql', label: 'SQL' },
+    { value: 'json', label: 'JSON' },
+    { value: 'xml', label: 'HTML / XML' },
+    { value: 'css', label: 'CSS' },
+    { value: 'plaintext', label: 'متن ساده' },
+];
 
 const escapeHtml = (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -22,14 +39,15 @@ const altFromFileName = (name = '') =>
 /**
  * The post body stays a plain <textarea> (you type/paste HTML in it). This
  * wrapper only adds helpers around it: insert uploaded images, insert a
- * MATLAB code block (rendered with Prism on the blog), and a live preview.
+ * code block (highlighted with highlight.js on the blog), and a live preview.
  *
  * `field` is the react-hook-form field object ({ value, onChange, ref, ... }).
  */
-export function PostContentField({ field, disabled, rows = 12, placeholder = 'متن کامل مقاله (متن ساده یا HTML)' }) {
+export function PostContentField({ field, disabled, rows = 22, placeholder = 'متن کامل مقاله (متن ساده یا HTML)' }) {
     const textareaRef = useRef(null);
     const [codeOpen, setCodeOpen] = useState(false);
     const [code, setCode] = useState('');
+    const [codeLanguage, setCodeLanguage] = useState('matlab');
     const [showPreview, setShowPreview] = useState(false);
     const [rendered, setRendered] = useState(null);
     const [previewLoading, setPreviewLoading] = useState(false);
@@ -53,16 +71,16 @@ export function PostContentField({ field, disabled, rows = 12, placeholder = 'م
     const insertCodeBlock = () => {
         const trimmed = code.replace(/^\n+|\s+$/g, '');
         if (!trimmed) {
-            toast.error('کد متلب را وارد کنید');
+            toast.error('کد را وارد کنید');
             return;
         }
-        insertAtCursor(`\n<pre><code class="language-matlab">${escapeHtml(trimmed)}</code></pre>\n`);
+        insertAtCursor(`\n<pre><code class="language-${codeLanguage}">${escapeHtml(trimmed)}</code></pre>\n`);
         setCode('');
         setCodeOpen(false);
     };
 
     // Live preview: rendered on the server with the exact same sanitizer and
-    // Prism highlighting the blog uses (debounced while typing).
+    // highlight.js highlighting the blog uses (debounced while typing).
     useEffect(() => {
         if (!showPreview) return undefined;
         let cancelled = false;
@@ -86,36 +104,21 @@ export function PostContentField({ field, disabled, rows = 12, placeholder = 'م
     return (
         <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-                <UploadButton
+                <PostImageUploader
                     endpoint="postContentImageUploader"
+                    multiple
+                    variant="secondary"
+                    label="افزودن تصویر"
                     disabled={disabled}
-                    onClientUploadComplete={(res) => {
-                        const tags = (res || [])
-                            .map((file) => {
-                                const url = file.ufsUrl ?? file.url;
-                                return url ? `<img src="${url}" alt="${altFromFileName(file.name)}" />` : null;
-                            })
-                            .filter(Boolean);
-                        if (!tags.length) {
-                            toast.error('آپلود تصویر با مشکل مواجه شد');
-                            return;
-                        }
+                    onUploaded={(files) => {
+                        const tags = files.map((file) => `<img src="${file.url}" alt="${altFromFileName(file.name)}" />`);
                         insertAtCursor(`\n${tags.join('\n')}\n`);
                         toast.success(tags.length > 1 ? 'تصاویر به متن اضافه شدند' : 'تصویر به متن اضافه شد');
-                    }}
-                    onUploadError={(error) => toast.error(`خطا در آپلود تصویر: ${error.message}`)}
-                    appearance={{
-                        container: 'items-start',
-                        button: 'ut-uploading:cursor-not-allowed ut-uploading:opacity-70 bg-secondary text-secondary-foreground px-3 py-1.5 rounded-md text-sm font-medium h-9 w-auto after:hidden',
-                        allowedContent: 'hidden',
-                    }}
-                    content={{
-                        button: ({ isUploading }) => (isUploading ? 'در حال آپلود...' : 'افزودن تصویر'),
                     }}
                 />
                 <Button type="button" variant="secondary" size="sm" disabled={disabled} onClick={() => setCodeOpen(true)}>
                     <Code2 className="ml-1.5 h-4 w-4" />
-                    افزودن کد متلب
+                    افزودن کد
                 </Button>
                 <Button type="button" variant="outline" size="sm" onClick={() => setShowPreview((v) => !v)}>
                     {showPreview ? <EyeOff className="ml-1.5 h-4 w-4" /> : <Eye className="ml-1.5 h-4 w-4" />}
@@ -153,11 +156,26 @@ export function PostContentField({ field, disabled, rows = 12, placeholder = 'م
             <Dialog open={codeOpen} onOpenChange={setCodeOpen}>
                 <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>افزودن کد متلب</DialogTitle>
+                        <DialogTitle>افزودن کد</DialogTitle>
                         <DialogDescription>
-                            کد را همین‌جا بنویسید یا پیست کنید؛ به‌صورت یک بلوک رنگی (Prism) در متن مقاله قرار می‌گیرد.
+                            کد را همین‌جا بنویسید یا پیست کنید؛ به‌صورت یک بلوک رنگی (highlight.js) در متن مقاله قرار می‌گیرد.
                         </DialogDescription>
                     </DialogHeader>
+                    <div className="space-y-1.5">
+                        <label className="text-sm font-medium">زبان برنامه‌نویسی</label>
+                        <Select value={codeLanguage} onValueChange={setCodeLanguage}>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {CODE_LANGUAGES.map((lang) => (
+                                    <SelectItem key={lang.value} value={lang.value}>
+                                        {lang.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <Textarea
                         dir="ltr"
                         rows={12}

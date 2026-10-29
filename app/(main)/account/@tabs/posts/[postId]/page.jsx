@@ -1,46 +1,20 @@
 import { getPostById } from '@/queries/posts';
 import { requireRole } from '@/lib/require-role';
 import { notFound } from 'next/navigation';
-import { PostTitleForm } from '../_components/post-title-form';
-import { PostSlugForm } from '../_components/post-slug-form';
-import { PostContentForm } from '../_components/post-content-form';
-import { PostThumbnailForm } from '../_components/post-thumbnail-form';
-import { PostActions } from '../_components/post-actions';
-import { PostSeoForm } from '../_components/post-seo-form';
-import { PostPublishForm } from '../_components/post-publish-form';
-import { PostCategoryForm } from '../_components/post-category-form';
+import { PostEditor } from '../_components/post-editor';
 import { getPostCategories } from '@/queries/post-categories';
 
-const EditPost = async ({ params: { postId } }) => {
+const EditPost = async ({ params }) => {
     await requireRole('admin');
+    const { postId } = await params;
     const [post, categories] = await Promise.all([getPostById(postId), getPostCategories()]);
 
     if (!post) {
         notFound();
     }
 
-    return (
-        <div className="p-6">
-            <div className="flex items-center justify-between">
-                <h1 className="text-xl font-bold">ویرایش پست</h1>
-                <PostActions postId={post.id} />
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                    <PostTitleForm initialData={post} postId={post.id} />
-                    <PostSlugForm initialData={post} postId={post.id} />
-                    <PostContentForm initialData={post} postId={post.id} />
-                    <PostSeoForm initialData={post} postId={post.id} />
-                </div>
-                <div>
-                    <PostPublishForm initialData={post} postId={post.id} />
-                    <PostCategoryForm initialData={post} postId={post.id} categories={categories} />
-                    <PostThumbnailForm initialData={post} postId={post.id} />
-                </div>
-            </div>
-        </div>
-    );
+    // Only plain, serialisable data goes to the client editor.
+    return <PostEditor post={JSON.parse(JSON.stringify(post))} categories={categories} />;
 };
 
 export default EditPost;

@@ -24,13 +24,13 @@ export function defaultScheduleDate() {
  * Controlled picker for the WordPress-style publish options.
  * value: { mode: 'now' | 'schedule' | 'draft', date: Date | null }
  */
-export function PostPublishPicker({ value, onChange, disabled, liveSince }) {
+export function PostPublishPicker({ value, onChange, disabled, liveSince, compact = false }) {
     const { mode, date } = value;
     const isPast = mode === 'schedule' && date && new Date(date).getTime() <= Date.now();
 
     return (
         <div className="space-y-3">
-            <div role="radiogroup" className="grid gap-2 sm:grid-cols-3">
+            <div role="radiogroup" className={cn('grid gap-2', compact ? 'grid-cols-1' : 'sm:grid-cols-3')}>
                 {MODES.map((m) => (
                     <button
                         key={m.value}

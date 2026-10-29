@@ -80,7 +80,7 @@ export async function deletePost(postId) {
 }
 
 // Server-side render of a body for the editor's live preview, so the preview
-// goes through exactly the same sanitizer + Prism highlighting as the blog.
+// goes through exactly the same sanitizer + highlight.js highlighting as the blog.
 export async function previewPostContent(content) {
     await requireAdmin();
     return renderPostContent(content || '');
