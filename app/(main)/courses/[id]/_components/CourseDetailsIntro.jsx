@@ -10,8 +10,6 @@ import { auth } from '@/auth';
 import { getUserByEmail } from '@/queries/users';
 import { hasEnrollmentForCourse } from '@/queries/enrollments';
 import { PriceDisplay } from '@/components/price-display';
-import { CourseProgress } from '@/components/course-progress';
-import { getCourseProgressPercent } from '@/lib/course-progress';
 
 const CourseDetailsIntro = async ({ course }) => {
     const session = await auth();
@@ -20,7 +18,6 @@ const CourseDetailsIntro = async ({ course }) => {
     const hasEnrollment =
         loggedInUser?.id && course?.id ? await hasEnrollmentForCourse(course.id, loggedInUser.id) : false;
     const isFullAccessUser = loggedInUser?.role === 'admin';
-    const totalProgress = hasEnrollment ? await getCourseProgressPercent(course, loggedInUser.id) : 0;
     const instructorName = course?.instructor ? `${course.instructor.firstName} ${course.instructor.lastName}` : 'مدرس';
     const lessonCount = course?.modules?.reduce((sum, module) => sum + (module.lessonIds?.length ?? 0), 0) ?? 0;
     const quizCount = course?.exam ? 1 : 0;
@@ -119,9 +116,6 @@ const CourseDetailsIntro = async ({ course }) => {
                                         <div className="space-y-3">
                                             <div className="rounded-xl border border-success/30 bg-success/10 p-3 text-center text-sm font-semibold text-success">
                                                 این دوره قبلاً خریداری شده است
-                                            </div>
-                                            <div className="rounded-xl border border-border bg-muted/40 p-3">
-                                                <CourseProgress variant="success" value={totalProgress} />
                                             </div>
                                             <Link
                                                 href={`/courses/${course?.id}/lesson`}

@@ -43,23 +43,6 @@ export const columns = [
     },
   },
   {
-    accessorKey: "progress",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          پیشرفت <ArrowUpDown className="mr-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const progress = row.getValue("progress");
-      return `${progress}%`;
-    },
-  },
-  {
     accessorKey: "enrollment_date",
     header: ({ column }) => {
       return (

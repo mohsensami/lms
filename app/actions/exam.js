@@ -142,7 +142,15 @@ export async function deleteExam(examId) {
     const denied = await requireAdmin();
     if (denied) return denied;
     try {
-        await prisma.exam.delete({ where: { id: examId } });
+        const exam = await prisma.exam.findUnique({ where: { id: examId } });
+        if (!exam) return { ok: false, error: 'آزمون پیدا نشد.' };
+        // The exam (and with it every attempt) is gone, so certificate requests
+        // that were based on it are no longer valid either: students must pass
+        // the course exam again and re-request their certificate.
+        await prisma.$transaction(async (tx) => {
+            await tx.certificateRequest.deleteMany({ where: { courseId: exam.courseId } });
+            await tx.exam.delete({ where: { id: examId } });
+        });
         revalidatePath('/account/exams');
         revalidatePath('/account/certificates');
         return { ok: true };
@@ -260,6 +268,15 @@ export async function submitExamAttempt(attemptId, answers) {
             },
         });
         if (count === 0) return { ok: false, error: 'این آزمون قبلاً ثبت شده است.' };
+
+        if (passed) {
+            // A fresh pass always starts a fresh certificate request: an old
+            // (e.g. already approved) request must never carry over.
+            const exam = await prisma.exam.findUnique({ where: { id: attempt.examId } });
+            if (exam) {
+                await prisma.certificateRequest.deleteMany({ where: { courseId: exam.courseId, studentId: user.id } });
+            }
+        }
 
         revalidatePath('/account/certificates');
 

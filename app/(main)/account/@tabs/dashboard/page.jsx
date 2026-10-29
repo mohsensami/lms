@@ -4,7 +4,6 @@ import { getAllCoursesDashboardData } from '@/queries/courses';
 import { getEnrollmentsForUser } from '@/queries/enrollments';
 import { getTestimonialsForUser } from '@/queries/testimonials';
 import { getPostCommentsForUser } from '@/queries/postComments';
-import { getReportsForUser } from '@/queries/reports';
 import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/require-role';
 
@@ -22,25 +21,22 @@ function StatCard({ title, value }) {
 }
 
 async function StudentDashboard({ user }) {
-    const [enrollments, courseComments, postComments, reports] = await Promise.all([
+    const [enrollments, courseComments, postComments] = await Promise.all([
         getEnrollmentsForUser(user.id),
         getTestimonialsForUser(user.id),
         getPostCommentsForUser(user.id),
-        getReportsForUser(user.id),
     ]);
 
     const passedExamCount = (
         await prisma.examAttempt.findMany({ where: { studentId: user.id, status: 'passed' }, select: { examId: true } })
     ).length;
-    const completedCourseCount = reports.filter((r) => r.completion_date).length;
     const totalComments = courseComments.length + postComments.length;
 
     return (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <StatCard title="دوره‌های ثبت‌نامی" value={enrollments.length} />
             <StatCard title="آزمون‌های قبول‌شده" value={passedExamCount} />
             <StatCard title="دیدگاه‌های ثبت‌شده" value={totalComments} />
-            <StatCard title="دوره‌های تکمیل‌شده" value={completedCourseCount} />
         </div>
     );
 }

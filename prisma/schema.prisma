@@ -36,8 +36,6 @@ model User {
   coursesTaught Course[]      @relation("CourseInstructor")
   enrollments   Enrollment[]
   testimonials  Testimonial[]
-  reports       Report[]
-  watches       Watch[]
   orders        Order[]
   postsAuthored Post[]        @relation("PostAuthor")
   postComments  PostComment[]
@@ -82,7 +80,6 @@ model Course {
   modules      Module[]
   testimonials Testimonial[]
   enrollments  Enrollment[]
-  reports      Report[]
   orders       Order[]
   certificateRequests CertificateRequest[]
 }
@@ -101,7 +98,6 @@ model Module {
   // Relation field intentionally named `lessonIds` to match existing
   // frontend usage of `module.lessonIds`.
   lessonIds Lesson[]
-  watches   Watch[]
 }
 
 model Lesson {
@@ -137,7 +133,6 @@ model Lesson {
   moduleId String?
   module   Module? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
-  watches Watch[]
 }
 
 // ---------------------------------------------------------------------------
@@ -254,36 +249,6 @@ model Testimonial {
 
   courseId String?
   course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-}
-
-model Report {
-  id                     String    @id @default(cuid())
-  totalCompletedLessons  String[]  @default([])
-  totalCompletedModeules String[]  @default([])
-  completion_date        DateTime?
-
-  courseId String?
-  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  studentId String?
-  student   User?   @relation(fields: [studentId], references: [id], onDelete: SetNull)
-}
-
-model Watch {
-  id         String   @id @default(cuid())
-  state       String   @default("started")
-  created_at  DateTime @default(now())
-  modified_at DateTime @default(now())
-  lastTime    Int      @default(0)
-
-  lessonId String?
-  lesson   Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-
-  moduleId String?
-  module   Module? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)

@@ -3,8 +3,6 @@ import { getCourseDetails } from '@/queries/courses';
 import CourseCurriculam from '../_components/CourseCurriculam';
 import { GiveReview } from './_components/give-review';
 import { getLoggedInUser } from '@/lib/loggedin-user';
-import { CourseProgress } from '@/components/course-progress';
-import { getCourseProgressPercent } from '@/lib/course-progress';
 
 const LessonPage = async ({ params, searchParams }) => {
     const { id } = await params;
@@ -12,7 +10,6 @@ const LessonPage = async ({ params, searchParams }) => {
 
     const course = await getCourseDetails(id);
     const loggedinUser = await getLoggedInUser();
-    const totalProgress = await getCourseProgressPercent(course, loggedinUser.id);
 
     const totalLessons = course?.modules?.reduce((sum, module) => sum + (module.lessonIds?.length ?? 0), 0);
     const quizCount = course?.exam?.active ? 1 : 0;
@@ -32,9 +29,6 @@ const LessonPage = async ({ params, searchParams }) => {
                     <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900">{course.title}</h1>
                     <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">{course.subtitle}</p>
 
-                    <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                        <CourseProgress variant="success" value={totalProgress} />
-                    </div>
 
                     <div className="mt-4 grid gap-3 sm:grid-cols-3">
                         <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">

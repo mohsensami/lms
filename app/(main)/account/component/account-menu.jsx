@@ -7,7 +7,6 @@ import React from 'react';
 const studentMenu = [
   { label: "پروفایل", href: "/account" },
   { label: "داشبورد", href: "/account/dashboard" },
-  { label: "پیشرفت من", href: "/account/progress" },
   { label: "فاکتورهای من", href: "/account/Order" },
   { label: "دیدگاه‌های من", href: "/account/my-comments" },
   { label: "دوره‌های ثبت‌نامی", href: "/account/enrolled-courses" },

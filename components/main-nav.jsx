@@ -16,7 +16,6 @@ const roleMenus = {
     student: [
         { label: 'پروفایل', href: '/account' },
         { label: 'داشبورد', href: '/account/dashboard' },
-        { label: 'پیشرفت من', href: '/account/progress' },
         { label: 'دوره‌های ثبت‌نامی', href: '/account/enrolled-courses' },
         { label: 'فاکتورهای من', href: '/account/Order' },
     ],

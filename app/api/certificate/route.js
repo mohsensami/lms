@@ -1,4 +1,4 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument, rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import fs from "fs/promises";
 import path from "path";
@@ -44,10 +44,11 @@ export async function GET(request) {
       );
     }
 
-    // Passing the exam is enforced when the request is created (see
-    // requestCertificate). An approved request is enough here, so certificates
-    // approved before the exam system existed keep working (without a score).
+    // The certificate is only issued to students who passed the course exam.
     const attempt = await getPassedAttempt(courseId, loggedInUser.id);
+    if (!attempt) {
+      return Response.json({ error: "برای دریافت مدرک باید در آزمون دوره قبول شوید." }, { status: 403 });
+    }
 
     const completionDate = formatMyDate(attempt?.finishedAt || Date.now());
 
@@ -80,6 +81,7 @@ export async function GET(request) {
       logoBytes,
       signBytes,
       patternBytes,
+      vazirFontBytes,
     ] = await Promise.all([
       getAsset("fonts/kalam/Kalam-Regular.ttf"),
       getAsset("fonts/montserrat/Montserrat-Italic.ttf"),
@@ -87,6 +89,7 @@ export async function GET(request) {
       getAsset("logo.png"),
       getAsset("sign.png"),
       getAsset("pattern.jpg"),
+      getAsset("fonts/Vazir/Vazir-FD-WOL.ttf"),
     ]);
 
     /* -----------------
@@ -98,11 +101,35 @@ export async function GET(request) {
     const kalamFont = await pdfDoc.embedFont(kalamFontBytes);
     const montserratItalic = await pdfDoc.embedFont(montserratItalicFontBytes);
     const montserrat = await pdfDoc.embedFont(montserratFontBytes);
+    // Persian/Arabic text: the Latin fonts have no glyphs for it (and the
+    // built-in Times font even throws on it), so those strings use Vazir.
+    const vazir = await pdfDoc.embedFont(vazirFontBytes);
 
     const page = pdfDoc.addPage([841.89, 595.28]);
     const { width, height } = page.getSize();
 
-    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    const hasPersian = (text) => /[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/.test(text || "");
+
+    // Draws one line. Persian text -> Vazir, anything else -> `latinFont`.
+    const drawLine = (text, { x, y, size, latinFont, color, center = false }) => {
+      const value = String(text ?? "").trim();
+      if (!value) return;
+      const font = hasPersian(value) ? vazir : latinFont;
+      let textWidth = 0;
+      try {
+        textWidth = font.widthOfTextAtSize(value, size);
+        page.drawText(value, {
+          x: center ? width / 2 - textWidth / 2 : x,
+          y,
+          size,
+          font,
+          color,
+        });
+      } catch (error) {
+        // A character the font can't encode must never break the whole certificate.
+        console.error("Certificate: skipped unprintable text:", error?.message);
+      }
+    };
 
     /* -----------------
      * Logo
@@ -133,43 +160,41 @@ export async function GET(request) {
     });
 
     /* -----------------
-     * Name
+     * Name + details (each value on its own line so Persian names
+     * don't get mixed into an English sentence)
      *-------------------*/
-    const nameWidth = kalamFont.widthOfTextAtSize(completionInfo.name, 40);
-
-    page.drawText(completionInfo.name, {
-      x: width / 2 - nameWidth / 2,
-      y: height - 240,
-      size: 40,
-      font: kalamFont,
-    });
-
-    /* -----------------
-     * Details
-     *-------------------*/
-    const detailsText = `This is to certify that ${completionInfo.name} successfully completed the ${completionInfo.courseName} course on ${completionInfo.completionDate} by ${completionInfo.instructor}`;
-
-    page.drawText(detailsText, {
-      x: width / 2 - 350,
-      y: height - 330,
+    drawLine("This is to certify that", { y: height - 205, size: 16, latinFont: montserrat, center: true });
+    drawLine(completionInfo.name, { y: height - 255, size: 40, latinFont: kalamFont, center: true });
+    drawLine("has successfully completed the course", {
+      y: height - 295,
       size: 16,
-      font: montserrat,
-      maxWidth: 700,
+      latinFont: montserrat,
+      center: true,
+    });
+    drawLine(completionInfo.courseName, {
+      y: height - 330,
+      size: 24,
+      latinFont: montserrat,
+      color: rgb(0, 0.53, 0.71),
+      center: true,
+    });
+    drawLine(`on ${completionInfo.completionDate}`, {
+      y: height - 360,
+      size: 16,
+      latinFont: montserrat,
+      center: true,
     });
 
     /* -----------------
      * Exam score (the student passed the course exam to get here)
      *-------------------*/
     if (quizScore && quizScore.total > 0) {
-      const quizText = `Exam Score: ${quizScore.correct}/${quizScore.total} (${quizScore.percentage}%)`;
-      const quizTextWidth = montserratItalic.widthOfTextAtSize(quizText, 14);
-
-      page.drawText(quizText, {
-        x: width / 2 - quizTextWidth / 2,
-        y: height - 365,
+      drawLine(`Exam Score: ${quizScore.correct}/${quizScore.total} (${quizScore.percentage}%)`, {
+        y: height - 390,
         size: 14,
-        font: montserratItalic,
+        latinFont: montserratItalic,
         color: rgb(0, 0.53, 0.71),
+        center: true,
       });
     }
 
@@ -187,19 +212,18 @@ export async function GET(request) {
       height: 54,
     });
 
-    page.drawText(completionInfo.instructor, {
+    drawLine(completionInfo.instructor, {
       x: width - signatureBoxWidth,
       y: 90,
       size: 14,
-      font: timesRomanFont,
+      latinFont: montserrat,
     });
 
-    page.drawText(completionInfo.instructorDesignation, {
+    drawLine(completionInfo.instructorDesignation, {
       x: width - signatureBoxWidth,
       y: 72,
       size: 10,
-      font: timesRomanFont,
-      maxWidth: 250,
+      latinFont: montserrat,
     });
 
     /* -----------------

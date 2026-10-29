@@ -3,13 +3,10 @@ import { notFound } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { requireRole } from '@/lib/require-role';
 import { getUserActivity } from '@/queries/userActivity';
-import { summarizeCourseProgress } from '@/lib/progress';
 import { formatPrice } from '@/lib/formatPrice';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import UserAvatar from '@/components/user-avatar';
-import { ProgressPie } from '@/components/progress-pie';
-import { CourseProgressList } from '@/components/course-progress-list';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,10 +54,11 @@ const UserDetailsPage = async ({ params }) => {
     const activity = await getUserActivity(userId);
     if (!activity) notFound();
 
-    const { user, enrollments, reports, orders, courseComments, postComments, certificateRequests } = activity;
+    const { user, enrollments, orders, courseComments, postComments, certificateRequests } = activity;
     const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'کاربر';
-    const progress = summarizeCourseProgress(enrollments, reports);
-    const enrolledCourseIds = new Set(progress.courses.map((c) => c.courseId));
+    const enrolledCourseIds = new Set(
+        enrollments.map((e) => e?.course?.id || e?.course?._id?.toString?.()).filter(Boolean),
+    );
 
     // Purchases = every invoice, plus enrollments that have no invoice at all
     // (free / manually granted access), so nothing the user owns is missed.
@@ -123,29 +121,11 @@ const UserDetailsPage = async ({ params }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <Stat title="دوره‌های ثبت‌نامی" value={toFa(progress.total)} />
-                <Stat title="دوره‌های گذرانده" value={toFa(progress.counts.completed)} />
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+                <Stat title="دوره‌های ثبت‌نامی" value={toFa(enrolledCourseIds.size)} />
                 <Stat title="مجموع پرداخت موفق" value={formatPrice(totalPaid)} />
                 <Stat title="دیدگاه‌ها" value={toFa(totalComments)} />
             </div>
-
-            {/* Progress */}
-            <Section title="پیشرفت" count={progress.total}>
-                {progress.total === 0 ? (
-                    <Empty>این کاربر در هیچ دوره‌ای ثبت‌نام نکرده است.</Empty>
-                ) : (
-                    <div className="space-y-6">
-                        <div className="flex justify-center">
-                            <ProgressPie counts={progress.counts} total={progress.total} size={190} />
-                        </div>
-                        <p className="text-center text-sm text-muted-foreground">
-                            میانگین پیشرفت: <span className="font-bold text-foreground">{toFa(progress.averagePercent)}٪</span>
-                        </p>
-                        <CourseProgressList courses={progress.courses} />
-                    </div>
-                )}
-            </Section>
 
             {/* Purchases */}
             <Section title="دوره‌های خریداری‌شده / فاکتورها" count={purchases.length}>

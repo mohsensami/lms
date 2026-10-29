@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Lock, PlayCircle, CheckCircle2, Download, Paperclip } from 'lucide-react';
+import { Lock, PlayCircle, Download, Paperclip } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,12 +12,9 @@ import SecureVideo from '@/components/secure-video';
 
 const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpen }) => {
     const [open, setOpen] = useState(false);
-    const [hasStarted, setHasStarted] = useState(false);
-    const router = useRouter();
 
     const isFree = lesson?.access === 'public';
     const isPlayable = isFree || isEnrolled;
-    const isCompleted = lesson?.state === 'completed';
     const lessonId = lesson?.id || lesson?._id;
 
     useEffect(() => {
@@ -28,39 +24,6 @@ const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpe
         // Only meant to run once on mount when landing on a specific lesson.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    async function recordWatch(state, lastTime = 0) {
-        if (!courseId || !moduleSlug) return; // free-preview lessons outside a real enrollment context
-        try {
-            await fetch('/api/lesson-watch', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    courseId,
-                    lessonId: lesson.id || lesson._id,
-                    moduleSlug,
-                    state,
-                    lastTime,
-                }),
-            });
-        } catch (error) {
-            // Silently ignore — this is just progress tracking, not critical path.
-        }
-    }
-
-    function handleStart() {
-        if (!hasStarted && isEnrolled) {
-            setHasStarted(true);
-            recordWatch('started');
-        }
-    }
-
-    function handleEnded() {
-        if (isEnrolled) {
-            recordWatch('completed');
-            router.refresh();
-        }
-    }
 
     // The real video location is never present in the page. A fresh, short-lived
     // download link is requested (and re-checked on the server) on every click.
@@ -95,17 +58,10 @@ const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpe
             <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className={cn(
-                    'flex w-full items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-primary/5 hover:text-primary',
-                    isCompleted ? 'text-emerald-600' : 'text-foreground',
-                )}
+                className="flex w-full items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-primary/5 hover:text-primary"
             >
                 <span className="flex items-center gap-2.5 truncate">
-                    {isCompleted ? (
-                        <CheckCircle2 size={16} className="flex-none text-emerald-600" />
-                    ) : (
-                        <PlayCircle size={16} className="flex-none text-primary" />
-                    )}
+                    <PlayCircle size={16} className="flex-none text-primary" />
                     <span className="truncate">{lesson?.title}</span>
                 </span>
                 {isFree ? (
@@ -113,11 +69,9 @@ const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpe
                         پیش‌نمایش رایگان
                     </Badge>
                 ) : (
-                    !isCompleted && (
-                        <Badge variant="outline" className="flex-none border-primary/30 text-[10px] text-primary">
-                            پرداخت شده
-                        </Badge>
-                    )
+                    <Badge variant="outline" className="flex-none border-primary/30 text-[10px] text-primary">
+                        پرداخت شده
+                    </Badge>
                 )}
             </button>
 
@@ -128,7 +82,7 @@ const CourseLessonPreview = ({ courseId, moduleSlug, lesson, isEnrolled, autoOpe
                     </DialogHeader>
                     <div className="aspect-video w-full bg-slate-950">
                         {open && lesson?.hasVideo ? (
-                            <SecureVideo lessonId={lessonId} autoPlay onStart={handleStart} onEnded={handleEnded} />
+                            <SecureVideo lessonId={lessonId} autoPlay />
                         ) : (
                             open && (
                                 <div className="flex h-full items-center justify-center text-sm text-white">

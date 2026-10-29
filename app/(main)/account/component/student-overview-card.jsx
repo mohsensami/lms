@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import UserAvatar from '@/components/user-avatar';
 import { Badge } from '@/components/ui/badge';
-import { CourseProgress } from '@/components/course-progress';
 import GrantAccessButton from './grant-access-button';
 
 const ORDER_LABEL = {
@@ -76,10 +75,6 @@ function StudentOverviewCard({ overview, hideHeader, canGrantAccess }) {
                                     {ORDER_LABEL[c.orderStatus] || 'بدون فاکتور ثبت‌شده'}
                                 </Badge>
                             </div>
-                        </div>
-
-                        <div className="mt-3">
-                            <CourseProgress value={c.progressPercent} variant={c.progressPercent === 100 ? 'success' : ''} />
                         </div>
 
                         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">

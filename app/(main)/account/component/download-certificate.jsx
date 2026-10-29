@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { requestCertificate } from '@/app/actions/certificate-request';
@@ -11,8 +11,11 @@ const STATUS_LABEL = {
     rejected: 'رد شده — می‌توانید دوباره درخواست دهید',
 };
 
-export const DownloadCertificate = ({ courseId, requestStatus }) => {
+export const DownloadCertificate = ({ courseId, requestStatus: initialStatus }) => {
     const router = useRouter();
+    // Kept in local state so the button changes right away, without waiting for the page refresh.
+    const [requestStatus, setRequestStatus] = useState(initialStatus);
+    useEffect(() => setRequestStatus(initialStatus), [initialStatus]);
     const [isBusy, setIsBusy] = useState(false);
 
     async function handleRequest() {
@@ -24,6 +27,7 @@ export const DownloadCertificate = ({ courseId, requestStatus }) => {
                 router.refresh();
                 return;
             }
+            setRequestStatus('pending');
             toast.success('درخواست تایید مدرک ثبت شد');
             router.refresh();
         } catch (error) {

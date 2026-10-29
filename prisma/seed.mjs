@@ -3,8 +3,7 @@
 // Seed data in Persian, suitable for a Farsi-language LMS demo.
 // One course only ("آموزش متلب"), but fleshed out completely: many
 // modules, lessons in each module, a final exam with several questions, an
-// admin (the course teacher), a few students, enrollments, testimonials/reviews, and
-// progress reports.
+// admin (the course teacher), a few students, enrollments, and testimonials/reviews.
 //
 // Run with:
 //   npx prisma db seed
@@ -22,8 +21,6 @@ function slugify(title) {
 async function clearExistingData() {
     // Delete children before parents to satisfy foreign key constraints.
     await prisma.post.deleteMany();
-    await prisma.watch.deleteMany();
-    await prisma.report.deleteMany();
     await prisma.examAttempt.deleteMany();
     await prisma.examQuestion.deleteMany();
     await prisma.exam.deleteMany();
@@ -452,48 +449,6 @@ async function main() {
     ]);
 
     console.log('در حال ثبت گزارش پیشرفت دانشجویان...');
-
-    // Mohammad has completed the course: mark every lesson & module as done.
-    const allModules = await prisma.module.findMany({
-        where: { courseId: course.id },
-        orderBy: { order: 'asc' },
-        include: { lessonIds: { orderBy: { order: 'asc' } } },
-    });
-    const allLessonIds = allModules.flatMap((m) => m.lessonIds.map((l) => l.id));
-    const allModuleIds = allModules.map((m) => m.id);
-
-    await prisma.report.create({
-        data: {
-            courseId: course.id,
-            studentId: mohammad.id,
-            totalCompletedLessons: allLessonIds,
-            totalCompletedModeules: allModuleIds,
-            completion_date: new Date('2026-05-20'),
-        },
-    });
-
-    // Sara and Amir are partway through (first two modules completed).
-    const partialModules = allModules.slice(0, 2);
-    const partialLessonIds = partialModules.flatMap((m) => m.lessonIds.map((l) => l.id));
-    const partialModuleIds = partialModules.map((m) => m.id);
-
-    await prisma.report.create({
-        data: {
-            courseId: course.id,
-            studentId: sara.id,
-            totalCompletedLessons: partialLessonIds,
-            totalCompletedModeules: partialModuleIds,
-        },
-    });
-
-    await prisma.report.create({
-        data: {
-            courseId: course.id,
-            studentId: amir.id,
-            totalCompletedLessons: partialLessonIds.slice(0, 3),
-            totalCompletedModeules: [],
-        },
-    });
 
     console.log('در حال ساخت مقالات وبلاگ...');
 

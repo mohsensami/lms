@@ -11,7 +11,7 @@ import { getExamStateForStudent } from '@/lib/exam';
  */
 export async function getStudentsOverview() {
     const courses = await prisma.course.findMany({
-        include: { _count: { select: { modules: true } } },
+        
     });
 
     const studentsMap = new Map();
@@ -28,14 +28,11 @@ export async function getStudentsOverview() {
 
         await Promise.all(
             Array.from(studentIds).map(async (studentId) => {
-                const [student, order, report, certificateRequest, commentCount, examState] = await Promise.all([
+                const [student, order, certificateRequest, commentCount, examState] = await Promise.all([
                     prisma.user.findUnique({ where: { id: studentId } }),
                     prisma.order.findFirst({
                         where: { courseId: course.id, userId: studentId },
                         orderBy: { createdAt: 'desc' },
-                    }),
-                    prisma.report.findFirst({
-                        where: { courseId: course.id, studentId },
                     }),
                     prisma.certificateRequest
                         .findUnique({
@@ -48,9 +45,6 @@ export async function getStudentsOverview() {
 
                 if (!student) return;
 
-                const totalModules = course._count?.modules || 0;
-                const completedModules = report?.totalCompletedModeules?.length || 0;
-                const progressPercent = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
                 const isEnrolled = enrollments.some((e) => e.studentId === studentId);
 
                 const courseEntry = {
@@ -58,7 +52,6 @@ export async function getStudentsOverview() {
                     courseTitle: course.title,
                     orderStatus: order?.status || null,
                     isEnrolled,
-                    progressPercent,
                     examState: examState.state,
                     examScore: examState.state === 'passed' ? examState.attempt : null,
                     examLockedUntil: examState.lockedUntil || null,

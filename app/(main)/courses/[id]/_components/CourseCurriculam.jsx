@@ -3,8 +3,6 @@ import { BookCheck, Clock10 } from 'lucide-react';
 import { Accordion } from '@/components/ui/accordion';
 
 import CourseModuleList from './module/CourseModuleList';
-import { getLoggedInUser } from '@/lib/loggedin-user';
-import { getModulesWithWatchState } from '@/lib/course-progress';
 
 const CourseCurriculam = async ({ course, isEnrolled, activeLessonSlug }) => {
     const totalDuration = course?.modules
@@ -17,10 +15,7 @@ const CourseCurriculam = async ({ course, isEnrolled, activeLessonSlug }) => {
             return acc + obj;
         }, 0);
 
-    const loggedInUser = isEnrolled ? await getLoggedInUser() : null;
-    const modules = loggedInUser
-        ? await getModulesWithWatchState(course, loggedInUser.id)
-        : (course?.modules ?? []);
+    const modules = course?.modules ?? [];
 
     const expandedModule = activeLessonSlug
         ? modules.findIndex((module) => module.lessonIds?.some((lesson) => lesson.slug === activeLessonSlug))
