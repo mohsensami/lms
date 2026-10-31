@@ -9,7 +9,7 @@ import { getCourseDetails, getRelatedCourses, sanitizeCourseForVisitor } from '@
 import { replaceMongoIdInArray } from '@/lib/convertData';
 import MoneyBack from '@/components/money-back';
 import { getLoggedInUser } from '@/lib/loggedin-user';
-import { hasEnrollmentForCourse } from '@/queries/enrollments';
+import { hasEnrollmentForCourse, hasFullCourseAccess } from '@/queries/enrollments';
 import { buildCourseMetadata, buildCourseJsonLd } from '@/lib/seo';
 import { getSiteName } from '@/lib/site-settings';
 
@@ -40,7 +40,8 @@ const SingleCoursePage = async ({ params }) => {
     // and, more importantly, never receive the real video_url for lessons
     // they haven't paid for.
     const loggedInUser = await getLoggedInUser();
-    const isEnrolled = loggedInUser ? await hasEnrollmentForCourse(currentCourseId, loggedInUser.id) : false;
+    // Admins get the same full access as buyers (they never need to purchase).
+    const isEnrolled = await hasFullCourseAccess(loggedInUser, currentCourseId);
     const visibleCourse = sanitizeCourseForVisitor(course, isEnrolled);
 
     // Fetch related courses only when both course and category IDs exist

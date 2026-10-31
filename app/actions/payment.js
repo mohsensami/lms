@@ -36,6 +36,10 @@ export async function startCheckout(courseId, gatewayId) {
       return { ok: false, message: "این درگاه پرداخت در حال حاضر فعال نیست." };
     }
 
+    if (user.role === "admin") {
+      return { ok: false, message: "مدیران به همه‌ی دوره‌ها دسترسی کامل دارند و نیازی به خرید نیست." };
+    }
+
     if (await hasEnrollmentForCourse(course.id, user.id)) {
       return { ok: false, message: "شما قبلاً در این دوره ثبت‌نام کرده‌اید." };
     }

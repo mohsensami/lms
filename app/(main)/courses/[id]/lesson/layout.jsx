@@ -1,15 +1,17 @@
 import { getLoggedInUser } from '@/lib/loggedin-user';
 import { redirect } from 'next/navigation';
-import { hasEnrollmentForCourse } from '@/queries/enrollments';
+import { hasFullCourseAccess } from '@/queries/enrollments';
 
-const CourseLayout = async ({ children, params: { id } }) => {
+const CourseLayout = async ({ children, params }) => {
+    const { id } = await params;
     const loggedinUser = await getLoggedInUser();
     if (!loggedinUser) {
         redirect('/login');
     }
 
-    const isEnrolled = await hasEnrollmentForCourse(id, loggedinUser.id);
-    if (!isEnrolled) {
+    // Buyers and admins may open the lesson area.
+    const canAccess = await hasFullCourseAccess(loggedinUser, id);
+    if (!canAccess) {
         redirect('/courses');
     }
 

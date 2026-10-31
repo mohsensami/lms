@@ -73,3 +73,14 @@ export async function hasEnrollmentForCourse(courseId, studentId) {
         throw new Error(error);
     }
 }
+
+/**
+ * May this user open ALL of a course's content (every lesson, video, download)?
+ * Admins always can — they own the courses and never need to buy them — and
+ * so can students who are enrolled. Guests / unrelated users can't.
+ */
+export async function hasFullCourseAccess(user, courseId) {
+    if (!user || !courseId) return false;
+    if (user.role === 'admin' && user.isActive !== false) return true;
+    return hasEnrollmentForCourse(courseId, user.id);
+}
