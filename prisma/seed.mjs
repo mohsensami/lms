@@ -14,6 +14,17 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
+// Lesson link fields (video_url, attachmentUrl, attachmentName) are optional
+// strings. Leave the 'xxxxxxxxxxx' placeholder, an empty string, or delete the
+// property entirely and the lesson is saved with NO value (null) — so a lesson
+// without a video or file never shows a broken player / download button.
+const PLACEHOLDER = 'xxxxxxxxxxx';
+function optionalText(value) {
+    if (typeof value !== 'string') return null;
+    const text = value.trim();
+    return text && text !== PLACEHOLDER ? text : null;
+}
+
 function slugify(title) {
     return title.replace(/ /g, '-').replace(/[^\w\u0600-\u06FF-]+/g, '');
 }
@@ -48,23 +59,23 @@ async function main() {
     });
 
     console.log('در حال ساخت کاربران...');
-    const hashedPassword = await bcrypt.hash('Password123!', 5);
+    const hashedPassword = await bcrypt.hash('123456sSa', 5);
 
     const instructor = await prisma.user.create({
         data: {
-            firstName: 'امیرحسین',
-            lastName: 'صادقی',
-            email: 'amirhossein.sadeghi@example.com',
+            firstName: 'مدیر',
+            lastName: 'سایت',
+            email: 'admin@email.com',
             password: hashedPassword,
             role: 'admin',
-            phone: '09121234567',
+            phone: '09033451850',
             bio: 'دکتری مهندسی برق و مدرس دانشگاه با بیش از ۸ سال سابقه‌ی تدریس متلب و شبیه‌سازی سیستم‌های مهندسی. علاقه‌مند به آموزش کاربردی و پروژه‌محور نرم‌افزارهای محاسباتی.',
             designation: 'مدرس متلب و شبیه‌سازی مهندسی',
             profilePicture: 'https://i.pravatar.cc/300?img=15',
             socialMedia: {
-                twitter: 'https://twitter.com/amirsadeghi',
-                linkedin: 'https://linkedin.com/in/amirhossein-sadeghi',
-                github: 'https://github.com/amirsadeghi',
+                twitter: 'https://twitter.com/mohsensami',
+                linkedin: 'https://linkedin.com/in/mohsensami',
+                github: 'https://github.com/mohsensami',
             },
         },
     });
@@ -72,55 +83,31 @@ async function main() {
     const students = await Promise.all([
         prisma.user.create({
             data: {
-                firstName: 'سارا',
-                lastName: 'احمدی',
-                email: 'sara.ahmadi@example.com',
+                firstName: 'دانشجو',
+                lastName: 'سایت',
+                email: 'student@email.com',
                 password: hashedPassword,
                 role: 'student',
-                phone: '09123456789',
+                phone: '09359431620',
                 bio: 'دانشجوی کارشناسی مهندسی برق، در حال یادگیری متلب برای پروژه‌های درسی.',
                 profilePicture: 'https://i.pravatar.cc/300?img=45',
             },
         }),
         prisma.user.create({
             data: {
-                firstName: 'محمد',
-                lastName: 'رضایی',
-                email: 'mohammad.rezaei@example.com',
+                firstName: 'مهمان',
+                lastName: 'سایت',
+                email: 'guest@email.com',
                 password: hashedPassword,
                 role: 'student',
-                phone: '09351234567',
+                phone: '',
                 bio: 'دانشجوی مهندسی مکانیک و علاقه‌مند به شبیه‌سازی و تحلیل عددی با متلب.',
                 profilePicture: 'https://i.pravatar.cc/300?img=33',
             },
         }),
-        prisma.user.create({
-            data: {
-                firstName: 'نگار',
-                lastName: 'کریمی',
-                email: 'negar.karimi@example.com',
-                password: hashedPassword,
-                role: 'student',
-                phone: '09191234567',
-                bio: 'دانشجوی ارشد مهندسی صنایع، به دنبال یادگیری تحلیل داده با متلب.',
-                profilePicture: 'https://i.pravatar.cc/300?img=48',
-            },
-        }),
-        prisma.user.create({
-            data: {
-                firstName: 'امیر',
-                lastName: 'حسینی',
-                email: 'amir.hosseini@example.com',
-                password: hashedPassword,
-                role: 'student',
-                phone: '09301234567',
-                bio: 'مهندس عمران که می‌خواهد از متلب برای محاسبات سازه‌ای استفاده کند.',
-                profilePicture: 'https://i.pravatar.cc/300?img=53',
-            },
-        }),
     ]);
 
-    const [sara, mohammad, negar, amir] = students;
+    const [student, guest] = students;
 
     console.log('در حال ساخت دوره...');
     const course = await prisma.course.create({
@@ -156,96 +143,390 @@ async function main() {
             title: 'آشنایی با متلب و نصب نرم‌افزار',
             description: 'آشنایی اولیه با کاربردهای متلب در صنعت و دانشگاه و راه‌اندازی نرم‌افزار.',
             lessons: [
-                { title: 'متلب چیست و در چه صنایعی کاربرد دارد؟', duration: 480, access: 'public' },
-                { title: 'دانلود و نصب متلب روی ویندوز و مک', duration: 600, access: 'public' },
-                { title: 'آشنایی با نسخه‌های مختلف و جعبه‌ابزارهای متلب', duration: 420, access: 'private' },
-                { title: 'آشنایی با MATLAB Online و جایگزین‌های رایگان', duration: 480, access: 'private' },
+                {
+                    title: 'متلب چیست و در چه صنایعی کاربرد دارد؟',
+                    duration: 480,
+                    access: 'public',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'دانلود و نصب متلب روی ویندوز و مک',
+                    duration: 600,
+                    access: 'public',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'آشنایی با نسخه‌های مختلف و جعبه‌ابزارهای متلب',
+                    duration: 420,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'آشنایی با MATLAB Online و جایگزین‌های رایگان',
+                    duration: 480,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
             ],
         },
         {
             title: 'آشنایی با محیط و رابط کاربری متلب',
             description: 'شناخت بخش‌های مختلف محیط متلب و نحوه‌ی کار با آن‌ها.',
             lessons: [
-                { title: 'معرفی Command Window و Workspace', duration: 540, access: 'public' },
-                { title: 'کار با Editor و نوشتن اولین اسکریپت', duration: 660, access: 'private' },
-                { title: 'مدیریت فایل‌ها با Current Folder', duration: 480, access: 'private' },
-                { title: 'استفاده از راهنما و مستندات متلب (Help و Documentation)', duration: 420, access: 'private' },
+                {
+                    title: 'معرفی Command Window و Workspace',
+                    duration: 540,
+                    access: 'public',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'کار با Editor و نوشتن اولین اسکریپت',
+                    duration: 660,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'مدیریت فایل‌ها با Current Folder',
+                    duration: 480,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'استفاده از راهنما و مستندات متلب (Help و Documentation)',
+                    duration: 420,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
             ],
         },
         {
             title: 'متغیرها، انواع داده و عملگرها',
             description: 'یادگیری نحوه‌ی تعریف متغیر، انواع داده و عملگرهای محاسباتی و منطقی در متلب.',
             lessons: [
-                { title: 'تعریف و مقداردهی متغیرها', duration: 600, access: 'private' },
-                { title: 'انواع داده در متلب (عددی، رشته‌ای، منطقی)', duration: 660, access: 'private' },
-                { title: 'عملگرهای محاسباتی (جمع، تفریق، ضرب، توان)', duration: 540, access: 'private' },
-                { title: 'عملگرهای منطقی و مقایسه‌ای', duration: 480, access: 'private' },
-                { title: 'تمرین عملی: محاسبات ریاضی پایه با متلب', duration: 720, access: 'private' },
+                {
+                    title: 'تعریف و مقداردهی متغیرها',
+                    duration: 600,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'انواع داده در متلب (عددی، رشته‌ای، منطقی)',
+                    duration: 660,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'عملگرهای محاسباتی (جمع، تفریق، ضرب، توان)',
+                    duration: 540,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'عملگرهای منطقی و مقایسه‌ای',
+                    duration: 480,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'تمرین عملی: محاسبات ریاضی پایه با متلب',
+                    duration: 720,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
             ],
         },
         {
             title: 'کار با ماتریس‌ها و آرایه‌ها',
             description: 'مهم‌ترین بخش متلب: ساخت، دستکاری و انجام محاسبات روی ماتریس‌ها و آرایه‌ها.',
             lessons: [
-                { title: 'ساخت ماتریس و آرایه در متلب', duration: 660, access: 'private' },
-                { title: 'دسترسی به عناصر ماتریس (Indexing)', duration: 720, access: 'private' },
-                { title: 'عملیات ماتریسی (ضرب، ترانهاده، معکوس)', duration: 840, access: 'private' },
-                { title: 'توابع پرکاربرد روی ماتریس‌ها (size، sum، sort)', duration: 660, access: 'private' },
-                { title: 'حل دستگاه معادلات خطی با ماتریس', duration: 900, access: 'private' },
+                {
+                    title: 'ساخت ماتریس و آرایه در متلب',
+                    duration: 660,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'دسترسی به عناصر ماتریس (Indexing)',
+                    duration: 720,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'عملیات ماتریسی (ضرب، ترانهاده، معکوس)',
+                    duration: 840,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'توابع پرکاربرد روی ماتریس‌ها (size، sum، sort)',
+                    duration: 660,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'حل دستگاه معادلات خطی با ماتریس',
+                    duration: 900,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
             ],
         },
         {
             title: 'حلقه‌ها و دستورات شرطی',
             description: 'کنترل روند اجرای برنامه با استفاده از حلقه‌ها و شرط‌ها برای حل مسائل تکرارشونده.',
             lessons: [
-                { title: 'دستور شرطی if و else', duration: 600, access: 'private' },
-                { title: 'دستور switch-case', duration: 480, access: 'private' },
-                { title: 'حلقه‌ی for در متلب', duration: 660, access: 'private' },
-                { title: 'حلقه‌ی while و کنترل تکرار', duration: 600, access: 'private' },
-                { title: 'تمرین عملی: محاسبه‌ی سری‌های عددی با حلقه', duration: 780, access: 'private' },
+                {
+                    title: 'دستور شرطی if و else',
+                    duration: 600,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'دستور switch-case',
+                    duration: 480,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'حلقه‌ی for در متلب',
+                    duration: 660,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'حلقه‌ی while و کنترل تکرار',
+                    duration: 600,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'تمرین عملی: محاسبه‌ی سری‌های عددی با حلقه',
+                    duration: 780,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
             ],
         },
         {
             title: 'نوشتن توابع در متلب',
             description: 'یادگیری ساخت توابع کاربر برای سازمان‌دهی و بازاستفاده از کد.',
             lessons: [
-                { title: 'تفاوت Script و Function در متلب', duration: 540, access: 'private' },
-                { title: 'نوشتن اولین تابع (function) با ورودی و خروجی', duration: 720, access: 'private' },
-                { title: 'توابع با چند خروجی و آرگومان‌های اختیاری', duration: 660, access: 'private' },
-                { title: 'توابع ناشناس (Anonymous Functions) و Handle', duration: 600, access: 'private' },
-                { title: 'پروژه عملی: نوشتن یک ماشین‌حساب ساده با تابع', duration: 900, access: 'private' },
+                {
+                    title: 'تفاوت Script و Function در متلب',
+                    duration: 540,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'نوشتن اولین تابع (function) با ورودی و خروجی',
+                    duration: 720,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'توابع با چند خروجی و آرگومان‌های اختیاری',
+                    duration: 660,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'توابع ناشناس (Anonymous Functions) و Handle',
+                    duration: 600,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'پروژه عملی: نوشتن یک ماشین‌حساب ساده با تابع',
+                    duration: 900,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
             ],
         },
         {
             title: 'رسم نمودار و تجسم داده‌ها',
             description: 'رسم نمودارهای دو بعدی و سه بعدی برای نمایش و تحلیل داده‌ها.',
             lessons: [
-                { title: 'رسم نمودار دو بعدی با دستور plot', duration: 660, access: 'private' },
-                { title: 'شخصی‌سازی نمودار (رنگ، عنوان، برچسب محورها)', duration: 600, access: 'private' },
-                { title: 'رسم چند نمودار هم‌زمان و Subplot', duration: 600, access: 'private' },
-                { title: 'نمودارهای سه‌بعدی با mesh و surf', duration: 780, access: 'private' },
-                { title: 'ذخیره و خروجی گرفتن از نمودارها', duration: 420, access: 'private' },
+                {
+                    title: 'رسم نمودار دو بعدی با دستور plot',
+                    duration: 660,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'شخصی‌سازی نمودار (رنگ، عنوان، برچسب محورها)',
+                    duration: 600,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'رسم چند نمودار هم‌زمان و Subplot',
+                    duration: 600,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'نمودارهای سه‌بعدی با mesh و surf',
+                    duration: 780,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'ذخیره و خروجی گرفتن از نمودارها',
+                    duration: 420,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
             ],
         },
         {
             title: 'کار با فایل‌ها و ورود و خروج داده',
             description: 'یادگیری خواندن و نوشتن داده از فایل‌های اکسل و متنی برای پردازش در متلب.',
             lessons: [
-                { title: 'وارد کردن داده از فایل اکسل (xlsread و readtable)', duration: 660, access: 'private' },
-                { title: 'خروجی گرفتن نتایج به فایل اکسل و CSV', duration: 600, access: 'private' },
-                { title: 'کار با فایل‌های متنی (txt) در متلب', duration: 540, access: 'private' },
-                { title: 'ذخیره و بارگذاری متغیرها با save و load', duration: 480, access: 'private' },
+                {
+                    title: 'وارد کردن داده از فایل اکسل (xlsread و readtable)',
+                    duration: 660,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'خروجی گرفتن نتایج به فایل اکسل و CSV',
+                    duration: 600,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'کار با فایل‌های متنی (txt) در متلب',
+                    duration: 540,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'ذخیره و بارگذاری متغیرها با save و load',
+                    duration: 480,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
             ],
         },
         {
             title: 'آشنایی مقدماتی با Simulink و پردازش سیگنال/تصویر',
             description: 'جمع‌بندی دوره و نگاهی مقدماتی به جعبه‌ابزارهای تخصصی متلب برای ادامه‌ی مسیر یادگیری.',
             lessons: [
-                { title: 'Simulink چیست و چه کاربردی دارد؟', duration: 600, access: 'private' },
-                { title: 'ساخت اولین مدل ساده در Simulink', duration: 900, access: 'private' },
-                { title: 'آشنایی مقدماتی با پردازش سیگنال در متلب', duration: 720, access: 'private' },
-                { title: 'آشنایی مقدماتی با پردازش تصویر در متلب', duration: 720, access: 'private' },
-                { title: 'جمع‌بندی دوره و مسیر یادگیری پیشرفته', duration: 480, access: 'private' },
+                {
+                    title: 'Simulink چیست و چه کاربردی دارد؟',
+                    duration: 600,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'ساخت اولین مدل ساده در Simulink',
+                    duration: 900,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'آشنایی مقدماتی با پردازش سیگنال در متلب',
+                    duration: 720,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'آشنایی مقدماتی با پردازش تصویر در متلب',
+                    duration: 720,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
+                {
+                    title: 'جمع‌بندی دوره و مسیر یادگیری پیشرفته',
+                    duration: 480,
+                    access: 'private',
+                    video_url: 'https://hajifirouz11.asset.aparat.com/aparat-video/1b2b1f2913cd3196a9473438e7cb2dc373180010-1080p.apt/chunk.m3u8?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImMxZjFiMGRlZDExZjIyYWNhYjE4MmQ4ZjIwNzMzYmMyIiwiZXhwIjoxNzkzNDg3NzUzLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.cc2v6caxqClaN-bP1ynl2V3t-MmA5T-YoIr5V1yt1xk', // لینک ویدئو (اختیاری)
+                    attachmentUrl: 'https://raw.githubusercontent.com/mohsensami/personal/refs/heads/main/public/fonts/IRANSansWeb.ttf?token=GHSAT0AAAAAAEMZS3AVRZNIQTOH2A2XIHG62XGGHWA', // لینک فایل ضمیمه (اختیاری؛ اگر ندارد، این دو خط ضمیمه را پاک کنید)
+                    attachmentName: 'File Atachment', // نام نمایشی ضمیمه، مثلاً 'فایل تمرین.zip' (اختیاری)
+                },
             ],
         },
     ];
@@ -270,7 +551,11 @@ async function main() {
                     title: lessonInfo.title,
                     description: `در این درس با موضوع «${lessonInfo.title}» به‌صورت کامل و همراه با مثال آشنا می‌شوید.`,
                     duration: lessonInfo.duration,
-                    video_url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+                    // Per-lesson link: replace each 'xxxxxxxxxxx' in modulesData above with the real video URL.
+                    video_url: optionalText(lessonInfo.video_url),
+                    // Optional downloadable file for the lesson.
+                    attachmentUrl: optionalText(lessonInfo.attachmentUrl),
+                    attachmentName: optionalText(lessonInfo.attachmentName),
                     active: true,
                     slug: slugify(lessonInfo.title),
                     access: lessonInfo.access,
@@ -381,7 +666,7 @@ async function main() {
         prisma.enrollment.create({
             data: {
                 courseId: course.id,
-                studentId: sara.id,
+                studentId: student.id,
                 method: 'online',
                 status: 'in-progress',
                 enrollment_date: new Date('2026-04-10'),
@@ -390,29 +675,11 @@ async function main() {
         prisma.enrollment.create({
             data: {
                 courseId: course.id,
-                studentId: mohammad.id,
+                studentId: guest.id,
                 method: 'online',
                 status: 'completed',
                 enrollment_date: new Date('2026-02-01'),
                 completion_date: new Date('2026-05-20'),
-            },
-        }),
-        prisma.enrollment.create({
-            data: {
-                courseId: course.id,
-                studentId: negar.id,
-                method: 'online',
-                status: 'not-started',
-                enrollment_date: new Date('2026-06-15'),
-            },
-        }),
-        prisma.enrollment.create({
-            data: {
-                courseId: course.id,
-                studentId: amir.id,
-                method: 'online',
-                status: 'in-progress',
-                enrollment_date: new Date('2026-05-05'),
             },
         }),
     ]);
@@ -425,7 +692,7 @@ async function main() {
                     'دوره‌ی خیلی خوبی بود، مخصوصاً بخش کار با ماتریس‌ها که پایه‌ی خیلی از پروژه‌های دانشگاهی منه. توضیحات آقای صادقی کاملاً قابل فهم و همراه با مثال بود.',
                 rating: 5,
                 courseId: course.id,
-                userId: sara.id,
+                userId: student.id,
             },
         }),
         prisma.testimonial.create({
@@ -434,16 +701,7 @@ async function main() {
                     'برای پروژه پایان‌نامه‌م به متلب نیاز داشتم و این دوره دقیقاً همون چیزی بود که لازم داشتم. بخش رسم نمودار و Simulink خیلی کاربردی بود.',
                 rating: 5,
                 courseId: course.id,
-                userId: mohammad.id,
-            },
-        }),
-        prisma.testimonial.create({
-            data: {
-                content:
-                    'محتوای دوره کامل و مرتب بود، فقط جای چند تا تمرین بیشتر برای بخش توابع خالی بود. در کل خیلی راضی‌ام.',
-                rating: 4,
-                courseId: course.id,
-                userId: amir.id,
+                userId: guest.id,
             },
         }),
     ]);
@@ -505,8 +763,8 @@ async function main() {
     console.log(`- ${quizzesData.length} سوال آزمون`);
     console.log(`- ${enrollments.length} ثبت‌نام`);
     console.log(`- ${postsData.length} مقاله`);
-    console.log('اطلاعات ورود مدرس: amirhossein.sadeghi@example.com / Password123!');
-    console.log('اطلاعات ورود دانشجو: sara.ahmadi@example.com / Password123!');
+    console.log('اطلاعات ورود مدرس: admin@email.com / Password123!');
+    console.log('اطلاعات ورود دانشجو: student@email.com / Password123!');
 }
 
 main()
